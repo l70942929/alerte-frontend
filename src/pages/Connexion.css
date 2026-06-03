@@ -1,0 +1,39 @@
+.auth-page { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+.auth-left { background:var(--primary); display:flex; align-items:center; justify-content:center; padding:48px; position:relative; overflow:hidden; }
+.auth-left::before { content:''; position:absolute; width:400px; height:400px; background:rgba(255,255,255,0.05); border-radius:50%; top:-100px; right:-100px; }
+.auth-left::after { content:''; position:absolute; width:300px; height:300px; background:rgba(253,139,0,0.15); border-radius:50%; bottom:-80px; left:-80px; }
+.auth-visual { position:relative; z-index:1; text-align:center; color:white; }
+.auth-visual h2 { font-family:var(--font-display); font-size:32px; font-weight:900; letter-spacing:-1px; margin:16px 0 12px; }
+.auth-visual p { font-size:15px; color:var(--primary-light); line-height:1.6; max-width:300px; margin:0 auto 28px; }
+.auth-stats { display:flex; gap:24px; justify-content:center; }
+.auth-stat { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.auth-stat strong { font-family:var(--font-display); font-size:28px; font-weight:900; letter-spacing:-1px; }
+.auth-stat span { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--primary-light); opacity:0.8; }
+.auth-right { display:flex; align-items:center; justify-content:center; padding:48px; background:var(--surface); overflow-y:auto; }
+.auth-box { width:100%; max-width:400px; }
+.auth-back { width:40px; height:40px; border-radius:var(--radius-full); background:var(--surface-container); display:flex; align-items:center; justify-content:center; color:var(--on-surface-variant); cursor:pointer; transition:all 0.2s; margin-bottom:20px; }
+.auth-back:hover { background:var(--surface-high); }
+.auth-box h1 { font-family:var(--font-display); font-size:32px; font-weight:900; color:var(--primary); letter-spacing:-1px; margin-bottom:4px; }
+.auth-box > p { font-size:14px; color:var(--on-surface-variant); margin-bottom:28px; }
+.fgrp { margin-bottom:16px; }
+.fgrp label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--on-surface-variant); margin-bottom:8px; }
+.finp { position:relative; display:flex; align-items:center; }
+.finp-ico { position:absolute; left:12px; font-size:18px !important; color:var(--outline); }
+.finp input, .finp select, .finp textarea {
+  width:100%; padding:12px 12px 12px 40px;
+  border:1.5px solid var(--outline-variant); border-radius:var(--radius-md);
+  font-size:14px; color:var(--on-surface); background:var(--surface-white);
+  transition:all 0.2s; outline:none;
+}
+.finp input:focus, .finp select:focus, .finp textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(0,63,135,0.1); }
+.form-err { display:flex; align-items:center; gap:8px; background:var(--error-light); color:var(--error); padding:12px 16px; border-radius:var(--radius-md); font-size:14px; margin-bottom:16px; }
+.auth-submit { width:100%; background:var(--primary); color:white; border-radius:var(--radius-md); padding:14px; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; margin-bottom:16px; box-shadow:var(--shadow); }
+.auth-submit:hover:not(:disabled) { background:var(--primary-dark); transform:translateY(-1px); }
+.auth-submit:disabled { opacity:0.7; cursor:not-allowed; }
+.auth-or { text-align:center; position:relative; margin-bottom:16px; }
+.auth-or::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:var(--outline-variant); }
+.auth-or span { background:var(--surface); padding:0 12px; font-size:12px; color:var(--outline); position:relative; }
+.auth-switch { width:100%; background:var(--surface-container); border-radius:var(--radius-md); padding:14px; font-size:14px; color:var(--on-surface-variant); transition:all 0.2s; }
+.auth-switch:hover { background:var(--surface-high); }
+.auth-switch strong { color:var(--primary); }
+@media (max-width:768px) { .auth-page { grid-template-columns:1fr; } .auth-left { display:none; } .auth-right { padding:24px; } }

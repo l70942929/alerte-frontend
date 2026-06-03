@@ -1,0 +1,60 @@
+.hdr {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(249,249,255,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--outline-variant);
+  box-shadow: var(--shadow-sm);
+}
+.hdr-inner {
+  max-width: 1280px; margin: 0 auto; padding: 0 24px;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+}
+.hdr-left { display: flex; align-items: center; gap: 40px; }
+.hdr-logo {
+  font-family: var(--font-display); font-size: 18px; font-weight: 800;
+  color: var(--primary); cursor: pointer; letter-spacing: -0.5px;
+}
+.hdr-dropdown-role {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+  padding: 0 10px 6px;
+}
+.hdr-nav { display: flex; gap: 4px; }
+.hdr-nav a {
+  font-size: 14px; font-weight: 600; color: var(--on-surface-variant);
+  padding: 6px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+}
+.hdr-nav a:hover { background: var(--surface-container); }
+.hdr-nav a.active { color: var(--primary); background: var(--primary-light); }
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+.hdr-icon-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-full);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--on-surface-variant); transition: all 0.2s;
+}
+.hdr-icon-btn:hover { background: var(--surface-container); }
+.hdr-user { position: relative; cursor: pointer; }
+.hdr-avatar {
+  width: 36px; height: 36px; border-radius: var(--radius-full);
+  background: var(--primary); color: white;
+  font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hdr-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: var(--surface-white); border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
+  min-width: 180px; padding: 8px; animation: fadeIn 0.2s ease;
+}
+.hdr-dropdown-name {
+  font-size: 12px; font-weight: 700; color: var(--on-surface-variant);
+  padding: 6px 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.hdr-logout {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  font-size: 14px; color: var(--error); transition: all 0.2s;
+}
+.hdr-logout:hover { background: var(--error-light); }
+@media (max-width: 768px) { .hdr-nav { display: none; } }

@@ -1,0 +1,73 @@
+.modo-page { min-height:100vh; background:var(--surface); }
+.modo-body { max-width:960px; margin:0 auto; padding:76px 24px 60px; }
+
+.modo-header { margin-bottom:28px; }
+.modo-badge { display:inline-block; background:#E8F5E9; color:#2E7D32; font-size:12px; font-weight:700; padding:4px 12px; border-radius:var(--radius-full); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.modo-title { font-family:var(--font-display); font-size:clamp(24px,3vw,36px); font-weight:900; color:var(--primary); letter-spacing:-1px; margin-bottom:6px; }
+.modo-sub { font-size:14px; color:var(--on-surface-variant); }
+
+.modo-msg { padding:12px 18px; border-radius:var(--radius-md); font-size:14px; font-weight:600; margin-bottom:20px; }
+.modo-msg.success { background:var(--success-light); color:var(--success); }
+.modo-msg.error { background:var(--error-light); color:var(--error); }
+
+.modo-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.modo-stat { background:var(--surface-white); border-radius:var(--radius-lg); padding:18px; text-align:center; border:1px solid var(--outline-variant); box-shadow:var(--shadow-sm); cursor:pointer; transition:all 0.2s; }
+.modo-stat:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+.modo-stat.attente { border-color:#FF9800; background:#FFF8F0; }
+.modo-stat.publiee { border-color:var(--primary); background:var(--primary-light); }
+.modo-stat.resolue { border-color:#43A047; background:#F1F8E9; }
+.modo-stat-val { display:block; font-family:var(--font-display); font-size:36px; font-weight:900; color:var(--primary); letter-spacing:-1px; }
+.modo-stat.attente .modo-stat-val { color:#E65100; }
+.modo-stat.resolue .modo-stat-val { color:#2E7D32; }
+.modo-stat-lbl { font-size:12px; color:var(--on-surface-variant); font-weight:600; margin-top:4px; display:block; }
+
+.modo-filtres { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.modo-filtre { padding:8px 16px; border-radius:var(--radius-full); font-size:13px; font-weight:600; background:var(--surface-container); color:var(--on-surface-variant); border:1.5px solid transparent; transition:all 0.2s; cursor:pointer; }
+.modo-filtre:hover { background:var(--surface-high); }
+.modo-filtre.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+.modo-liste { display:flex; flex-direction:column; gap:14px; }
+
+.modo-card { background:var(--surface-white); border-radius:var(--radius-xl); padding:20px 24px; border:1px solid var(--outline-variant); box-shadow:var(--shadow-sm); transition:all 0.2s; }
+.modo-card:hover { box-shadow:var(--shadow); }
+.modo-card.recu { border-left:4px solid #FF9800; }
+.modo-card.en_cours { border-left:4px solid var(--primary); }
+.modo-card.resolu { border-left:4px solid #43A047; }
+.modo-card.cloture { border-left:4px solid var(--outline); }
+
+.modo-card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.modo-card-left { display:flex; align-items:center; gap:12px; }
+.modo-card-emoji { font-size:32px; }
+.modo-card-type { font-size:15px; font-weight:700; color:var(--on-surface); text-transform:capitalize; margin:0 0 3px; font-family:var(--font-display); }
+.modo-card-lieu { font-size:12px; color:var(--on-surface-variant); margin:0; }
+
+.modo-tag { font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px; padding:5px 14px; border-radius:var(--radius-full); flex-shrink:0; }
+.modo-tag-recu { background:#FFF3E0; color:#E65100; }
+.modo-tag-en_cours { background:var(--primary-light); color:var(--primary); }
+.modo-tag-resolu { background:#E8F5E9; color:#2E7D32; }
+.modo-tag-cloture { background:var(--surface-container); color:var(--outline); }
+
+.modo-card-desc { font-size:14px; color:var(--on-surface-variant); line-height:1.6; margin-bottom:10px; }
+.modo-card-date { font-size:12px; color:var(--outline); margin-bottom:14px; }
+
+.modo-card-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.modo-btn-valider { background:#43A047; color:white; padding:10px 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; transition:all 0.2s; }
+.modo-btn-valider:hover { background:#2E7D32; transform:translateY(-1px); }
+.modo-btn-rejeter { background:var(--error-light); color:var(--error); padding:10px 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; transition:all 0.2s; border:1.5px solid var(--error); }
+.modo-btn-rejeter:hover { background:var(--error); color:white; }
+.modo-btn-resoudre { background:var(--primary); color:white; padding:10px 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; transition:all 0.2s; }
+.modo-btn-resoudre:hover { background:var(--primary-dark); }
+.modo-btn-cloturer { background:var(--surface-container); color:var(--on-surface-variant); padding:10px 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; transition:all 0.2s; }
+.modo-btn-cloturer:hover { background:var(--surface-high); }
+.modo-btn-detail { background:none; color:var(--primary); padding:10px 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; border:1.5px solid var(--primary); transition:all 0.2s; }
+.modo-btn-detail:hover { background:var(--primary-light); }
+
+.modo-loading { text-align:center; padding:60px; color:var(--on-surface-variant); font-size:14px; }
+.modo-empty { text-align:center; padding:60px 20px; color:var(--on-surface-variant); }
+.modo-empty span { font-size:48px; display:block; margin-bottom:12px; }
+.modo-empty p { font-size:14px; }
+
+@media (max-width:768px) {
+  .modo-stats { grid-template-columns:repeat(2,1fr); }
+  .modo-card-top { flex-direction:column; gap:10px; }
+}
