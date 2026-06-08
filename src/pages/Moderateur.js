@@ -11,6 +11,7 @@ function Moderateur() {
   const [filtre, setFiltre] = useState('recu');
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
+  const [processingIds, setProcessingIds] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,18 +44,77 @@ const chargerAlertes = async () => {
   };
 
   const changerStatut = async (id, nouveauStatut) => {
+    if (processingIds.includes(id)) return;
+    setProcessingIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+    const url = `signalements/${id}/`;
     try {
-      await api.patch(`signalements/${id}/`, { statut: nouveauStatut });
+      // First attempt: JSON (default)
+      await api.patch(url, { statut: nouveauStatut });
       setMessage('✅ Alerte mise à jour avec succès !');
       setErreur('');
-      setAlertes(prev =>
-        prev.map(a => a.id === id ? { ...a, statut: nouveauStatut } : a)
-      );
+      setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      const errMsg = error.response?.data?.detail || 'Erreur lors de la mise à jour';
-      setErreur(errMsg);
-      setTimeout(() => setErreur(''), 3000);
+      console.error('Erreur changerStatut (initial):', error);
+      const status = error.response?.status;
+
+      // If server rejects media type, try fallbacks
+      if (status === 415) {
+        try {
+          // Fallback 1: send as multipart/form-data
+          const fd = new FormData();
+          fd.append('statut', nouveauStatut);
+          await api.patch(url, fd);
+          setMessage('✅ Alerte mise à jour (form-data) !');
+          setErreur('');
+          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
+          setTimeout(() => setMessage(''), 3000);
+          return;
+        } catch (errFd) {
+          console.error('Fallback form-data failed:', errFd);
+        }
+
+        try {
+          // Fallback 2: send as x-www-form-urlencoded
+          const body = new URLSearchParams();
+          body.append('statut', nouveauStatut);
+          await api.patch(url, body.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+          setMessage('✅ Alerte mise à jour (urlencoded) !');
+          setErreur('');
+          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
+          setTimeout(() => setMessage(''), 3000);
+          return;
+        } catch (errUrl) {
+          console.error('Fallback urlencoded failed:', errUrl);
+        }
+
+        try {
+          // Fallback 3: try alternate field name 'status' as JSON
+          await api.patch(url, { status: nouveauStatut });
+          setMessage('✅ Alerte mise à jour (status) !');
+          setErreur('');
+          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
+          setTimeout(() => setMessage(''), 3000);
+          return;
+        } catch (errStatus) {
+          console.error('Fallback status failed:', errStatus);
+          const s2 = errStatus.response?.status;
+          const d2 = errStatus.response?.data;
+          const det2 = d2?.detail || d2 || null;
+          const errMsg2 = (s2 ? `Erreur ${s2}: ` : '') + (typeof det2 === 'string' ? det2 : JSON.stringify(det2) || errStatus.message || 'Erreur lors de la mise à jour');
+          setErreur(errMsg2);
+          setTimeout(() => setErreur(''), 8000);
+        }
+      } else {
+        const data = error.response?.data;
+        const detail = data?.detail || data || null;
+        const errMsg = (status ? `Erreur ${status}: ` : '') + (typeof detail === 'string' ? detail : JSON.stringify(detail) || error.message || 'Erreur lors de la mise à jour');
+        setErreur(errMsg);
+        // Keep error visible a bit longer for debugging
+        setTimeout(() => setErreur(''), 8000);
+      }
+    } finally {
+      setProcessingIds(prev => prev.filter(x => x !== id));
     }
   };
 
@@ -196,14 +256,16 @@ const chargerAlertes = async () => {
                       <button
                         className="modo-btn-valider"
                         onClick={() => changerStatut(a.id, 'en_cours')}
+                        disabled={processingIds.includes(a.id)}
                       >
-                        ✅ Valider et publier
+                        {processingIds.includes(a.id) ? 'Traitement...' : '✅ Valider et publier'}
                       </button>
                       <button
                         className="modo-btn-rejeter"
                         onClick={() => changerStatut(a.id, 'cloture')}
+                        disabled={processingIds.includes(a.id)}
                       >
-                        ❌ Rejeter
+                        {processingIds.includes(a.id) ? 'Traitement...' : '❌ Rejeter'}
                       </button>
                     </>
                   )}
@@ -211,16 +273,18 @@ const chargerAlertes = async () => {
                     <button
                       className="modo-btn-resoudre"
                       onClick={() => changerStatut(a.id, 'resolu')}
+                      disabled={processingIds.includes(a.id)}
                     >
-                      🏁 Marquer comme résolue
+                      {processingIds.includes(a.id) ? 'Traitement...' : '🏁 Marquer comme résolue'}
                     </button>
                   )}
                   {a.statut === 'resolu' && (
                     <button
                       className="modo-btn-cloturer"
                       onClick={() => changerStatut(a.id, 'cloture')}
+                      disabled={processingIds.includes(a.id)}
                     >
-                      🔒 Clôturer l'alerte
+                      {processingIds.includes(a.id) ? 'Traitement...' : '🔒 Clôturer l\'alerte'}
                     </button>
                   )}
                   <button

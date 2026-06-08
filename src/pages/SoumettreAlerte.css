@@ -40,6 +40,9 @@
 .sa-location-actions { align-items:center; display:flex; flex-wrap:wrap; gap:12px; margin:-4px 0 14px; }
 .sa-locate-btn { align-items:center; background:var(--primary-light); border:1px solid #bfd4ef; border-radius:var(--radius-md); color:var(--primary); display:flex; font-size:13px; font-weight:800; gap:8px; padding:10px 14px; }
 .sa-locate-btn:hover { background:#dbeafb; }
+.sa-search-btn { align-items:center; background:var(--surface-white); border:1px solid var(--outline-variant); border-radius:var(--radius-md); color:var(--primary); display:flex; font-size:13px; font-weight:800; gap:8px; padding:10px 14px; }
+.sa-search-btn:hover { background:var(--surface-high); }
+.sa-search-btn:disabled { opacity:0.6; cursor:not-allowed; }
 .sa-coords { color:var(--on-surface-variant); font-size:12px; font-weight:700; }
 .sa-map { background:var(--surface-container); border:1px solid var(--outline-variant); border-radius:var(--radius-lg); height:260px; margin-bottom:20px; overflow:hidden; }
 .sa-map iframe { border:0; height:100%; width:100%; }

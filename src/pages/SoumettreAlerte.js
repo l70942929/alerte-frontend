@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
@@ -15,6 +21,7 @@ function SoumettreAlerte() {
     anonyme: false,
   });
   const [position, setPosition] = useState(null);
+  const [searching, setSearching] = useState(false);
   const [etape, setEtape] = useState(1);
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
@@ -30,10 +37,18 @@ function SoumettreAlerte() {
   ];
 
   const typeActif = types.find((type) => type.value === form.type_alerte);
-
   const mapSrc = position
     ? `https://www.openstreetmap.org/export/embed.html?bbox=${Number(position.lng) - 0.015}%2C${Number(position.lat) - 0.015}%2C${Number(position.lng) + 0.015}%2C${Number(position.lat) + 0.015}&layer=mapnik&marker=${position.lat}%2C${position.lng}`
     : 'https://www.openstreetmap.org/export/embed.html?bbox=8.0%2C1.6%2C16.2%2C13.2&layer=mapnik';
+
+  // Fix Leaflet default icon paths (webpack)
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+  });
+
+  const DEFAULT_CENTER = [4.05, 9.7]; // Douala approx
 
   const utiliserMaPosition = () => {
     if (!navigator.geolocation) {
@@ -57,6 +72,53 @@ function SoumettreAlerte() {
     );
   };
 
+  const rechercherAdresse = async () => {
+    const q = form.localisation && form.localisation.trim();
+    if (!q) {
+      setErreur('Veuillez saisir une adresse ou un lieu à rechercher.');
+      return;
+    }
+
+    setErreur('');
+    setSearching(true);
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
+      const res = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+      const data = await res.json();
+      if (data && data[0]) {
+        const lat = Number(data[0].lat).toFixed(6);
+        const lng = Number(data[0].lon).toFixed(6);
+        setPosition({ lat, lng });
+        setForm((prev) => ({ ...prev, localisation: data[0].display_name }));
+      } else {
+        setErreur("Aucune correspondance trouvée pour l'adresse saisie.");
+      }
+    } catch (e) {
+      setErreur("Erreur lors de la recherche d'adresse.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  function LocationMarker({ position }) {
+    // attach click handler to the map to set marker
+    useMapEvents({
+      click(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        setPosition({ lat, lng });
+        setForm((prev) => ({ ...prev, localisation: prev.localisation || `${lat}, ${lng}` }));
+      },
+    });
+
+    if (!position) return null;
+    return (
+      <Marker position={[position.lat, position.lng]}>
+        <Popup>Position sélectionnée: {position.lat}, {position.lng}</Popup>
+      </Marker>
+    );
+  }
+
   const submit = async () => {
     if (!form.type_alerte || !form.description || !form.localisation || !form.date_evenement || !form.photoFile) {
       setErreur('Veuillez remplir tous les champs obligatoires.');
@@ -78,6 +140,12 @@ function SoumettreAlerte() {
     }
 
     try {
+      // include latitude/longitude if available
+      if (position) {
+        formData.append('latitude', position.lat);
+        formData.append('longitude', position.lng);
+      }
+
       await axios.post('http://127.0.0.1:8000/api/signalements/', formData, {
         headers: {
           Authorization: `Token ${localStorage.getItem('token')}`,
@@ -206,10 +274,27 @@ function SoumettreAlerte() {
                   <span className="material-symbols-outlined">my_location</span>
                   Utiliser ma position
                 </button>
+                <button type="button" className="sa-search-btn" onClick={rechercherAdresse} disabled={searching}>
+                  <span className="material-symbols-outlined">search</span>
+                  {searching ? 'Recherche...' : 'Rechercher l\u2019adresse'}
+                </button>
                 {position && <span className="sa-coords">{position.lat}, {position.lng}</span>}
               </div>
               <div className="sa-map">
-                <iframe title="Carte de localisation de l'alerte" src={mapSrc} loading="lazy" />
+                <MapContainer
+                  center={position ? [position.lat, position.lng] : DEFAULT_CENTER}
+                  zoom={position ? 13 : 6}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationMarker position={position} />
+                </MapContainer>
+                {/* Hidden fields for latitude/longitude (sent to backend) */}
+                <input type="hidden" name="latitude" value={position?.lat || ''} />
+                <input type="hidden" name="longitude" value={position?.lng || ''} />
               </div>
 
               {erreur && <div className="sa-error"><span className="material-symbols-outlined">error</span>{erreur}</div>}

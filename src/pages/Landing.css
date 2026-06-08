@@ -1,11 +1,14 @@
 .land {
   min-height: 100vh;
   overflow-x: hidden;
+  background: radial-gradient(circle at top left, rgba(39, 85, 217, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(245, 171, 53, 0.14), transparent 22%),
+    var(--surface);
 }
 
 .land-hdr {
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid var(--outline-variant);
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(16, 63, 123, 0.08);
   backdrop-filter: blur(18px);
   left: 0;
   position: fixed;
@@ -96,13 +99,14 @@
 
 .land-hero {
   align-items: center;
-  background-image: url('https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=1800&q=80');
+  background-image: linear-gradient(180deg, rgba(15, 37, 75, 0.85), rgba(15, 37, 75, 0.25)),
+    url('https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=1800&q=80');
   background-position: center;
   background-size: cover;
   color: white;
   display: flex;
-  min-height: 88vh;
-  padding: 96px 24px 72px;
+  min-height: 92vh;
+  padding: 130px 24px 72px;
   position: relative;
 }
 
@@ -114,7 +118,7 @@
 
 .hero-txt {
   margin: 0 auto;
-  max-width: 1180px;
+  max-width: 1040px;
   position: relative;
   width: 100%;
   z-index: 1;

@@ -10,6 +10,7 @@ function Header() {
   const [open, setOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
+  const homePath = '/';
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
@@ -17,9 +18,18 @@ function Header() {
     <header className="hdr">
       <div className="hdr-inner">
         <div className="hdr-left">
-          <button className="hdr-logo" onClick={() => navigate('/accueil')}>
+          <Link
+            to={homePath}
+            className="hdr-logo"
+            onClick={(e) => {
+              if (location.pathname === homePath) {
+                e.preventDefault();
+                window.location.href = homePath;
+              }
+            }}
+          >
             Alerte Citoyenne
-          </button>
+          </Link>
           <nav className="hdr-nav">
             <Link className={isActive('/accueil') ? 'active' : ''} to="/accueil">Accueil</Link>
             <Link className={isActive('/alertes') ? 'active' : ''} to="/alertes">Alertes</Link>
