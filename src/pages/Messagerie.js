@@ -80,6 +80,18 @@ function Messagerie() {
     }
   };
 
+  const supprimerMessage = async (id) => {
+  try {
+    await api.delete(`messagerie/${id}/`);
+
+    setMessages(
+      messages.filter((msg) => msg.id !== id)
+    );
+  } catch (error) {
+    alert("Impossible de supprimer le message");
+  }
+};
+
   useEffect(() => {
     if (threadRef.current) {
       threadRef.current.scrollTop = threadRef.current.scrollHeight;
@@ -202,22 +214,40 @@ function Messagerie() {
                     <p>Commencez la conversation avec {actif.username}</p>
                   </div>
                 ) : (
-                  messages.map((message, index) => (
-                    <div
-                      key={message.id || `${message.date_envoi}-${index}`}
-                      className={`msg-bubble ${estMoi(message) ? 'moi' : 'autre'}`}
-                    >
-                      <p>{message.contenu}</p>
-                      {message.date_envoi && (
-                        <span className="msg-time">
-                          {new Date(message.date_envoi).toLocaleTimeString('fr-FR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      )}
-                    </div>
-                  ))
+    messages.map((message, index) => (
+  <div
+    key={message.id || `${message.date_envoi}-${index}`}
+    className={`msg-bubble ${estMoi(message) ? 'moi' : 'autre'}`}
+  >
+    <p>{message.contenu}</p>
+
+    {message.date_envoi && (
+      <span className="msg-time">
+        {new Date(message.date_envoi).toLocaleTimeString(
+          'fr-FR',
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+          }
+        )}
+      </span>
+    )}
+
+    {estMoi(message) && (
+      <button
+        onClick={() => supprimerMessage(message.id)}
+        style={{
+          marginLeft: '10px',
+          border: 'none',
+          background: 'transparent',
+          cursor: 'pointer'
+        }}
+      >
+        delete
+      </button>
+    )}
+  </div>
+))
                 )}
               </div>
 
