@@ -1,6 +1,43 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import {
+  Shield,
+  Sun,
+  Moon,
+  Users,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  MapPin,
+  Bell,
+  UserPlus,
+  Verified,
+  Send,
+  Menu,
+  X,
+  ArrowRight,
+  Eye,
+  Home,
+  Phone,
+  FileText,
+  Lock,
+  LogIn,
+  PlusCircle,
+  Search,
+  Award,
+  Heart,
+  Globe,
+  Camera,
+  Video,
+  MessageCircle,
+  Share2,
+  ThumbsUp,
+  Flag,
+  Settings,
+  User,
+  LogOut
+} from 'lucide-react';
 import './Landing.css';
 
 function Landing() {
@@ -10,7 +47,6 @@ function Landing() {
 
   const alertes = [
     {
-      // Femme africaine — portrait fort et expressif
       image: 'https://images.unsplash.com/photo-1531844251246-9a1bfaae09fc?w=800&q=80',
       type: 'ENLÈVEMENT',
       lieu: 'Douala — il y a 10 min',
@@ -20,7 +56,6 @@ function Landing() {
       sc: 'urgent',
     },
     {
-      // Enfants africains à l'école — groupe d'enfants
       image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=80',
       type: 'DISPARITION',
       lieu: 'Yaoundé — il y a 2 h',
@@ -30,7 +65,6 @@ function Landing() {
       sc: 'en-cours',
     },
     {
-      // Documents officiels / papiers retrouvés — image claire de documents
       image: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80',
       type: 'OBJET RETROUVÉ',
       lieu: 'Bafoussam — aujourd\'hui',
@@ -42,10 +76,10 @@ function Landing() {
   ];
 
   const steps = [
-    { icon: 'person_add',        title: 'Créer un compte',  desc: 'Un accès personnel pour signaler et suivre les alertes.' },
-    { icon: 'add_location_alt',  title: 'Localiser',        desc: 'Ajoutez un lieu précis ou utilisez votre position GPS.' },
-    { icon: 'verified_user',     title: 'Vérifier',         desc: 'Les modérateurs contrôlent les informations reçues.' },
-    { icon: 'campaign',          title: 'Diffuser',         desc: 'Les alertes validées sont partagées à toute la communauté.' },
+    { icon: UserPlus, title: 'Créer un compte', desc: 'Un accès personnel pour signaler et suivre les alertes.' },
+    { icon: MapPin, title: 'Localiser', desc: 'Ajoutez un lieu précis ou utilisez votre position GPS.' },
+    { icon: Verified, title: 'Vérifier', desc: 'Les modérateurs contrôlent les informations reçues.' },
+    { icon: Send, title: 'Diffuser', desc: 'Les alertes validées sont partagées à toute la communauté.' },
   ];
 
   return (
@@ -57,11 +91,7 @@ function Landing() {
 
           <a className="logo" href="/">
             <span className="logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
+              <Shield size={28} />
             </span>
             <span className="logo-text">Alerte Citoyenne</span>
           </a>
@@ -73,19 +103,21 @@ function Landing() {
 
           <div className="land-hdr-btns">
             <button className="btn-ghost" onClick={() => navigate('/connexion')}>
+              <LogIn size={18} />
               Se connecter
             </button>
             <button className="btn-prim" onClick={() => navigate('/inscription')}>
+              <UserPlus size={18} />
               Créer un compte
             </button>
             <button className="theme-btn-landing" onClick={() => setDarkMode(!darkMode)}>
-              {darkMode ? '☀️' : '🌙'}
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button
               className="hamburger-landing"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              ☰
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
@@ -96,7 +128,7 @@ function Landing() {
         <div className="mobile-menu-landing">
           <a href="#alertes" onClick={() => setMobileMenuOpen(false)}>Alertes</a>
           <a href="#comment" onClick={() => setMobileMenuOpen(false)}>Fonctionnement</a>
-          <button onClick={() => { navigate('/connexion');   setMobileMenuOpen(false); }}>
+          <button onClick={() => { navigate('/connexion'); setMobileMenuOpen(false); }}>
             Se connecter
           </button>
           <button onClick={() => { navigate('/inscription'); setMobileMenuOpen(false); }}>
@@ -110,9 +142,7 @@ function Landing() {
         <div className="hero-overlay">
           <div className="hero-grid">
 
-            {/* Texte gauche */}
             <div className="hero-txt">
-              
               <h1 className="hero-h1">
                 Protégez votre <span className='titre'>communauté</span>, un signalement <span className='titre'>à la fois.</span>
               </h1>
@@ -123,7 +153,7 @@ function Landing() {
               </p>
               <div className="hero-btns">
                 <button className="btn-sec" onClick={() => navigate('/inscription')}>
-                  <span className="material-symbols-outlined">add_alert</span>
+                  <AlertTriangle size={20} />
                   Soumettre une alerte
                 </button>
                 <button className="btn-ghost-lg" onClick={() => navigate('/connexion')}>
@@ -132,7 +162,6 @@ function Landing() {
               </div>
             </div>
 
-            {/* Carte dernière alerte */}
             <div className="hero-latest">
               <div className="hero-latest-card">
                 <img
@@ -151,7 +180,7 @@ function Landing() {
                     onClick={() => navigate('/connexion')}
                   >
                     Voir les détails
-                    <span className="material-symbols-outlined">arrow_forward</span>
+                    <ArrowRight size={18} />
                   </button>
                 </div>
               </div>
@@ -165,21 +194,21 @@ function Landing() {
       <section className="land-stats">
         <div className="stats-in">
           <div className="stat-card">
-            <span className="material-symbols-outlined sc-icon">groups</span>
+            <Users size={32} className="sc-icon" />
             <div>
               <div className="sc-val">12k+</div>
               <div className="sc-lbl">Citoyens engagés</div>
             </div>
           </div>
           <div className="stat-card">
-            <span className="material-symbols-outlined sc-icon">fact_check</span>
+            <CheckCircle size={32} className="sc-icon" />
             <div>
               <div className="sc-val">98%</div>
               <div className="sc-lbl">Alertes vérifiées</div>
             </div>
           </div>
           <div className="stat-card">
-            <span className="material-symbols-outlined sc-icon">timer</span>
+            <Clock size={32} className="sc-icon" />
             <div>
               <div className="sc-val">15 min</div>
               <div className="sc-lbl">Délai de traitement</div>
@@ -200,7 +229,7 @@ function Landing() {
             </div>
             <button className="btn-link" onClick={() => navigate('/connexion')}>
               Voir tout
-              <span className="material-symbols-outlined">arrow_forward</span>
+              <ArrowRight size={18} />
             </button>
           </div>
 
@@ -220,7 +249,7 @@ function Landing() {
                 <p className="alrt-desc">{alerte.desc}</p>
                 <button className="alrt-btn" onClick={() => navigate('/connexion')}>
                   Voir les détails
-                  <span className="material-symbols-outlined">arrow_forward</span>
+                  <ArrowRight size={18} />
                 </button>
               </article>
             ))}
@@ -233,14 +262,17 @@ function Landing() {
         <div className="sec-in">
           <h2 className="sec-title center">Comment ça marche ?</h2>
           <div className="steps-grid">
-            {steps.map((step, index) => (
-              <article key={step.title} className="step-card">
-                <div className="step-num">0{index + 1}</div>
-                <span className="material-symbols-outlined step-icon">{step.icon}</span>
-                <h3>{step.title}</h3>
-                <p>{step.desc}</p>
-              </article>
-            ))}
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <article key={step.title} className="step-card">
+                  <div className="step-num">0{index + 1}</div>
+                  <Icon size={40} className="step-icon" />
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -252,17 +284,14 @@ function Landing() {
             Une plateforme pensée pour les citoyens africains
           </h2>
           <div className="community-grid">
-            {/*  Groupe d'africains en réunion communautaire */}
             <img
               src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80"
               alt="Citoyens africains en réunion communautaire"
             />
-            {/*  Femme africaine souriante dans la communauté */}
             <img
               src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
               alt="Femme africaine dans sa communauté"
             />
-            {/*  Hommes africains en discussion, solidarité */}
             <img
               src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800&q=80"
               alt="Communauté africaine solidaire"
@@ -280,7 +309,7 @@ function Landing() {
             sécuriser une zone ou retrouver un objet perdu.
           </p>
           <button className="btn-sec" onClick={() => navigate('/inscription')}>
-            <span className="material-symbols-outlined">campaign</span>
+            <Bell size={20} />
             Signaler maintenant
           </button>
         </div>
@@ -290,7 +319,10 @@ function Landing() {
       <footer className="land-footer">
         <div className="foot-in">
           <div>
-            <div className="foot-logo">Alerte Citoyenne</div>
+            <div className="foot-logo">
+              <Shield size={20} />
+              Alerte Citoyenne
+            </div>
             <p className="foot-copy">
               © 2026 Alerte Citoyenne Cameroun. Tous droits réservés.
             </p>
