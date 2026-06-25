@@ -346,39 +346,39 @@ function Landing() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="land-how" id="comment">
-        <div className="sec-in">
-          <div className="sec-hdr center">
-            <span className="sec-tag">Guide</span>
-            <h2 className="sec-title">Comment ça marche ?</h2>
-            <p className="sec-desc">
-              En 4 étapes simples, devenez acteur de la sécurité de votre communauté.
-            </p>
+     {/* HOW IT WORKS */}
+<section className="land-how" id="comment">
+  <div className="sec-in">
+    <div className="sec-hdr center">
+      <span className="sec-tag">Guide</span>
+      <h2 className="sec-title">Comment ça marche ?</h2>
+      <p className="sec-desc">
+        En 4 étapes simples, devenez acteur de la sécurité de votre communauté.
+      </p>
+    </div>
+    <div className="steps-grid">
+      {steps.map((step, index) => {
+        const Icon = step.icon;
+        return (
+          <div key={step.title} className="step-card">
+            <div className="step-left">
+              <div className="step-number" style={{ background: step.color }}>
+                {index + 1}
+              </div>
+              <div className="step-content">
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </div>
+            </div>
+            <div className="step-icon-wrap" style={{ color: step.color }}>
+              <Icon size={40} />
+            </div>
           </div>
-          <div className="steps-grid">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.title} className="step-card">
-                  <div className="step-left">
-                    <div className="step-number" style={{ background: step.color }}>
-                      {index + 1}
-                    </div>
-                    <div className="step-content">
-                      <h3>{step.title}</h3>
-                      <p>{step.desc}</p>
-                    </div>
-                  </div>
-                  <div className="step-icon-wrap" style={{ color: step.color }}>
-                    <Icon size={40} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+        );
+      })}
+    </div>
+  </div>
+</section>
 
       {/* COMMUNITY */}
       <section className="community-section" id="community">
