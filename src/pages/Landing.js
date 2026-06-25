@@ -132,7 +132,11 @@ function Landing() {
               <UserPlus size={18} />
               Créer un compte
             </button>
-            <button className="theme-btn-landing" onClick={() => setDarkMode(!darkMode)}>
+            <button 
+              className="theme-btn-landing" 
+              onClick={() => setDarkMode(!darkMode)}
+              aria-label="Changer le thème"
+            >
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button
@@ -169,7 +173,7 @@ function Landing() {
             <div className="hero-txt">
               <div className="hero-badge">
                 <Shield size={16} />
-                Plateforme citoyenne 🇨🇲
+                Plateforme citoyenne
               </div>
               <h1 className="hero-h1">
                 Protégez votre <span className='titre'>communauté</span>,<br />
@@ -372,18 +376,16 @@ function Landing() {
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <article key={step.title} className="step-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={step.title} className="step-card" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="step-number" style={{ background: step.color }}>
                     {index + 1}
                   </div>
-                  <div className="step-content">
-                    <div className="step-icon-wrap" style={{ color: step.color }}>
-                      <Icon size={40} />
-                    </div>
-                    <h3>{step.title}</h3>
-                    <p>{step.desc}</p>
+                  <div className="step-icon-wrap" style={{ color: step.color }}>
+                    <Icon size={40} />
                   </div>
-                </article>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
               );
             })}
           </div>
@@ -437,7 +439,7 @@ function Landing() {
           <h2>Ensemble, protégeons nos communautés.</h2>
           <p>
             Chaque information partagée peut aider à retrouver une personne,
-            sécuriser une zone ou retrouver un objet perdu. Rejoignez-nous !
+            sécuriser une zone ou retrouver un objet perdu.
           </p>
           <div className="cta-buttons">
             <button className="btn-sec" onClick={() => navigate('/inscription')}>
