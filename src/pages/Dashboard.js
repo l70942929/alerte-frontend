@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { getNotifications, markAsRead } from '../services/notificationService';
@@ -17,9 +17,8 @@ function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get('http://127.0.0.1:8000/api/signalements/', {
-      headers: { Authorization: `Token ${token}` },
-    }).then((res) => {
+   api.get('signalements/');
+   then((res) => {
       const all = Array.isArray(res.data) ? res.data : [];
       const mes = all.filter((a) => a.utilisateur_nom === username);
       setAlertes(mes);

@@ -5,7 +5,7 @@ import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -139,11 +139,7 @@ function SoumettreAlerte() {
     }
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/signalements/', formData, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`,
-        },
-      });
+      await api.post('signalements/', formData);
       setMessage('Votre alerte a été soumise. Elle sera vérifiée sous 15 minutes.');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {

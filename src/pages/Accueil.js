@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import './Accueil.css';
@@ -21,10 +21,7 @@ function Accueil() {
     else if (h < 18) setHeure('Bon après-midi');
     else             setHeure('Bonsoir');
 
-    axios
-      .get('http://127.0.0.1:8000/api/signalements/', {
-        headers: { Authorization: `Token ${token}` },
-      })
+    api.get('signalements/')
       .then((res) => setAlertes(Array.isArray(res.data) ? res.data.slice(0, 4) : []))
       .catch(() => {});
   }, [navigate]);
