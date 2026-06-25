@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -18,26 +17,15 @@ import {
   Menu,
   X,
   ArrowRight,
-  Eye,
-  Home,
-  Phone,
-  FileText,
-  Lock,
   LogIn,
-  PlusCircle,
-  Search,
   Award,
   Heart,
-  Globe,
-  Camera,
-  Video,
-  MessageCircle,
-  Share2,
-  ThumbsUp,
-  Flag,
-  Settings,
-  User,
-  LogOut
+  Phone,
+  Mail,
+  Twitter,
+  Facebook,
+  Instagram,
+  Youtube,
 } from 'lucide-react';
 import './Landing.css';
 
@@ -45,6 +33,23 @@ function Landing() {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % 3);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const alertes = [
     {
@@ -76,23 +81,39 @@ function Landing() {
     },
   ];
 
+  const communityImages = [
+    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+    'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80',
+    'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800&q=80',
+  ];
+
   const steps = [
-    { icon: UserPlus, title: 'Créer un compte', desc: 'Un accès personnel pour signaler et suivre les alertes.' },
-    { icon: MapPin, title: 'Localiser', desc: 'Ajoutez un lieu précis ou utilisez votre position GPS.' },
-    { icon: Verified, title: 'Vérifier', desc: 'Les modérateurs contrôlent les informations reçues.' },
-    { icon: Send, title: 'Diffuser', desc: 'Les alertes validées sont partagées à toute la communauté.' },
+    { icon: UserPlus, title: 'Créer un compte', desc: 'Un accès personnel pour signaler et suivre les alertes.', color: '#e74c3c' },
+    { icon: MapPin, title: 'Localiser', desc: 'Ajoutez un lieu précis ou utilisez votre position GPS.', color: '#3498db' },
+    { icon: Verified, title: 'Vérifier', desc: 'Les modérateurs contrôlent les informations reçues.', color: '#2ecc71' },
+    { icon: Send, title: 'Diffuser', desc: 'Les alertes validées sont partagées à toute la communauté.', color: '#f39c12' },
+  ];
+
+  const features = [
+    { icon: Shield, title: 'Sécurisé', desc: 'Toutes les données sont protégées et confidentielles.' },
+    { icon: Clock, title: 'Rapide', desc: 'Traitement des alertes en moins de 15 minutes.' },
+    { icon: Award, title: 'Fiable', desc: '98% des alertes sont vérifiées et authentifiées.' },
+    { icon: Heart, title: 'Communautaire', desc: 'Une plateforme solidaire et engagée.' },
   ];
 
   return (
-    <div className="land">
+    <div className={`land ${darkMode ? 'dark-mode' : ''}`}>
 
-      {/* ══════════════════════ HEADER ══════════════════════ */}
-      <header className="land-hdr">
+      <header className={`land-hdr ${scrolled ? 'scrolled' : ''}`}>
         <div className="land-hdr-in">
 
           <a className="logo" href="/">
             <span className="logo-icon">
-              <Shield size={28} />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
             </span>
             <span className="logo-text">Alerte Citoyenne</span>
           </a>
@@ -100,6 +121,8 @@ function Landing() {
           <nav className="land-nav">
             <a href="#alertes">Alertes</a>
             <a href="#comment">Fonctionnement</a>
+            <a href="#features">Caractéristiques</a>
+            <a href="#community">Communauté</a>
           </nav>
 
           <div className="land-hdr-btns">
@@ -124,28 +147,33 @@ function Landing() {
         </div>
       </header>
 
-      {/* ══════════════════════ MENU MOBILE ══════════════════════ */}
       {mobileMenuOpen && (
         <div className="mobile-menu-landing">
           <a href="#alertes" onClick={() => setMobileMenuOpen(false)}>Alertes</a>
           <a href="#comment" onClick={() => setMobileMenuOpen(false)}>Fonctionnement</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Caractéristiques</a>
+          <a href="#community" onClick={() => setMobileMenuOpen(false)}>Communauté</a>
           <button onClick={() => { navigate('/connexion'); setMobileMenuOpen(false); }}>
             Se connecter
           </button>
-          <button onClick={() => { navigate('/inscription'); setMobileMenuOpen(false); }}>
+          <button className="btn-prim-mobile" onClick={() => { navigate('/inscription'); setMobileMenuOpen(false); }}>
             Créer un compte
           </button>
         </div>
       )}
 
-      {/* ══════════════════════ HERO ══════════════════════ */}
       <section className="land-hero">
         <div className="hero-overlay">
           <div className="hero-grid">
 
             <div className="hero-txt">
+              <div className="hero-badge">
+                <Shield size={16} />
+                Plateforme citoyenne 🇨🇲
+              </div>
               <h1 className="hero-h1">
-                Protégez votre <span className='titre'>communauté</span>, un signalement <span className='titre'>à la fois.</span>
+                Protégez votre <span className='titre'>communauté</span>,<br />
+                un signalement <span className='titre'>à la fois.</span>
               </h1>
               <p className="hero-p">
                 Rejoignez des milliers de citoyens qui utilisent Alerte Citoyenne
@@ -161,6 +189,20 @@ function Landing() {
                   Se connecter
                 </button>
               </div>
+              <div className="hero-trust">
+                <div className="trust-item">
+                  <Users size={20} />
+                  <span>12 000+ citoyens</span>
+                </div>
+                <div className="trust-item">
+                  <CheckCircle size={20} />
+                  <span>98% vérifiées</span>
+                </div>
+                <div className="trust-item">
+                  <Clock size={20} />
+                  <span>15 min de réponse</span>
+                </div>
+              </div>
             </div>
 
             <div className="hero-latest">
@@ -170,9 +212,13 @@ function Landing() {
                   alt={alertes[0].titre}
                   className="hero-latest-img"
                 />
-                <div className="hero-latest-tag">Dernière alerte</div>
+                <div className="hero-latest-tag">
+                  <Bell size={14} />
+                  Dernière alerte
+                </div>
                 <div className="hero-latest-body">
                   <div className="hero-latest-meta">
+                    <span className={`status-dot ${alertes[0].sc}`}></span>
                     {alertes[0].type} — {alertes[0].lieu}
                   </div>
                   <h3 className="hero-latest-titre">{alertes[0].titre}</h3>
@@ -191,38 +237,80 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════════ STATS ══════════════════════ */}
       <section className="land-stats">
         <div className="stats-in">
           <div className="stat-card">
-            <Users size={32} className="sc-icon" />
+            <div className="stat-icon-wrap">
+              <Users size={32} className="sc-icon" />
+            </div>
             <div>
-              <div className="sc-val">12k+</div>
+              <div className="sc-val">12 000+</div>
               <div className="sc-lbl">Citoyens engagés</div>
             </div>
           </div>
           <div className="stat-card">
-            <CheckCircle size={32} className="sc-icon" />
+            <div className="stat-icon-wrap">
+              <CheckCircle size={32} className="sc-icon" />
+            </div>
             <div>
               <div className="sc-val">98%</div>
               <div className="sc-lbl">Alertes vérifiées</div>
             </div>
           </div>
           <div className="stat-card">
-            <Clock size={32} className="sc-icon" />
+            <div className="stat-icon-wrap">
+              <Clock size={32} className="sc-icon" />
+            </div>
             <div>
               <div className="sc-val">15 min</div>
               <div className="sc-lbl">Délai de traitement</div>
             </div>
           </div>
+          <div className="stat-card">
+            <div className="stat-icon-wrap">
+              <Award size={32} className="sc-icon" />
+            </div>
+            <div>
+              <div className="sc-val">4.9/5</div>
+              <div className="sc-lbl">Satisfaction</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ══════════════════════ ALERTES RÉCENTES ══════════════════════ */}
+      <section className="land-features" id="features">
+        <div className="sec-in">
+          <div className="sec-hdr">
+            <div>
+              <span className="sec-tag">Pourquoi nous choisir</span>
+              <h2 className="sec-title">Des fonctionnalités pensées pour vous</h2>
+              <p className="sec-desc">
+                Une plateforme simple, rapide et sécurisée pour tous les citoyens.
+              </p>
+            </div>
+          </div>
+          <div className="features-grid">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div key={feature.title} className="feature-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="feature-icon-wrap">
+                    <Icon size={32} />
+                  </div>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       <section className="land-alertes" id="alertes">
         <div className="sec-in">
           <div className="sec-hdr">
             <div>
+              <span className="sec-tag">Actualités</span>
               <h2 className="sec-title">Alertes récentes</h2>
               <p className="sec-desc">
                 Exemples d'informations publiées après vérification par notre équipe.
@@ -235,17 +323,26 @@ function Landing() {
           </div>
 
           <div className="alrt-grid">
-            {alertes.map((alerte) => (
-              <article key={alerte.titre} className="alrt-card">
+            {alertes.map((alerte, index) => (
+              <article key={alerte.titre} className="alrt-card" style={{ animationDelay: `${index * 0.15}s` }}>
                 <div className="alrt-img-wrap">
                   <img
                     src={alerte.image}
                     alt={alerte.titre}
                     className="alrt-image"
                   />
-                  <span className={`alrt-statut ${alerte.sc}`}>{alerte.statut}</span>
+                  <span className={`alrt-statut ${alerte.sc}`}>
+                    <Flag size={12} />
+                    {alerte.statut}
+                  </span>
                 </div>
-                <div className="alrt-meta">{alerte.type} — {alerte.lieu}</div>
+                <div className="alrt-meta">
+                  <span className="alrt-type">{alerte.type}</span>
+                  <span className="alrt-lieu">
+                    <MapPin size={14} />
+                    {alerte.lieu}
+                  </span>
+                </div>
                 <h3 className="alrt-titre">{alerte.titre}</h3>
                 <p className="alrt-desc">{alerte.desc}</p>
                 <button className="alrt-btn" onClick={() => navigate('/connexion')}>
@@ -258,17 +355,26 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════════ COMMENT ÇA MARCHE ══════════════════════ */}
       <section className="land-how" id="comment">
         <div className="sec-in">
-          <h2 className="sec-title center">Comment ça marche ?</h2>
+          <div className="sec-hdr center">
+            <span className="sec-tag">Guide</span>
+            <h2 className="sec-title">Comment ça marche ?</h2>
+            <p className="sec-desc">
+              En 4 étapes simples, devenez acteur de la sécurité de votre communauté.
+            </p>
+          </div>
           <div className="steps-grid">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <article key={step.title} className="step-card">
-                  <div className="step-num">0{index + 1}</div>
-                  <Icon size={40} className="step-icon" />
+                <article key={step.title} className="step-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="step-number" style={{ background: step.color }}>
+                    {index + 1}
+                  </div>
+                  <div className="step-icon-wrap" style={{ color: step.color }}>
+                    <Icon size={40} />
+                  </div>
                   <h3>{step.title}</h3>
                   <p>{step.desc}</p>
                 </article>
@@ -278,60 +384,148 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════════ COMMUNITY ══════════════════════ */}
-      <section className="community-section">
+      <section className="community-section" id="community">
         <div className="sec-in">
-          <h2 className="sec-title center">
-            Une plateforme pensée pour les citoyens africains
-          </h2>
+          <div className="sec-hdr center">
+            <span className="sec-tag">Notre communauté</span>
+            <h2 className="sec-title">
+              Une plateforme pensée pour les citoyens africains
+            </h2>
+            <p className="sec-desc">
+              Rejoignez une communauté solidaire et engagée pour la sécurité de tous.
+            </p>
+          </div>
           <div className="community-grid">
-            <img
-              src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80"
-              alt="Citoyens africains en réunion communautaire"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
-              alt="Femme africaine dans sa communauté"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800&q=80"
-              alt="Communauté africaine solidaire"
-            />
+            {communityImages.map((img, index) => (
+              <div 
+                key={index} 
+                className={`community-item ${index === currentImageIndex ? 'active' : ''}`}
+              >
+                <img src={img} alt={`Communauté ${index + 1}`} />
+                <div className="community-overlay">
+                  <Heart size={24} />
+                  <span>Solidarité</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="community-dots">
+            {communityImages.map((_, index) => (
+              <button
+                key={index}
+                className={`dot ${index === currentImageIndex ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(index)}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════ CTA ══════════════════════ */}
+      <section className="testimonials-section">
+        <div className="sec-in">
+          <div className="sec-hdr center">
+            <span className="sec-tag">Témoignages</span>
+            <h2 className="sec-title">Ce que disent les citoyens</h2>
+          </div>
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
+              </div>
+              <p>"Grâce à Alerte Citoyenne, j'ai retrouvé mon frère disparu en moins de 24h. Une plateforme incroyable !"</p>
+              <div className="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80" alt="Marie" />
+                <div>
+                  <strong>Marie K.</strong>
+                  <span>Douala</span>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
+              </div>
+              <p>"Un outil essentiel pour notre quartier. Les alertes sont rapides et les autorités réagissent efficacement."</p>
+              <div className="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" alt="Jean" />
+                <div>
+                  <strong>Jean P.</strong>
+                  <span>Yaoundé</span>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
+              </div>
+              <p>"Je recommande vivement cette plateforme. Elle a sauvé des vies dans ma communauté."</p>
+              <div className="testimonial-author">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80" alt="Amina" />
+                <div>
+                  <strong>Amina T.</strong>
+                  <span>Bafoussam</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="land-cta">
         <div className="cta-content">
+          <div className="cta-icon">
+            <Bell size={48} />
+          </div>
           <h2>Ensemble, protégeons nos communautés.</h2>
           <p>
             Chaque information partagée peut aider à retrouver une personne,
             sécuriser une zone ou retrouver un objet perdu.
           </p>
-          <button className="btn-sec" onClick={() => navigate('/inscription')}>
-            <Bell size={20} />
-            Signaler maintenant
-          </button>
+          <div className="cta-buttons">
+            <button className="btn-sec" onClick={() => navigate('/inscription')}>
+              <UserPlus size={20} />
+              Créer un compte
+            </button>
+            <button className="btn-ghost-lg" onClick={() => navigate('/connexion')}>
+              Se connecter
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* ══════════════════════ FOOTER ══════════════════════ */}
       <footer className="land-footer">
         <div className="foot-in">
-          <div>
+          <div className="foot-brand">
             <div className="foot-logo">
-              <Shield size={20} />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
               Alerte Citoyenne
             </div>
             <p className="foot-copy">
               © 2026 Alerte Citoyenne Cameroun. Tous droits réservés.
             </p>
+            <div className="foot-socials">
+              <a href="#"><Facebook size={20} /></a>
+              <a href="#"><Twitter size={20} /></a>
+              <a href="#"><Instagram size={20} /></a>
+              <a href="#"><Youtube size={20} /></a>
+            </div>
           </div>
           <div className="foot-links">
-            <Link to="/conditions-d-utilisation">Conditions</Link>
-            <Link to="/politique-de-confidentialite">Confidentialité</Link>
-            <Link to="/contact-d-urgence">Contact d'urgence</Link>
+            <div className="foot-links-group">
+              <h4>Plateforme</h4>
+              <Link to="/conditions-d-utilisation">Conditions</Link>
+              <Link to="/politique-de-confidentialite">Confidentialité</Link>
+              <Link to="/contact-d-urgence">Contact d'urgence</Link>
+            </div>
+            <div className="foot-links-group">
+              <h4>Contact</h4>
+              <a href="mailto:contact@alerte-citoyenne.cm"><Mail size={16} /> contact@alerte-citoyenne.cm</a>
+              <a href="tel:+237691234567"><Phone size={16} /> +237 691 234 567</a>
+            </div>
           </div>
         </div>
       </footer>
