@@ -21,11 +21,6 @@ import {
   Award,
   Heart,
   Phone,
-  Mail,
-  Flag,
-  Facebook,
-  Twitter,
-  Instagram,
 } from 'lucide-react';
 import './Landing.css';
 
@@ -329,7 +324,6 @@ function Landing() {
                     className="alrt-image"
                   />
                   <span className={`alrt-statut ${alerte.sc}`}>
-                    <Flag size={12} />
                     {alerte.statut}
                   </span>
                 </div>
@@ -455,7 +449,8 @@ function Landing() {
             </div>
             <div className="foot-links-group">
               <h4>Contact</h4>
-              <a href="tel:+237657955286"><Phone size={16} /> +237 657 955 286</a>
+              <a href="mailto:contact@civialert.com"><Phone size={16} /> contact@civialert.com</a>
+              <a href="tel:+237691234567"><Phone size={16} /> +237 691 234 567</a>
             </div>
           </div>
         </div>
