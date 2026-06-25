@@ -23,7 +23,6 @@ import {
   Phone,
   Mail,
   Flag,
-  ThumbsUp,
 } from 'lucide-react';
 import './Landing.css';
 
@@ -423,57 +422,6 @@ function Landing() {
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section className="testimonials-section">
-        <div className="sec-in">
-          <div className="sec-hdr center">
-            <span className="sec-tag">Témoignages</span>
-            <h2 className="sec-title">Ce que disent les citoyens</h2>
-          </div>
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="testimonial-stars">
-                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
-              </div>
-              <p>"Grâce à Alerte Citoyenne, j'ai retrouvé mon frère disparu en moins de 24h. Une plateforme incroyable !"</p>
-              <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80" alt="Marie" />
-                <div>
-                  <strong>Marie K.</strong>
-                  <span>Douala</span>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <div className="testimonial-stars">
-                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
-              </div>
-              <p>"Un outil essentiel pour notre quartier. Les alertes sont rapides et les autorités réagissent efficacement."</p>
-              <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" alt="Jean" />
-                <div>
-                  <strong>Jean P.</strong>
-                  <span>Yaoundé</span>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <div className="testimonial-stars">
-                {[...Array(5)].map((_, i) => <ThumbsUp key={i} size={16} fill="#f39c12" color="#f39c12" />)}
-              </div>
-              <p>"Je recommande vivement cette plateforme. Elle a sauvé des vies dans ma communauté."</p>
-              <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80" alt="Amina" />
-                <div>
-                  <strong>Amina T.</strong>
-                  <span>Bafoussam</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
