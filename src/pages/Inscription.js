@@ -11,7 +11,6 @@ import {
   Shield,
   Users,
   CheckCircle,
-  Clock,
   ArrowLeft,
   ArrowRight,
   Eye,
