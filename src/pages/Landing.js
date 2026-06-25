@@ -189,11 +189,6 @@ function Landing() {
                   Se connecter
                 </button>
               </div>
-              <div className="hero-trust">
-                <div className="trust-item"><Users size={20} /><span>12 000+ citoyens</span></div>
-                <div className="trust-item"><CheckCircle size={20} /><span>98% vérifiées</span></div>
-                <div className="trust-item"><Clock size={20} /><span>15 min de réponse</span></div>
-              </div>
             </div>
 
             <div className="hero-latest">
