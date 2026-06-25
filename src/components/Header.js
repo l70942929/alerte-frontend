@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import NotificationPanel from './NotificationPanel';
+import { getUnreadCount } from '../services/notificationService';
 import './Header.css';
 
 function Header() {
@@ -8,11 +11,25 @@ function Header() {
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
   const [open, setOpen] = useState(false);
-
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { darkMode, setDarkMode } = useTheme();
   const isActive = (path) => location.pathname === path;
   const homePath = '/';
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
+
+  // Mettre à jour le compteur de notifications non lues
+  useEffect(() => {
+    const updateCount = () => setUnreadCount(getUnreadCount());
+    updateCount();
+    window.addEventListener('notificationsUpdated', updateCount);
+    window.addEventListener('newNotification', updateCount);
+    return () => {
+      window.removeEventListener('notificationsUpdated', updateCount);
+      window.removeEventListener('newNotification', updateCount);
+    };
+  }, []);
 
   return (
     <header className="hdr">
@@ -24,7 +41,7 @@ function Header() {
             onClick={(e) => {
               if (location.pathname === homePath) {
                 e.preventDefault();
-                window.location.href = homePath;
+                navigate(homePath);
               }
             }}
           >
@@ -45,9 +62,29 @@ function Header() {
           </nav>
         </div>
         <div className="hdr-right">
-          <button className="hdr-icon-btn" aria-label="Notifications">
-            <span className="material-symbols-outlined">notifications</span>
+          {/* BOUTON MODE NUIT/JOUR */}
+          <button className="theme-btn" onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? '☀️' : '🌙'}
           </button>
+
+          {/* BOUTON NOTIFICATION (CLOCHE) - CLIQUABLE */}
+          <button 
+            className="hdr-icon-btn" 
+            aria-label="Notifications"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <span className="material-symbols-outlined">notifications</span>
+            {unreadCount > 0 && (
+              <span className="notif-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </button>
+          
+          {/* PANEAU DES NOTIFICATIONS */}
+          {showNotifications && (
+            <NotificationPanel onClose={() => setShowNotifications(false)} />
+          )}
+
+          {/* MENU UTILISATEUR */}
           <div className="hdr-user" onClick={() => setOpen(!open)}>
             <div className="hdr-avatar">{username ? username[0].toUpperCase() : '?'}</div>
             {open && (

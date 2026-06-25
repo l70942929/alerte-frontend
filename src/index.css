@@ -1,8 +1,15 @@
+/* ============================================
+   src/index.css — CSS GLOBAL
+   ============================================ */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
+/* Import des polices Google */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --primary: #12406f;
@@ -30,8 +37,10 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  /* ✅ Polices normales et lisibles */
+--font-display: 'Inter', system-ui, sans-serif;
+--font-body: 'DM Sans', system-ui, sans-serif;
 }
 
 html {
@@ -54,6 +63,7 @@ h1, h2, h3, h4 {
   line-height: 1.2;
 }
 
+/* ✅ Tailles de titres raisonnables (sans clamp excessif) */
 h1 { font-size: clamp(22px, 3vw, 32px); }
 h2 { font-size: clamp(18px, 2.5vw, 24px); }
 h3 { font-size: clamp(15px, 2vw, 18px); }
@@ -69,8 +79,25 @@ button {
   line-height: 1.4;
 }
 
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+  font-size: 20px;
+  visibility: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  unicode-bidi: bidi-override;
+}
+
+html.fonts-loaded .material-symbols-outlined {
+  visibility: visible;
+}
+
 button:disabled {
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 input, select, textarea {
@@ -94,20 +121,63 @@ img { max-width: 100%; }
   font-size: 20px;
 }
 
+/* ─── ANIMATIONS ─── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50%       { opacity: 0.5; }
 }
 
 .fade-up { animation: fadeUp 0.4s ease forwards; }
 .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+/* ─── BADGE NOTIFICATION ─── */
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* ─── DARK MODE ─── */
+[data-theme="dark"] {
+  --primary: #4ea1ff;
+  --primary-dark: #1b4d7a;
+  --primary-light: #0f2235;
+  --secondary: #ff9a3d;
+  --secondary-light: #2a1a10;
+  --error: #ff6b6b;
+  --error-light: #3a1a1a;
+  --success: #4ade80;
+  --success-light: #12301f;
+  --surface: #0f141a;
+  --surface-low: #141b23;
+  --surface-container: #1a232e;
+  --surface-high: #202c3a;
+  --surface-white: #121a22;
+  --on-surface: #e6edf5;
+  --on-surface-variant: #a8b3c2;
+  --outline: #3a4655;
+  --outline-variant: #263140;
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.25);
+}

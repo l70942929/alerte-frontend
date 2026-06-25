@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import Landing from '../pages/Landing';
@@ -35,6 +37,7 @@ function Layout({ children }) {
 
 function App() {
   return (
+    
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -55,6 +58,7 @@ function App() {
         <Route path="/contact-d-urgence" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

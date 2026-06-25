@@ -4,6 +4,7 @@ import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import './Moderateur.css';
+import { addNotificationForUser } from '../services/notificationService';
 
 function Moderateur() {
   const [alertes, setAlertes] = useState([]);
@@ -16,11 +17,7 @@ function Moderateur() {
 
   useEffect(() => {
     const roleActuel = localStorage.getItem('role');
-    const token = localStorage.getItem('token');
-
-    console.log('Role actuel:', roleActuel);
-    console.log('Token présent:', !!token);
-
+    
     if (roleActuel !== 'moderateur' && roleActuel !== 'admin') {
       alert('Accès refusé. Vous devez être modérateur.');
       navigate('/accueil');
@@ -29,7 +26,8 @@ function Moderateur() {
 
     chargerAlertes();
   }, [navigate]);
-const chargerAlertes = async () => {
+
+  const chargerAlertes = async () => {
     setLoading(true);
     setErreur('');
     try {
@@ -45,74 +43,53 @@ const chargerAlertes = async () => {
 
   const changerStatut = async (id, nouveauStatut) => {
     if (processingIds.includes(id)) return;
-    setProcessingIds(prev => (prev.includes(id) ? prev : [...prev, id]));
-    const url = `signalements/${id}/`;
+    setProcessingIds(prev => [...prev, id]);
+    
+    const alerteActuelle = alertes.find(a => a.id === id);
+    const proprietaireAlerte = alerteActuelle?.utilisateur_nom || alerteActuelle?.username;
+    
     try {
-      // First attempt: JSON (default)
-      await api.patch(url, { statut: nouveauStatut });
+      await api.patch(`signalements/${id}/`, { statut: nouveauStatut });
       setMessage('✅ Alerte mise à jour avec succès !');
       setErreur('');
       setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
+      
+      // Envoyer la notification au propriétaire de l'alerte
+      if (proprietaireAlerte) {
+        const typeAlerte = alerteActuelle?.type_alerte?.replace(/_/g, ' ') || 'alerte';
+        
+        if (nouveauStatut === 'en_cours') {
+          addNotificationForUser(
+            proprietaireAlerte,
+            '✅ Alerte vérifiée et publiée',
+            `Votre ${typeAlerte} a été validée et est maintenant publique.`,
+            'success',
+            id
+          );
+        } else if (nouveauStatut === 'resolu') {
+          addNotificationForUser(
+            proprietaireAlerte,
+            '🏁 Alerte résolue',
+            `L'alerte "${typeAlerte}" est maintenant résolue.`,
+            'success',
+            id
+          );
+        } else if (nouveauStatut === 'cloture' && alerteActuelle?.statut === 'recu') {
+          addNotificationForUser(
+            proprietaireAlerte,
+            '❌ Alerte non validée',
+            `Votre ${typeAlerte} n'a pas été validée par nos modérateurs.`,
+            'error',
+            id
+          );
+        }
+      }
+      
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error('Erreur changerStatut (initial):', error);
-      const status = error.response?.status;
-
-      // If server rejects media type, try fallbacks
-      if (status === 415) {
-        try {
-          // Fallback 1: send as multipart/form-data
-          const fd = new FormData();
-          fd.append('statut', nouveauStatut);
-          await api.patch(url, fd);
-          setMessage('✅ Alerte mise à jour (form-data) !');
-          setErreur('');
-          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
-          setTimeout(() => setMessage(''), 3000);
-          return;
-        } catch (errFd) {
-          console.error('Fallback form-data failed:', errFd);
-        }
-
-        try {
-          // Fallback 2: send as x-www-form-urlencoded
-          const body = new URLSearchParams();
-          body.append('statut', nouveauStatut);
-          await api.patch(url, body.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-          setMessage('✅ Alerte mise à jour (urlencoded) !');
-          setErreur('');
-          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
-          setTimeout(() => setMessage(''), 3000);
-          return;
-        } catch (errUrl) {
-          console.error('Fallback urlencoded failed:', errUrl);
-        }
-
-        try {
-          // Fallback 3: try alternate field name 'status' as JSON
-          await api.patch(url, { status: nouveauStatut });
-          setMessage('✅ Alerte mise à jour (status) !');
-          setErreur('');
-          setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
-          setTimeout(() => setMessage(''), 3000);
-          return;
-        } catch (errStatus) {
-          console.error('Fallback status failed:', errStatus);
-          const s2 = errStatus.response?.status;
-          const d2 = errStatus.response?.data;
-          const det2 = d2?.detail || d2 || null;
-          const errMsg2 = (s2 ? `Erreur ${s2}: ` : '') + (typeof det2 === 'string' ? det2 : JSON.stringify(det2) || errStatus.message || 'Erreur lors de la mise à jour');
-          setErreur(errMsg2);
-          setTimeout(() => setErreur(''), 8000);
-        }
-      } else {
-        const data = error.response?.data;
-        const detail = data?.detail || data || null;
-        const errMsg = (status ? `Erreur ${status}: ` : '') + (typeof detail === 'string' ? detail : JSON.stringify(detail) || error.message || 'Erreur lors de la mise à jour');
-        setErreur(errMsg);
-        // Keep error visible a bit longer for debugging
-        setTimeout(() => setErreur(''), 8000);
-      }
+      console.error('Erreur:', error);
+      setErreur('Erreur lors de la mise à jour');
+      setTimeout(() => setErreur(''), 8000);
     } finally {
       setProcessingIds(prev => prev.filter(x => x !== id));
     }
@@ -126,10 +103,7 @@ const chargerAlertes = async () => {
     accident: '🚑',
   };
 
-  const alertesFiltrees =
-    filtre === 'tous'
-      ? alertes
-      : alertes.filter((a) => a.statut === filtre);
+  const alertesFiltrees = filtre === 'tous' ? alertes : alertes.filter((a) => a.statut === filtre);
 
   const stats = {
     total: alertes.length,
@@ -153,11 +127,7 @@ const chargerAlertes = async () => {
         </div>
 
         {message && (
-          <div
-            className={`modo-msg ${
-              message.startsWith('✅') ? 'success' : 'error'
-            }`}
-          >
+          <div className={`modo-msg ${message.startsWith('✅') ? 'success' : 'error'}`}>
             {message}
           </div>
         )}
@@ -175,10 +145,7 @@ const chargerAlertes = async () => {
             <span className="modo-stat-val">{stats.recu}</span>
             <span className="modo-stat-lbl">⏳ En attente</span>
           </div>
-          <div
-            className="modo-stat publiee"
-            onClick={() => setFiltre('en_cours')}
-          >
+          <div className="modo-stat publiee" onClick={() => setFiltre('en_cours')}>
             <span className="modo-stat-val">{stats.en_cours}</span>
             <span className="modo-stat-lbl">📢 Publiées</span>
           </div>
@@ -245,8 +212,7 @@ const chargerAlertes = async () => {
                 <p className="modo-card-desc">{a.description}</p>
 
                 <p className="modo-card-date">
-                  📅 Soumis le{' '}
-                  {new Date(a.date_soumission).toLocaleString('fr-FR')}
+                  📅 Soumis le {new Date(a.date_soumission).toLocaleString('fr-FR')}
                   {a.anonyme && ' • 🕵️ Anonyme'}
                 </p>
 

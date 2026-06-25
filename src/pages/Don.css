@@ -1,39 +1,58 @@
-.don-page { min-height:100vh; background:var(--surface); }
-.don-body { max-width:700px; margin:0 auto; padding:76px 24px 100px; }
+.don-page { min-height: 100vh; background: var(--surface); }
+.don-body { max-width: 680px; margin: 0 auto; padding: 76px 24px 100px; }
 
-.don-hero { text-align:center; margin-bottom:40px; padding:40px 24px; background:linear-gradient(135deg,var(--primary),#0056b3); border-radius:var(--radius-xl); color:white; }
-.don-hero h1 { font-family:var(--font-display); font-size:clamp(24px,4vw,36px); font-weight:900; margin:12px 0 10px; letter-spacing:-1px; }
-.don-hero p { font-size:15px; opacity:0.9; line-height:1.6; }
+/* ── Hero ── */
+.don-hero { text-align: center; margin-bottom: 36px; padding: 40px 28px; background: linear-gradient(145deg, var(--primary-dark), var(--primary)); border-radius: var(--radius-xl); color: white; }
+.don-hero-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.don-hero-icon .material-symbols-outlined { font-size: 32px !important; color: white; }
+.don-hero h1 { font-family: var(--font-display); font-size: clamp(22px, 3.5vw, 30px); font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; }
+.don-hero p  { font-size: 14px; opacity: 0.85; line-height: 1.7; max-width: 480px; margin: 0 auto; }
 
-.don-why { margin-bottom:32px; }
-.don-why h2 { font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--primary); margin-bottom:16px; }
-.don-why-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-.don-why-card { background:var(--surface-white); border-radius:var(--radius-lg); padding:20px 16px; text-align:center; border:1px solid var(--outline-variant); box-shadow:var(--shadow-sm); }
-.don-why-card span { font-size:28px; display:block; margin-bottom:8px; }
-.don-why-card strong { font-size:14px; font-weight:700; color:var(--on-surface); display:block; margin-bottom:6px; }
-.don-why-card p { font-size:12px; color:var(--on-surface-variant); line-height:1.5; }
+/* ── Pourquoi ── */
+.don-why { margin-bottom: 28px; }
+.don-why h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 14px; }
+.don-why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.don-why-card { background: var(--surface-white); border-radius: var(--radius-lg); padding: 20px 14px; text-align: center; border: 1px solid var(--outline-variant); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.don-why-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--primary-light); display: flex; align-items: center; justify-content: center; }
+.don-why-icon .material-symbols-outlined { font-size: 22px !important; color: var(--primary); }
+.don-why-card strong { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.don-why-card p { font-size: 12px; color: var(--on-surface-variant); line-height: 1.5; }
 
-.don-form-box { background:var(--surface-white); border-radius:var(--radius-xl); padding:28px; border:1px solid var(--outline-variant); box-shadow:var(--shadow); }
-.don-form-box h2 { font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--primary); margin-bottom:6px; }
-.don-form-sub { font-size:13px; color:var(--on-surface-variant); margin-bottom:24px; }
-.don-fgrp { margin-bottom:18px; }
-.don-fgrp label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--on-surface-variant); margin-bottom:8px; }
-.don-fgrp input { width:100%; padding:12px 14px; border:1.5px solid var(--outline-variant); border-radius:var(--radius-md); font-size:14px; outline:none; transition:all 0.2s; }
-.don-fgrp input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(0,63,135,0.1); }
+/* ── Formulaire ── */
+.don-form-box { background: var(--surface-white); border-radius: var(--radius-xl); padding: 28px; border: 1px solid var(--outline-variant); box-shadow: var(--shadow); }
+.don-form-box h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.don-form-sub { font-size: 13px; color: var(--on-surface-variant); margin-bottom: 22px; }
 
-.don-operators { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.don-op { padding:14px; border-radius:var(--radius-md); border:2px solid var(--outline-variant); font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; background:var(--surface-low); }
-.don-op:hover { border-color:var(--primary); }
-.don-op.active-mtn { background:#FFF3E0; border-color:#FF9800; color:#E65100; }
-.don-op.active-orange { background:#FFF3E0; border-color:#FF6D00; color:#E65100; }
+.don-fgrp { margin-bottom: 18px; }
+.don-fgrp label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--on-surface-variant); margin-bottom: 8px; }
 
-.don-message { padding:14px 16px; border-radius:var(--radius-md); margin-bottom:16px; }
-.don-message p { font-size:13px; line-height:1.8; margin:0; }
-.don-message.success { background:var(--success-light); color:var(--success); }
-.don-message.error { background:var(--error-light); color:var(--error); }
+.don-inp-wrap { position: relative; display: flex; align-items: center; }
+.don-inp-ico  { position: absolute; left: 12px; font-size: 18px !important; color: var(--outline); }
+.don-inp-wrap input { width: 100%; padding: 12px 12px 12px 42px; border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md); font-size: 14px; color: var(--on-surface); background: var(--surface-white); outline: none; transition: all 0.2s; }
+.don-inp-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(18,64,111,0.1); }
 
-.don-submit { width:100%; background:var(--secondary); color:white; padding:14px; border-radius:var(--radius-md); font-size:15px; font-weight:700; box-shadow:var(--shadow); transition:all 0.2s; margin-bottom:14px; }
-.don-submit:hover { filter:brightness(1.05); transform:translateY(-1px); }
-.don-note { font-size:12px; color:var(--outline); text-align:center; line-height:1.6; }
+/* Opérateurs */
+.don-operators { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.don-op { padding: 13px; border-radius: var(--radius-md); border: 2px solid var(--outline-variant); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; background: var(--surface-low); cursor: pointer; color: var(--on-surface-variant); }
+.don-op:hover { border-color: var(--primary); color: var(--primary); }
+.don-op.active-mtn    { background: #FFF8E1; border-color: #FFA000; color: #E65100; }
+.don-op.active-orange { background: #FFF3E0; border-color: #FF6D00; color: #BF360C; }
+.don-op .material-symbols-outlined { font-size: 18px !important; }
 
-@media (max-width:600px) { .don-why-grid { grid-template-columns:1fr; } }
+/* Message retour */
+.don-message { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); margin-bottom: 16px; }
+.don-message.success { background: var(--success-light); color: var(--success); }
+.don-message.error   { background: var(--error-light);   color: var(--error); }
+.don-msg-icon { font-size: 20px !important; flex-shrink: 0; margin-top: 1px; }
+.don-message p { font-size: 13px; line-height: 1.8; margin: 0; }
+
+/* Bouton */
+.don-submit { width: 100%; background: var(--primary); color: white; padding: 13px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); transition: all 0.2s; margin-bottom: 14px; border: none; cursor: pointer; }
+.don-submit:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+.don-note { font-size: 12px; color: var(--outline); text-align: center; line-height: 1.6; }
+
+@media (max-width: 600px) {
+  .don-why-grid  { grid-template-columns: 1fr; }
+  .don-operators { grid-template-columns: 1fr; }
+}

@@ -283,7 +283,7 @@
 .msg-input-row input {
   border: 1.5px solid var(--outline-variant);
   border-radius: var(--radius-full);
-  color: var(--on-surface);
+  color: black;
   flex: 1;
   font-size: 14px;
   min-width: 0;

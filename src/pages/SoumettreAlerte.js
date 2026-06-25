@@ -37,9 +37,6 @@ function SoumettreAlerte() {
   ];
 
   const typeActif = types.find((type) => type.value === form.type_alerte);
-  const mapSrc = position
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${Number(position.lng) - 0.015}%2C${Number(position.lat) - 0.015}%2C${Number(position.lng) + 0.015}%2C${Number(position.lat) + 0.015}&layer=mapnik&marker=${position.lat}%2C${position.lng}`
-    : 'https://www.openstreetmap.org/export/embed.html?bbox=8.0%2C1.6%2C16.2%2C13.2&layer=mapnik';
 
   // Fix Leaflet default icon paths (webpack)
   L.Icon.Default.mergeOptions({
@@ -48,14 +45,13 @@ function SoumettreAlerte() {
     shadowUrl: markerShadow,
   });
 
-  const DEFAULT_CENTER = [4.05, 9.7]; // Douala approx
+  const DEFAULT_CENTER = [4.05, 9.7]; // Douala
 
   const utiliserMaPosition = () => {
     if (!navigator.geolocation) {
       setErreur("La géolocalisation n'est pas disponible sur ce navigateur.");
       return;
     }
-
     setErreur('');
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
@@ -78,7 +74,6 @@ function SoumettreAlerte() {
       setErreur('Veuillez saisir une adresse ou un lieu à rechercher.');
       return;
     }
-
     setErreur('');
     setSearching(true);
     try {
@@ -101,7 +96,6 @@ function SoumettreAlerte() {
   };
 
   function LocationMarker({ position }) {
-    // attach click handler to the map to set marker
     useMapEvents({
       click(e) {
         const lat = e.latlng.lat.toFixed(6);
@@ -114,7 +108,7 @@ function SoumettreAlerte() {
     if (!position) return null;
     return (
       <Marker position={[position.lat, position.lng]}>
-        <Popup>Position sélectionnée: {position.lat}, {position.lng}</Popup>
+        <Popup>Position sélectionnée : {position.lat}, {position.lng}</Popup>
       </Marker>
     );
   }
@@ -139,19 +133,17 @@ function SoumettreAlerte() {
       formData.append('photo', form.photoFile);
     }
 
-    try {
-      // include latitude/longitude if available
-      if (position) {
-        formData.append('latitude', position.lat);
-        formData.append('longitude', position.lng);
-      }
+    if (position) {
+      formData.append('latitude', position.lat);
+      formData.append('longitude', position.lng);
+    }
 
+    try {
       await axios.post('http://127.0.0.1:8000/api/signalements/', formData, {
         headers: {
           Authorization: `Token ${localStorage.getItem('token')}`,
         },
       });
-
       setMessage('Votre alerte a été soumise. Elle sera vérifiée sous 15 minutes.');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {
@@ -171,14 +163,22 @@ function SoumettreAlerte() {
             <p>Renseignez les informations essentielles pour faciliter la vérification.</p>
             <div className="sa-steps">
               {[1, 2, 3].map((step) => (
-                <div key={step} className={`sa-step ${etape >= step ? 'done' : ''} ${etape === step ? 'active' : ''}`}>
-                  <div className="sa-step-dot">{etape > step ? <span className="material-symbols-outlined">check</span> : step}</div>
+                <div
+                  key={step}
+                  className={`sa-step ${etape >= step ? 'done' : ''} ${etape === step ? 'active' : ''}`}
+                >
+                  <div className="sa-step-dot">
+                    {etape > step
+                      ? <span className="material-symbols-outlined">check</span>
+                      : step}
+                  </div>
                   <span>{step === 1 ? 'Type' : step === 2 ? 'Détails' : 'Localisation'}</span>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* ── ÉTAPE 1 : TYPE ── */}
           {etape === 1 && (
             <div className="sa-etape fade-up">
               <h2 className="sa-etape-title">
@@ -190,7 +190,11 @@ function SoumettreAlerte() {
                   <button
                     key={type.value}
                     className={`sa-type-card ${form.type_alerte === type.value ? 'selected' : ''}`}
-                    style={form.type_alerte === type.value ? { background: type.color, borderColor: type.border, color: type.text } : {}}
+                    style={
+                      form.type_alerte === type.value
+                        ? { background: type.color, borderColor: type.border, color: type.text }
+                        : {}
+                    }
                     onClick={() => setForm({ ...form, type_alerte: type.value })}
                   >
                     <span className="material-symbols-outlined sa-type-icon">{type.icon}</span>
@@ -205,6 +209,7 @@ function SoumettreAlerte() {
             </div>
           )}
 
+          {/* ── ÉTAPE 2 : DÉTAILS ── */}
           {etape === 2 && (
             <div className="sa-etape fade-up">
               <h2 className="sa-etape-title">
@@ -212,6 +217,7 @@ function SoumettreAlerte() {
                 Informations descriptives
               </h2>
               <div className="sa-selected-type">{typeActif?.label} sélectionné</div>
+
               <div className="sa-fgrp">
                 <label>Description détaillée <span className="req">*</span></label>
                 <textarea
@@ -221,11 +227,17 @@ function SoumettreAlerte() {
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                 />
               </div>
+
               <div className="sa-fgrp">
                 <label>Ajouter une photo <span className="req">*</span></label>
-                <input type="file" accept="image/*" onChange={(e) => setForm({ ...form, photoFile: e.target.files[0] })} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setForm({ ...form, photoFile: e.target.files[0] })}
+                />
                 {form.photoFile && <small className="sa-file-name">{form.photoFile.name}</small>}
               </div>
+
               <div className="sa-fgrp">
                 <label>Date et heure de l'incident <span className="req">*</span></label>
                 <input
@@ -234,6 +246,7 @@ function SoumettreAlerte() {
                   onChange={(e) => setForm({ ...form, date_evenement: e.target.value })}
                 />
               </div>
+
               <div className="sa-anon">
                 <input
                   type="checkbox"
@@ -243,23 +256,30 @@ function SoumettreAlerte() {
                 />
                 <label htmlFor="anon">Signalement anonyme. Votre identité ne sera pas révélée.</label>
               </div>
+
               <div className="sa-nav">
                 <button className="sa-prev" onClick={() => setEtape(1)}>
                   <span className="material-symbols-outlined">arrow_back</span> Précédent
                 </button>
-                <button className="sa-next" disabled={!form.description || !form.date_evenement || !form.photoFile} onClick={() => setEtape(3)}>
+                <button
+                  className="sa-next"
+                  disabled={!form.description || !form.date_evenement || !form.photoFile}
+                  onClick={() => setEtape(3)}
+                >
                   Suivant <span className="material-symbols-outlined">arrow_forward</span>
                 </button>
               </div>
             </div>
           )}
 
+          {/* ── ÉTAPE 3 : LOCALISATION ── */}
           {etape === 3 && (
             <div className="sa-etape fade-up">
               <h2 className="sa-etape-title">
                 <span className="material-symbols-outlined">location_on</span>
                 Localisation
               </h2>
+
               <div className="sa-fgrp">
                 <label>Lieu précis de l'incident <span className="req">*</span></label>
                 <input
@@ -269,6 +289,7 @@ function SoumettreAlerte() {
                   onChange={(e) => setForm({ ...form, localisation: e.target.value })}
                 />
               </div>
+
               <div className="sa-location-actions">
                 <button type="button" className="sa-locate-btn" onClick={utiliserMaPosition}>
                   <span className="material-symbols-outlined">my_location</span>
@@ -276,10 +297,14 @@ function SoumettreAlerte() {
                 </button>
                 <button type="button" className="sa-search-btn" onClick={rechercherAdresse} disabled={searching}>
                   <span className="material-symbols-outlined">search</span>
-                  {searching ? 'Recherche...' : 'Rechercher l\u2019adresse'}
+                  {searching ? 'Recherche...' : "Rechercher l'adresse"}
                 </button>
-                {position && <span className="sa-coords">{position.lat}, {position.lng}</span>}
+                {position && (
+                  <span className="sa-coords">{position.lat}, {position.lng}</span>
+                )}
               </div>
+
+              {/* Carte Leaflet interactive */}
               <div className="sa-map">
                 <MapContainer
                   center={position ? [position.lat, position.lng] : DEFAULT_CENTER}
@@ -292,19 +317,30 @@ function SoumettreAlerte() {
                   />
                   <LocationMarker position={position} />
                 </MapContainer>
-                {/* Hidden fields for latitude/longitude (sent to backend) */}
                 <input type="hidden" name="latitude" value={position?.lat || ''} />
                 <input type="hidden" name="longitude" value={position?.lng || ''} />
               </div>
 
-              {erreur && <div className="sa-error"><span className="material-symbols-outlined">error</span>{erreur}</div>}
-              {message && <div className="sa-success"><span className="material-symbols-outlined">check_circle</span>{message}</div>}
+              {erreur && (
+                <div className="sa-error">
+                  <span className="material-symbols-outlined">error</span>{erreur}
+                </div>
+              )}
+              {message && (
+                <div className="sa-success">
+                  <span className="material-symbols-outlined">check_circle</span>{message}
+                </div>
+              )}
 
               <div className="sa-nav">
                 <button className="sa-prev" onClick={() => setEtape(2)}>
                   <span className="material-symbols-outlined">arrow_back</span> Précédent
                 </button>
-                <button className="sa-submit" disabled={!form.localisation || loading} onClick={submit}>
+                <button
+                  className="sa-submit"
+                  disabled={!form.localisation || loading}
+                  onClick={submit}
+                >
                   <span className="material-symbols-outlined">send</span>
                   {loading ? 'Envoi...' : "Soumettre l'alerte"}
                 </button>
@@ -316,7 +352,9 @@ function SoumettreAlerte() {
         <aside className="sa-aside">
           <div className="sa-conseils">
             <h3>
-              <span className="material-symbols-outlined" style={{ color: 'var(--secondary)' }}>tips_and_updates</span>
+              <span className="material-symbols-outlined" style={{ color: 'var(--secondary)' }}>
+                tips_and_updates
+              </span>
               Conseils d'urgence
             </h3>
             <p>Une description précise, une photo claire et un lieu exact facilitent la vérification.</p>
@@ -327,6 +365,7 @@ function SoumettreAlerte() {
               <li><span className="material-symbols-outlined">check_circle</span>Ajoutez une photo récente si possible</li>
             </ul>
           </div>
+
           <div className="sa-process">
             <h3>Processus de modération</h3>
             <div className="sa-proc-step"><span>1</span><p>Soumission du formulaire complet</p></div>

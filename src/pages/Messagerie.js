@@ -4,7 +4,6 @@ import BottomNav from '../components/BottomNav';
 import api from '../services/api';
 import './Messagerie.css';
 
-// ...existing code...
 function Messagerie() {
   const [contacts, setContacts] = useState([]);
   const [actif, setActif] = useState(null);
@@ -14,10 +13,11 @@ function Messagerie() {
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [erreur, setErreur] = useState('');
+  const [menuMessage, setMenuMessage] = useState(null); // Pour le menu contextuel
   const threadRef = useRef(null);
   const username = localStorage.getItem('username');
 
- useEffect(() => {
+  useEffect(() => {
     const chargerContacts = async () => {
       setLoadingContacts(true);
       setErreur('');
@@ -35,30 +35,25 @@ function Messagerie() {
       }
     };
     chargerContacts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // ...existing code...
+  }, [username]);
 
- const ouvrirChat = async (contact) => {
+  const ouvrirChat = async (contact) => {
     setActif(contact);
     setMessages([]);
     setNouveauMsg('');
     setLoadingMessages(true);
     setErreur('');
     try {
-      const res = await api.get(
-        `messagerie/conversation/?user_id=${contact.id}`
-      );
+      const res = await api.get(`messagerie/conversation/?user_id=${contact.id}`);
       setMessages(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
-      setErreur(`Impossible de charger la conversation.`);
+      setErreur("Impossible de charger la conversation.");
       setMessages([]);
     } finally {
       setLoadingMessages(false);
     }
   };
 
-  // ...existing code...
   const envoyer = async (e) => {
     if (e?.preventDefault) e.preventDefault();
     const contenu = nouveauMsg.trim();
@@ -73,24 +68,69 @@ function Messagerie() {
       setMessages(prev => [...prev, res.data]);
     } catch (error) {
       setNouveauMsg(contenu);
-      setErreur(
-        error.response?.data?.detail ||
-        "Erreur lors de l'envoi du message."
-      );
+      setErreur(error.response?.data?.detail || "Erreur lors de l'envoi.");
     }
   };
 
-  const supprimerMessage = async (id) => {
-  try {
-    await api.delete(`messagerie/${id}/`);
+  // Copier le message
+  const copierMessage = (contenu) => {
+    navigator.clipboard.writeText(contenu);
+    setMenuMessage(null);
+    alert('Message copié !');
+  };
 
-    setMessages(
-      messages.filter((msg) => msg.id !== id)
-    );
-  } catch (error) {
-    alert("Impossible de supprimer le message");
-  }
-};
+  // Supprimer le message
+  const supprimerMessage = async (id) => {
+    if (window.confirm('Supprimer ce message ?')) {
+      try {
+        await api.delete(`messagerie/${id}/`);
+        setMessages(messages.filter((msg) => msg.id !== id));
+        setMenuMessage(null);
+      } catch (error) {
+        alert("Impossible de supprimer le message");
+      }
+    }
+  };
+
+  // Modifier le message (éditer)
+  const modifierMessage = async (id, ancienContenu) => {
+    const nouveauContenu = prompt('Modifier le message :', ancienContenu);
+    if (nouveauContenu && nouveauContenu.trim() !== ancienContenu) {
+      try {
+        await api.patch(`messagerie/${id}/`, { contenu: nouveauContenu });
+        setMessages(messages.map(msg => msg.id === id ? { ...msg, contenu: nouveauContenu } : msg));
+        setMenuMessage(null);
+      } catch (error) {
+        alert("Impossible de modifier le message");
+      }
+    } else {
+      setMenuMessage(null);
+    }
+  };
+
+  // Transférer le message (ouvrir liste des contacts)
+  const transfererMessage = async (contenu) => {
+    const reponse = window.prompt('Transférer à quel utilisateur ? (nom exact)');
+    if (reponse && reponse.trim()) {
+      const destinataire = contacts.find(c => c.username.toLowerCase() === reponse.trim().toLowerCase());
+      if (destinataire) {
+        try {
+          await api.post('messagerie/', {
+            destinataire: destinataire.id,
+            contenu: `[Transféré] ${contenu}`,
+          });
+          alert(`Message transféré à ${destinataire.username}`);
+          setMenuMessage(null);
+        } catch (error) {
+          alert("Erreur lors du transfert");
+        }
+      } else {
+        alert(`Utilisateur "${reponse}" non trouvé`);
+      }
+    } else {
+      setMenuMessage(null);
+    }
+  };
 
   useEffect(() => {
     if (threadRef.current) {
@@ -103,6 +143,7 @@ function Messagerie() {
     setMessages([]);
     setNouveauMsg('');
     setErreur('');
+    setMenuMessage(null);
   };
 
   const estMoi = (msg) => {
@@ -112,6 +153,10 @@ function Messagerie() {
       msg.sender_username === username
     );
   };
+
+  const filteredContacts = contacts.filter(c =>
+    c.username.toLowerCase().includes(recherche.toLowerCase())
+  );
 
   return (
     <div className="msg-page">
@@ -139,7 +184,7 @@ function Messagerie() {
 
           {loadingContacts ? (
             <div className="msg-state">Chargement des contacts...</div>
-          ) : contacts.length === 0 ? (
+          ) : filteredContacts.length === 0 ? (
             <div className="msg-no-contacts">
               <span className="material-symbols-outlined">group_off</span>
               <p>Aucun contact disponible</p>
@@ -147,7 +192,7 @@ function Messagerie() {
             </div>
           ) : (
             <div className="msg-contact-list">
-              {contacts.map((contact) => (
+              {filteredContacts.map((contact) => (
                 <button
                   type="button"
                   key={contact.id}
@@ -179,12 +224,7 @@ function Messagerie() {
           ) : (
             <>
               <div className="msg-chat-header">
-                <button
-                  type="button"
-                  className="msg-back"
-                  onClick={fermerChatMobile}
-                  aria-label="Retour aux contacts"
-                >
+                <button type="button" className="msg-back" onClick={fermerChatMobile} aria-label="Retour aux contacts">
                   <span className="material-symbols-outlined">arrow_back</span>
                 </button>
                 <span className="msg-avatar">
@@ -192,9 +232,7 @@ function Messagerie() {
                 </span>
                 <div>
                   <p className="msg-chat-nom">{actif.username}</p>
-                  <p className="msg-chat-status">
-                    {actif.localisation || 'Cameroun'}
-                  </p>
+                  <p className="msg-chat-status">{actif.localisation || 'Cameroun'}</p>
                 </div>
               </div>
 
@@ -214,40 +252,35 @@ function Messagerie() {
                     <p>Commencez la conversation avec {actif.username}</p>
                   </div>
                 ) : (
-    messages.map((message, index) => (
-  <div
-    key={message.id || `${message.date_envoi}-${index}`}
-    className={`msg-bubble ${estMoi(message) ? 'moi' : 'autre'}`}
-  >
-    <p>{message.contenu}</p>
+                  messages.map((message, index) => (
+                    <div
+                      key={message.id || `${message.date_envoi}-${index}`}
+                      className={`msg-bubble ${estMoi(message) ? 'moi' : 'autre'}`}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        if (estMoi(message)) {
+                          setMenuMessage(menuMessage === message.id ? null : message.id);
+                        }
+                      }}
+                    >
+                      <p>{message.contenu}</p>
+                      {message.date_envoi && (
+                        <span className="msg-time">
+                          {new Date(message.date_envoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
 
-    {message.date_envoi && (
-      <span className="msg-time">
-        {new Date(message.date_envoi).toLocaleTimeString(
-          'fr-FR',
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-          }
-        )}
-      </span>
-    )}
-
-    {estMoi(message) && (
-      <button
-        onClick={() => supprimerMessage(message.id)}
-        style={{
-          marginLeft: '10px',
-          border: 'none',
-          background: 'transparent',
-          cursor: 'pointer'
-        }}
-      >
-        delete
-      </button>
-    )}
-  </div>
-))
+                      {/* Menu contextuel (clic droit) */}
+                      {menuMessage === message.id && estMoi(message) && (
+                        <div className="msg-context-menu">
+                          <button onClick={() => copierMessage(message.contenu)}>Copier</button><br></br>
+                          <button onClick={() => modifierMessage(message.id, message.contenu)}>Modifier</button><br></br>
+                          <button onClick={() => transfererMessage(message.contenu)}>Transférer</button><br></br>
+                          <button onClick={() => supprimerMessage(message.id)}>Supprimer</button>
+                        </div>
+                      )}
+                    </div>
+                  ))
                 )}
               </div>
 
