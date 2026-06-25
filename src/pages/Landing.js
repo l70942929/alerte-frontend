@@ -365,14 +365,15 @@ function Landing() {
               <div className="step-number" style={{ background: step.color }}>
                 {index + 1}
               </div>
+              <div className="step-icon-wrap" style={{ color: step.color }}>
+              <Icon size={40} />
+            </div>
               <div className="step-content">
                 <h3>{step.title}</h3>
                 <p>{step.desc}</p>
               </div>
             </div>
-            <div className="step-icon-wrap" style={{ color: step.color }}>
-              <Icon size={40} />
-            </div>
+            
           </div>
         );
       })}
