@@ -22,10 +22,8 @@ import {
   Heart,
   Phone,
   Mail,
-  Twitter,
-  Facebook,
-  Instagram,
-  Youtube,
+  Flag,
+  ThumbsUp,
 } from 'lucide-react';
 import './Landing.css';
 
@@ -104,6 +102,7 @@ function Landing() {
   return (
     <div className={`land ${darkMode ? 'dark-mode' : ''}`}>
 
+      {/* HEADER */}
       <header className={`land-hdr ${scrolled ? 'scrolled' : ''}`}>
         <div className="land-hdr-in">
 
@@ -147,6 +146,7 @@ function Landing() {
         </div>
       </header>
 
+      {/* MENU MOBILE */}
       {mobileMenuOpen && (
         <div className="mobile-menu-landing">
           <a href="#alertes" onClick={() => setMobileMenuOpen(false)}>Alertes</a>
@@ -162,6 +162,7 @@ function Landing() {
         </div>
       )}
 
+      {/* HERO */}
       <section className="land-hero">
         <div className="hero-overlay">
           <div className="hero-grid">
@@ -237,6 +238,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* STATS */}
       <section className="land-stats">
         <div className="stats-in">
           <div className="stat-card">
@@ -278,6 +280,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* FEATURES */}
       <section className="land-features" id="features">
         <div className="sec-in">
           <div className="sec-hdr">
@@ -306,6 +309,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* ALERTES */}
       <section className="land-alertes" id="alertes">
         <div className="sec-in">
           <div className="sec-hdr">
@@ -355,6 +359,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
       <section className="land-how" id="comment">
         <div className="sec-in">
           <div className="sec-hdr center">
@@ -384,6 +389,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* COMMUNITY */}
       <section className="community-section" id="community">
         <div className="sec-in">
           <div className="sec-hdr center">
@@ -421,6 +427,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
       <section className="testimonials-section">
         <div className="sec-in">
           <div className="sec-hdr center">
@@ -471,6 +478,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* CTA */}
       <section className="land-cta">
         <div className="cta-content">
           <div className="cta-icon">
@@ -493,6 +501,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* FOOTER */}
       <footer className="land-footer">
         <div className="foot-in">
           <div className="foot-brand">
@@ -507,12 +516,6 @@ function Landing() {
             <p className="foot-copy">
               © 2026 Alerte Citoyenne Cameroun. Tous droits réservés.
             </p>
-            <div className="foot-socials">
-              <a href="#"><Facebook size={20} /></a>
-              <a href="#"><Twitter size={20} /></a>
-              <a href="#"><Instagram size={20} /></a>
-              <a href="#"><Youtube size={20} /></a>
-            </div>
           </div>
           <div className="foot-links">
             <div className="foot-links-group">

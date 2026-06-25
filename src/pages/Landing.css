@@ -1,6 +1,5 @@
 /* ============================================
    src/pages/Landing.css
-   Version améliorée
    ============================================ */
 
 /* ─────────── VARIABLES ─────────── */
@@ -302,7 +301,7 @@
   background: #3a3a5e;
 }
 
-/* ─────────── HERO SECTION ─────────── */
+/* ─────────── HERO ─────────── */
 .land-hero {
   position: relative;
   min-height: 95vh;
@@ -1229,31 +1228,6 @@
   color: var(--on-surface-variant);
 }
 
-.foot-socials {
-  display: flex;
-  gap: 12px;
-}
-
-.foot-socials a {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--surface-white);
-  color: var(--on-surface-variant);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-  border: 1px solid var(--outline-variant);
-}
-
-.foot-socials a:hover {
-  background: var(--primary);
-  color: white;
-  transform: translateY(-3px);
-  border-color: var(--primary);
-}
-
 .foot-links {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1534,16 +1508,3 @@
     padding: 0 4px;
   }
 }
-
-/* ─────────── UTILITAIRES ─────────── */
-.text-center { text-align: center; }
-.mt-16 { margin-top: 16px; }
-.mt-24 { margin-top: 24px; }
-.mt-32 { margin-top: 32px; }
-.mb-16 { margin-bottom: 16px; }
-.mb-24 { margin-bottom: 24px; }
-.mb-32 { margin-bottom: 32px; }
-.gap-8 { gap: 8px; }
-.gap-16 { gap: 16px; }
-.gap-24 { gap: 24px; }
-.flex-center { display: flex; align-items: center; justify-content: center; }
