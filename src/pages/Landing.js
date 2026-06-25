@@ -97,7 +97,11 @@ function Landing() {
 
           <a className="logo" href="/">
             <span className="logo-icon">
-              <Shield size={22} />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
             </span>
             <span className="logo-text">CIVIALERT</span>
           </a>
@@ -156,10 +160,6 @@ function Landing() {
           <div className="hero-grid">
 
             <div className="hero-txt">
-              <div className="hero-badge">
-                <Shield size={16} />
-                Plateforme citoyenne
-              </div>
               <h1 className="hero-h1">
                 Protégez votre <span className='titre'>communauté</span>,<br />
                 un signalement <span className='titre'>à la fois.</span>
@@ -360,15 +360,19 @@ function Landing() {
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <div key={step.title} className="step-card" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="step-number" style={{ background: step.color }}>
-                    {index + 1}
+                <div key={step.title} className="step-card">
+                  <div className="step-left">
+                    <div className="step-number" style={{ background: step.color }}>
+                      {index + 1}
+                    </div>
+                    <div className="step-content">
+                      <h3>{step.title}</h3>
+                      <p>{step.desc}</p>
+                    </div>
                   </div>
                   <div className="step-icon-wrap" style={{ color: step.color }}>
                     <Icon size={40} />
                   </div>
-                  <h3>{step.title}</h3>
-                  <p>{step.desc}</p>
                 </div>
               );
             })}
@@ -433,7 +437,11 @@ function Landing() {
         <div className="foot-in">
           <div className="foot-brand">
             <div className="foot-logo">
-              <Shield size={24} />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
               CIVIALERT
             </div>
             <p className="foot-copy">
