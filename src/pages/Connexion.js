@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './Connexion.css';
 
 function Connexion() {
@@ -13,7 +13,7 @@ function Connexion() {
     if (!form.username || !form.password) { setErreur('Veuillez remplir tous les champs.'); return; }
     setLoading(true); setErreur('');
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/auth/connexion/', form);
+      const res = await api.post('/auth/connexion/', form);
       if (res.data?.token) {
         localStorage.setItem('token',    res.data.token);
         localStorage.setItem('username', res.data.username);

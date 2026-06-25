@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './Connexion.css';
 
 function Inscription() {
@@ -13,7 +13,7 @@ function Inscription() {
     if (!form.username || !form.password) { setErreur('Nom et mot de passe obligatoires.'); return; }
     setLoading(true); setErreur('');
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/auth/inscription/', form);
+      const res = await api.post('/auth/inscription/', form);
       if (res.data.token) {
         localStorage.setItem('token',    res.data.token);
         localStorage.setItem('username', res.data.username);
