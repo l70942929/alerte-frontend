@@ -306,7 +306,7 @@ function Landing() {
           <div className="steps-grid">
             {steps.map(({ icon: Icon, title, desc, color }, index) => (
               <div key={title} className="step-card">
-                <div className="step-num" >{index + 1}</div>
+                <div className="step-number" style={{ background: color }}>{index + 1}</div>
                 <div className="step-icon-wrap" style={{ color }}>
                   <Icon size={40} />
                 </div>
@@ -386,7 +386,7 @@ function Landing() {
             <div className="foot-links-group">
               <h4>Contact</h4>
               <a href="mailto:contact@civialert.com"><Phone size={16} /> contact@civialert.com</a>
-              <a href="tel:+237691234567"><Phone size={16} /> +237 657 955 286</a>
+              <a href="tel:+237691234567"><Phone size={16} /> +237 691 234 567</a>
             </div>
           </div>
         </div>
