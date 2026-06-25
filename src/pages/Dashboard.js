@@ -17,8 +17,7 @@ function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-   api.get('signalements/');
-   then((res) => {
+   api.get('signalements/').then((res) => {
       const all = Array.isArray(res.data) ? res.data : [];
       const mes = all.filter((a) => a.utilisateur_nom === username);
       setAlertes(mes);
