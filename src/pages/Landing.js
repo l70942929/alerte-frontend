@@ -178,7 +178,7 @@ function Landing() {
               <p className="hero-p">
                 Rejoignez des milliers de citoyens qui utilisent Alerte Citoyenne
                 pour signaler des incidents, retrouver des personnes disparues
-                et sécuriser leurs quartiers au Cameroun.
+                et sécuriser leurs quartiers.
               </p>
               <div className="hero-btns">
                 <button className="btn-sec" onClick={() => navigate('/inscription')}>
@@ -376,11 +376,13 @@ function Landing() {
                   <div className="step-number" style={{ background: step.color }}>
                     {index + 1}
                   </div>
-                  <div className="step-icon-wrap" style={{ color: step.color }}>
-                    <Icon size={40} />
+                  <div className="step-content">
+                    <div className="step-icon-wrap" style={{ color: step.color }}>
+                      <Icon size={40} />
+                    </div>
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
                   </div>
-                  <h3>{step.title}</h3>
-                  <p>{step.desc}</p>
                 </article>
               );
             })}
@@ -435,7 +437,7 @@ function Landing() {
           <h2>Ensemble, protégeons nos communautés.</h2>
           <p>
             Chaque information partagée peut aider à retrouver une personne,
-            sécuriser une zone ou retrouver un objet perdu.
+            sécuriser une zone ou retrouver un objet perdu. Rejoignez-nous !
           </p>
           <div className="cta-buttons">
             <button className="btn-sec" onClick={() => navigate('/inscription')}>
@@ -462,7 +464,7 @@ function Landing() {
               Alerte Citoyenne
             </div>
             <p className="foot-copy">
-              © 2026 Alerte Citoyenne Cameroun. Tous droits réservés.
+              © 2026 Tous droits réservés.
             </p>
           </div>
           <div className="foot-links">
