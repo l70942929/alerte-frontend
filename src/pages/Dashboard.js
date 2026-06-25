@@ -17,7 +17,13 @@ function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-   api.get('signalements/').then((res) => {
+    
+    // Ajouter le token dans les headers de l'API
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Token ${token}`;
+    }
+
+    api.get('signalements/').then((res) => {
       const all = Array.isArray(res.data) ? res.data : [];
       const mes = all.filter((a) => a.utilisateur_nom === username);
       setAlertes(mes);
