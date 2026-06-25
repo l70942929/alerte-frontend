@@ -23,6 +23,9 @@ import {
   Phone,
   Mail,
   Flag,
+  Facebook,
+  Twitter,
+  Instagram,
 } from 'lucide-react';
 import './Landing.css';
 
@@ -31,7 +34,6 @@ function Landing() {
   const { darkMode, setDarkMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,13 +41,6 @@ function Landing() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const alertes = [
@@ -107,13 +102,9 @@ function Landing() {
 
           <a className="logo" href="/">
             <span className="logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
+              <Shield size={22} />
             </span>
-            <span className="logo-text">Alerte Citoyenne</span>
+            <span className="logo-text">CIVIALERT</span>
           </a>
 
           <nav className="land-nav">
@@ -135,9 +126,8 @@ function Landing() {
             <button 
               className="theme-btn-landing" 
               onClick={() => setDarkMode(!darkMode)}
-              aria-label="Changer le thème"
             >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {darkMode ? <Sun size={20} color="#f5ab35" /> : <Moon size={20} />}
             </button>
             <button
               className="hamburger-landing"
@@ -180,7 +170,7 @@ function Landing() {
                 un signalement <span className='titre'>à la fois.</span>
               </h1>
               <p className="hero-p">
-                Rejoignez des milliers de citoyens qui utilisent Alerte Citoyenne
+                Rejoignez des milliers de citoyens qui utilisent CIVIALERT
                 pour signaler des incidents, retrouver des personnes disparues
                 et sécuriser leurs quartiers.
               </p>
@@ -398,7 +388,7 @@ function Landing() {
           <div className="sec-hdr center">
             <span className="sec-tag">Notre communauté</span>
             <h2 className="sec-title">
-              Une plateforme pensée pour les citoyens africains
+              Une plateforme pensée pour les citoyens
             </h2>
             <p className="sec-desc">
               Rejoignez une communauté solidaire et engagée pour la sécurité de tous.
@@ -408,7 +398,7 @@ function Landing() {
             {communityImages.map((img, index) => (
               <div 
                 key={index} 
-                className={`community-item ${index === currentImageIndex ? 'active' : ''}`}
+                className="community-item"
               >
                 <img src={img} alt={`Communauté ${index + 1}`} />
                 <div className="community-overlay">
@@ -416,15 +406,6 @@ function Landing() {
                   <span>Solidarité</span>
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="community-dots">
-            {communityImages.map((_, index) => (
-              <button
-                key={index}
-                className={`dot ${index === currentImageIndex ? 'active' : ''}`}
-                onClick={() => setCurrentImageIndex(index)}
-              />
             ))}
           </div>
         </div>
@@ -458,12 +439,8 @@ function Landing() {
         <div className="foot-in">
           <div className="foot-brand">
             <div className="foot-logo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
-              Alerte Citoyenne
+              <Shield size={24} />
+              CIVIALERT
             </div>
             <p className="foot-copy">
               © 2026 Tous droits réservés.
@@ -478,8 +455,7 @@ function Landing() {
             </div>
             <div className="foot-links-group">
               <h4>Contact</h4>
-              <a href="mailto:contact@alerte-citoyenne.cm"><Mail size={16} /> contact@alerte-citoyenne.cm</a>
-              <a href="tel:+237691234567"><Phone size={16} /> +237 691 234 567</a>
+              <a href="tel:+237657955286"><Phone size={16} /> +237 657 955 286</a>
             </div>
           </div>
         </div>
