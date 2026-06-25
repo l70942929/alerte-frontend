@@ -306,7 +306,7 @@ function Landing() {
           <div className="steps-grid">
             {steps.map(({ icon: Icon, title, desc, color }, index) => (
               <div key={title} className="step-card">
-                <div className="step-num" style={{ background: color }}>{index + 1}</div>
+                <div className="step-num" >{index + 1}</div>
                 <div className="step-icon-wrap" style={{ color }}>
                   <Icon size={40} />
                 </div>
