@@ -37,7 +37,7 @@ function Landing() {
 
   const alertes = [
     {
-      image: 'https://images.unsplash.com/photo-1531844251246-9a1bfaae09fc?w=800&q=80',
+      image: 'https://i.pinimg.com/736x/ca/f6/e0/caf6e0a4941ebe132dc5b4d27074e61b.jpg',
       type: 'ENLÈVEMENT',
       lieu: 'Douala — il y a 10 min',
       titre: 'Enlèvement signalé à Bonanjo',
@@ -46,7 +46,7 @@ function Landing() {
       sc: 'urgent',
     },
     {
-      image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=80',
+      image: 'https://i.pinimg.com/736x/00/bd/31/00bd31b8872e71ab3ee4776e5433028b.jpg',
       type: 'DISPARITION',
       lieu: 'Yaoundé — il y a 2 h',
       titre: 'Enfant porté disparu à Bastos',
@@ -55,7 +55,7 @@ function Landing() {
       sc: 'en-cours',
     },
     {
-      image: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80',
+      image: 'https://i.pinimg.com/736x/b7/92/55/b79255b419b5bb6e796ad8097c156c71.jpg',
       type: 'OBJET RETROUVÉ',
       lieu: "Bafoussam — aujourd'hui",
       titre: 'Documents officiels retrouvés',
@@ -67,15 +67,15 @@ function Landing() {
 
   const communityImages = [
     {
-      url: 'https://images.unsplash.com/photo-1531844251246-9a1bfaae09fc?w=800&q=80',
+      url: 'https://i.pinimg.com/1200x/90/3a/53/903a537c861450414948dbc07bae602d.jpg',
       label: 'Solidarité',
     },
     {
-      url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80',
+      url: 'https://i.pinimg.com/736x/00/bd/31/00bd31b8872e71ab3ee4776e5433028b.jpg',
       label: 'Vigilance',
     },
     {
-      url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+      url: 'https://i.pinimg.com/736x/42/f1/92/42f1923d74e92071899707bb01801fbd.jpg',
       label: 'Communauté',
     },
   ];
@@ -340,7 +340,6 @@ function Landing() {
       {/* ══════════ CTA ══════════ */}
       <section className="land-cta">
         <div className="cta-content">
-          <div className="cta-icon"><Bell size={48} /></div>
           <h2>Ensemble, protégeons nos communautés.</h2>
           <p>
             Chaque information partagée peut aider à retrouver une personne,
@@ -380,8 +379,7 @@ function Landing() {
             </div>
             <div className="foot-links-group">
               <h4>Contact</h4>
-              <a href="mailto:contact@civialert.com"><Phone size={16} /> contact@civialert.com</a>
-              <a href="tel:+237691234567"><Phone size={16} /> +237 691 234 567</a>
+              <a href="tel:+237691234567"><Phone size={16} /> +237 657 955 286</a>
             </div>
           </div>
         </div>
