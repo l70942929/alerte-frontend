@@ -13,7 +13,6 @@ import {
   CheckCircle,
   User,
   AlertTriangle,
-  MapPin,
   Eye,
   Heart,
   Shield,
@@ -76,13 +75,6 @@ function Points() {
       'Bonus': <Gift size={16} />,
     };
     return icons[type] || <Award size={16} />;
-  };
-
-  const getPointsColor = (points) => {
-    if (points >= 80) return '#2ecc71';
-    if (points >= 50) return '#f39c12';
-    if (points >= 25) return '#3498db';
-    return '#5a5a7a';
   };
 
   const getBadge = (points) => {
