@@ -19,7 +19,7 @@ import Conditions from '../pages/Conditions';
 import Privacy from '../pages/Privacy';
 import Contact from '../pages/Contact';
 import NotFound from '../pages/NotFound';
-import Points from './pages/Points';
+import Points from '../pages/Points';
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/connexion" />;
