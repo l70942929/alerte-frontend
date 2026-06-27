@@ -49,17 +49,17 @@ function Header() {
   }, []);
 
   const navLinks = [
-    { path: '/accueil', label: 'Accueil', icon: Home },
-    { path: '/alertes', label: 'Alertes', icon: AlertTriangle },
-    { path: '/soumettre', label: 'Signaler', icon: PlusCircle },
-    { path: '/dashboard', label: 'Mon espace', icon: LayoutDashboard },
-    { path: '/messagerie', label: 'Messages', icon: MessageSquare },
-    { path: '/don', label: 'Faire un don', icon: Heart },
-    { path: '/points', label: 'Points', icon: Award },
+    { path: '/accueil', label: 'Accueil' },
+    { path: '/alertes', label: 'Alertes' },
+    { path: '/soumettre', label: 'Signaler' },
+    { path: '/dashboard', label: 'Mon espace' },
+    { path: '/messagerie', label: 'Messages' },
+    { path: '/don', label: 'Faire un don' },
+    { path: '/points', label: 'Points' },
   ];
 
   const filteredNavLinks = role === 'moderateur' || role === 'admin' 
-    ? [...navLinks, { path: '/moderateur', label: 'Modération', icon: Shield }]
+    ? [...navLinks, { path: '/moderateur', label: 'Modération' }]
     : navLinks;
 
   const handleLogout = () => {
@@ -90,7 +90,6 @@ function Header() {
                   className={isActive(link.path) ? 'active' : ''}
                   to={link.path}
                 >
-                  <link.icon size={16} />
                   {link.label}
                 </Link>
               ))}
@@ -162,7 +161,6 @@ function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className={isActive(link.path) ? 'active' : ''}
             >
-              <link.icon size={18} />
               {link.label}
             </Link>
           ))}
