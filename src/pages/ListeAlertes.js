@@ -8,8 +8,6 @@ import {
   RefreshCw,
   Filter,
   X,
-  Search,
-  Home,
   User,
   Package,
   Eye,
