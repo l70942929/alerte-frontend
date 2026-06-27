@@ -309,3 +309,143 @@
   font-size: 18px;
   color: #5a5a7a;
 }
+
+
+/* ===== BADGE ===== */
+.badge-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid #e0e0e8;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.points-page.dark-mode .badge-card {
+  background: #1a1a2e;
+  border-color: #2a2a3e;
+}
+
+.badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+}
+
+.points-page.dark-mode .badge-icon {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.badge-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 4px;
+}
+
+.points-page.dark-mode .badge-info h3 {
+  color: #f0f0f0;
+}
+
+.badge-info p {
+  font-size: 13px;
+  color: #5a5a7a;
+  margin: 0;
+}
+
+.points-page.dark-mode .badge-info p {
+  color: #a0a0b8;
+}
+
+/* ===== CONDITIONS ===== */
+.points-conditions {
+  margin: 20px 0 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e8;
+}
+
+.points-page.dark-mode .points-conditions {
+  border-color: #2a2a3e;
+}
+
+.points-conditions h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+
+.points-page.dark-mode .points-conditions h3 {
+  color: #f0f0f0;
+}
+
+.conditions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.condition-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.points-page.dark-mode .condition-item {
+  background: #2a2a3e;
+}
+
+.condition-item:hover {
+  transform: translateX(4px);
+  background: rgba(26, 84, 144, 0.05);
+}
+
+.points-page.dark-mode .condition-item:hover {
+  background: rgba(91, 155, 213, 0.08);
+}
+
+.condition-item > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.condition-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a5a7a;
+}
+
+.points-page.dark-mode .condition-label {
+  color: #a0a0b8;
+}
+
+.condition-points {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2ecc71;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .conditions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .badge-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+  }
+}
