@@ -7,16 +7,8 @@ import {
   Moon,
   LogOut,
   User,
-  Shield,
   Menu,
   X,
-  Home,
-  AlertTriangle,
-  PlusCircle,
-  LayoutDashboard,
-  MessageSquare,
-  Heart,
-  Award,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
 import { getUnreadCount } from '../services/notificationService';
