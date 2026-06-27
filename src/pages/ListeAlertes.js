@@ -1,26 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import {
+  AlertTriangle,
+  MapPin,
+  Calendar,
+  RefreshCw,
+  Filter,
+  X,
+  Search,
+  Home,
+  User,
+  Package,
+  Eye,
+  Heart,
+  Bell,
+  Plus,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+  Shield,
+} from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import './ListeAlertes.css';
 
 function ListeAlertes() {
-  const [alertes, setAlertes] = useState([]);
-  const [filtre,  setFiltre]  = useState('tous');
-  const [region,  setRegion]  = useState('toutes');
-  const [loading, setLoading] = useState(true);
-  const [erreur,  setErreur]  = useState('');
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const [alertes, setAlertes] = useState([]);
+  const [filtre, setFiltre] = useState('tous');
+  const [region, setRegion] = useState('toutes');
+  const [loading, setLoading] = useState(true);
+  const [erreur, setErreur] = useState('');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => { chargerAlertes(); }, []);
 
   const chargerAlertes = async () => {
-    setLoading(true); setErreur('');
+    setLoading(true);
+    setErreur('');
     try {
       const token = localStorage.getItem('token');
-      const res   = await api.get('signalements/', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await api.get('signalements/', {
+        headers: { Authorization: `Token ${token}` },
       });
       setAlertes(Array.isArray(res.data) ? res.data : []);
     } catch {
@@ -31,23 +55,21 @@ function ListeAlertes() {
     }
   };
 
-  /* ── Config types ── */
   const typesCfg = {
-    tous:        { label: 'Toutes les alertes', icon: 'dashboard',     couleur: '#12406f' },
-    kidnapping:  { label: 'Kidnapping',          icon: 'emergency',     couleur: '#C62828' },
-    disparition: { label: 'Disparition',         icon: 'search',        couleur: '#1565C0' },
-    perte_objet: { label: "Perte d'objet",       icon: 'inventory_2',   couleur: '#E65100' },
-    decouverte:  { label: 'Découverte',          icon: 'person_search', couleur: '#2E7D32' },
-    accident:    { label: 'Accident',            icon: 'local_hospital',couleur: '#6A1B9A' },
+    tous: { label: 'Toutes les alertes', icon: Shield, couleur: '#12406f' },
+    kidnapping: { label: 'Kidnapping', icon: AlertTriangle, couleur: '#C62828' },
+    disparition: { label: 'Disparition', icon: User, couleur: '#1565C0' },
+    perte_objet: { label: "Perte d'objet", icon: Package, couleur: '#E65100' },
+    decouverte: { label: 'Découverte', icon: Eye, couleur: '#2E7D32' },
+    accident: { label: 'Accident', icon: Heart, couleur: '#6A1B9A' },
   };
 
-  /* Config couleurs par type pour les cartes */
   const typeBg = {
-    kidnapping:  { bg: '#FFF0F0', border: '#FFCDD2', color: '#C62828', lightBg: '#FFEBEE' },
-    disparition: { bg: '#EFF6FF', border: '#BBDEFB', color: '#1565C0', lightBg: '#E3F2FD' },
-    perte_objet: { bg: '#FFFBF0', border: '#FFE082', color: '#E65100', lightBg: '#FFF8E1' },
-    decouverte:  { bg: '#F0FFF4', border: '#C8E6C9', color: '#2E7D32', lightBg: '#E8F5E9' },
-    accident:    { bg: '#F5F0FF', border: '#D1C4E9', color: '#6A1B9A', lightBg: '#EDE7F6' },
+    kidnapping: { bg: '#FFF0F0', border: '#FFCDD2', color: '#C62828' },
+    disparition: { bg: '#EFF6FF', border: '#BBDEFB', color: '#1565C0' },
+    perte_objet: { bg: '#FFFBF0', border: '#FFE082', color: '#E65100' },
+    decouverte: { bg: '#F0FFF4', border: '#C8E6C9', color: '#2E7D32' },
+    accident: { bg: '#F5F0FF', border: '#D1C4E9', color: '#6A1B9A' },
   };
 
   const regions = [
@@ -58,14 +80,12 @@ function ListeAlertes() {
     'Sud-Ouest (Buea)',
   ];
 
-  /* Lieu lisible : masque les coords GPS brutes */
   const afficherLieu = (loc = '') => {
     if (!loc) return 'Lieu non précisé';
     if (/^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(loc.trim())) return 'Localisation GPS';
     return loc;
   };
 
-  /* Titre lisible de la carte */
   const afficherTitre = (alerte) => {
     const type = typesCfg[alerte.type_alerte]?.label
       || alerte.type_alerte?.replace(/_/g, ' ')
@@ -74,17 +94,15 @@ function ListeAlertes() {
     return lieu === 'Localisation GPS' ? type : `${type} — ${lieu}`;
   };
 
-  /* Config statut */
   const statutCfg = {
-    recu:     { label: 'Urgent',   cls: 'tag-urgent'   },
-    en_cours: { label: 'En cours', cls: 'tag-encours'  },
-    resolu:   { label: 'Résolu',   cls: 'tag-resolu'   },
-    cloture:  { label: 'Clôturé',  cls: 'tag-cloture'  },
+    recu: { label: 'Urgent', cls: 'tag-urgent' },
+    en_cours: { label: 'En cours', cls: 'tag-encours' },
+    resolu: { label: 'Résolu', cls: 'tag-resolu' },
+    cloture: { label: 'Clôturé', cls: 'tag-cloture' },
   };
 
-  /* Filtrage */
   const alertesFiltrees = alertes.filter((a) => {
-    const okType   = filtre === 'tous' || a.type_alerte === filtre;
+    const okType = filtre === 'tous' || a.type_alerte === filtre;
     const okRegion = region === 'toutes' ||
       (a.localisation || '').toLowerCase().includes(
         region.split('(')[0].trim().toLowerCase()
@@ -95,30 +113,32 @@ function ListeAlertes() {
   const nbResultats = alertesFiltrees.length;
 
   return (
-    <div className="la-page">
+    <div className={`la-page ${darkMode ? 'dark-mode' : ''}`}>
       <Header />
       <div className="la-layout">
 
         {/* ══════════ SIDEBAR ══════════ */}
-        <aside className="la-sidebar">
+        <aside className={`la-sidebar ${mobileFiltersOpen ? 'open' : ''}`}>
           <div className="la-sidebar-brand">
-            <span className="material-symbols-outlined la-brand-icon">notifications_active</span>
-            Alerte Citoyenne
+            <Bell size={24} className="la-brand-icon" />
+            <span>CIVIALERT</span>
           </div>
 
           <div className="la-sidebar-section">
             <p className="la-sidebar-label">Catégories</p>
-            {Object.entries(typesCfg).map(([key, cfg]) => (
-              <button
-                key={key}
-                className={`la-filter-btn ${filtre === key ? 'active' : ''}`}
-                onClick={() => setFiltre(key)}
-                style={filtre === key ? { '--active-color': cfg.couleur } : {}}
-              >
-                <span className="material-symbols-outlined la-filter-ico">{cfg.icon}</span>
-                {cfg.label}
-              </button>
-            ))}
+            {Object.entries(typesCfg).map(([key, cfg]) => {
+              const Icon = cfg.icon;
+              return (
+                <button
+                  key={key}
+                  className={`la-filter-btn ${filtre === key ? 'active' : ''}`}
+                  onClick={() => setFiltre(key)}
+                >
+                  <Icon size={18} className="la-filter-ico" />
+                  {cfg.label}
+                </button>
+              );
+            })}
           </div>
 
           <div className="la-sidebar-section">
@@ -129,17 +149,22 @@ function ListeAlertes() {
                 className={`la-filter-btn ${region === r ? 'active' : ''}`}
                 onClick={() => setRegion(r)}
               >
-                <span className="material-symbols-outlined la-filter-ico">location_on</span>
+                <MapPin size={18} className="la-filter-ico" />
                 {r === 'toutes' ? 'Tout le Cameroun' : r}
               </button>
             ))}
           </div>
 
           <button className="la-new-btn" onClick={() => navigate('/soumettre')}>
-            <span className="material-symbols-outlined">add_alert</span>
+            <Plus size={20} />
             Nouveau signalement
           </button>
         </aside>
+
+        {/* Overlay pour fermer le menu mobile */}
+        {mobileFiltersOpen && (
+          <div className="la-overlay" onClick={() => setMobileFiltersOpen(false)} />
+        )}
 
         {/* ══════════ MAIN ══════════ */}
         <main className="la-main">
@@ -149,13 +174,21 @@ function ListeAlertes() {
             <div>
               <h1 className="la-main-titre">Fil d'actualité</h1>
               <p className="la-main-sub">
-                Signalements citoyens en temps réel au Cameroun
+                Signalements citoyens en temps réel
               </p>
             </div>
-            <button className="la-refresh-btn" onClick={chargerAlertes}>
-              <span className="material-symbols-outlined">refresh</span>
-              Actualiser
-            </button>
+            <div className="la-hdr-actions">
+              <button
+                className="la-mobile-filter-btn"
+                onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              >
+                <Filter size={20} />
+              </button>
+              <button className="la-refresh-btn" onClick={chargerAlertes}>
+                <RefreshCw size={18} />
+                Actualiser
+              </button>
+            </div>
           </div>
 
           {/* Barre de résultats */}
@@ -170,30 +203,17 @@ function ListeAlertes() {
                   className="la-reset-btn"
                   onClick={() => { setFiltre('tous'); setRegion('toutes'); }}
                 >
-                  Réinitialiser les filtres
-                  <span className="material-symbols-outlined">close</span>
+                  Réinitialiser
+                  <X size={16} />
                 </button>
               )}
             </div>
           )}
 
-          {/* Filtres mobile */}
-          <div className="la-filtres-mob">
-            {Object.entries(typesCfg).map(([key, cfg]) => (
-              <button
-                key={key}
-                className={`la-filt-mob ${filtre === key ? 'active' : ''}`}
-                onClick={() => setFiltre(key)}
-              >
-                {key === 'tous' ? 'Toutes' : cfg.label}
-              </button>
-            ))}
-          </div>
-
           {/* Erreur */}
           {erreur && (
             <div className="la-error">
-              <span className="material-symbols-outlined">error_outline</span>
+              <AlertCircle size={20} />
               {erreur}
             </div>
           )}
@@ -201,15 +221,14 @@ function ListeAlertes() {
           {/* Chargement */}
           {loading ? (
             <div className="la-loading">
-              <div className="la-spinner" />
+              <Loader2 size={40} className="la-spinner" />
               <p>Chargement des alertes...</p>
             </div>
 
-          /* Vide */
           ) : alertesFiltrees.length === 0 ? (
             <div className="la-empty">
               <div className="la-empty-icon">
-                <span className="material-symbols-outlined">notifications_off</span>
+                <Bell size={48} />
               </div>
               <p className="la-empty-titre">Aucune alerte trouvée</p>
               <p className="la-empty-sub">
@@ -223,43 +242,39 @@ function ListeAlertes() {
               </button>
             </div>
 
-          /* Grille */
           ) : (
             <div className="la-grid">
               {alertesFiltrees.map((alerte, index) => {
-                const sc      = statutCfg[alerte.statut] || { label: alerte.statut, cls: '' };
-                const tCfg    = typesCfg[alerte.type_alerte] || typesCfg.tous;
+                const sc = statutCfg[alerte.statut] || { label: alerte.statut, cls: '' };
+                const tCfg = typesCfg[alerte.type_alerte] || typesCfg.tous;
                 const tColors = typeBg[alerte.type_alerte] || {};
-                const lieu    = afficherLieu(alerte.localisation);
-                const titre   = afficherTitre(alerte);
-                const date    = new Date(alerte.date_soumission).toLocaleDateString('fr-FR', {
+                const lieu = afficherLieu(alerte.localisation);
+                const titre = afficherTitre(alerte);
+                const date = new Date(alerte.date_soumission).toLocaleDateString('fr-FR', {
                   day: '2-digit', month: 'short', year: 'numeric',
                 });
+                const Icon = tCfg.icon;
 
                 return (
                   <article
                     key={alerte.id}
                     className={`la-card ${index === 0 ? 'la-card-featured' : ''}`}
                     onClick={() => navigate(`/alertes/${alerte.id}`)}
-                    style={index === 0 ? {} : {}}
                   >
-                    {/* Bande colorée en haut */}
                     <div
                       className="la-card-strip"
                       style={{ background: tColors.color || '#12406f' }}
                     />
 
                     <div className="la-card-inner">
-                      {/* En-tête */}
                       <div className="la-card-top">
                         <div className="la-card-top-left">
                           <span className={`la-tag ${sc.cls}`}>{sc.label}</span>
                           <span className="la-card-lieu">
-                            <span className="material-symbols-outlined">location_on</span>
+                            <MapPin size={14} />
                             {lieu}
                           </span>
                         </div>
-                        {/* Icône type dans un carré coloré */}
                         <div
                           className="la-card-type-ico"
                           style={{
@@ -267,16 +282,10 @@ function ListeAlertes() {
                             border: `1px solid ${tColors.border || '#BBDEFB'}`,
                           }}
                         >
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ color: tColors.color || '#1565C0' }}
-                          >
-                            {tCfg.icon}
-                          </span>
+                          <Icon size={20} style={{ color: tColors.color || '#1565C0' }} />
                         </div>
                       </div>
 
-                      {/* Type badge */}
                       <div
                         className="la-card-type-label"
                         style={{ color: tColors.color || '#12406f' }}
@@ -284,16 +293,12 @@ function ListeAlertes() {
                         {tCfg.label}
                       </div>
 
-                      {/* Titre */}
                       <h3 className="la-card-titre">{titre}</h3>
-
-                      {/* Description */}
                       <p className="la-card-desc">{alerte.description}</p>
 
-                      {/* Pied */}
                       <div className="la-card-foot">
                         <span className="la-card-date">
-                          <span className="material-symbols-outlined">calendar_today</span>
+                          <Calendar size={14} />
                           {date}
                         </span>
                         <button
@@ -304,7 +309,7 @@ function ListeAlertes() {
                           }}
                         >
                           Voir les détails
-                          <span className="material-symbols-outlined">arrow_forward</span>
+                          <ArrowRight size={16} />
                         </button>
                       </div>
                     </div>
