@@ -12,7 +12,7 @@ import {
   Heart,
   Handshake,
   MessageCircle,
-  Facebook,
+  FacebookIcon,
   Info,
   Camera,
   Clock,
@@ -104,6 +104,16 @@ function DetailAlerte() {
 
   const IconComponent = alerte?.type_alerte ? typeIcon[alerte.type_alerte] || AlertTriangle : AlertTriangle;
 
+  // Construction de l'URL de la photo
+  const getPhotoUrl = (photoPath) => {
+    if (!photoPath) return null;
+    if (photoPath.startsWith('http')) return photoPath;
+    const cleanPath = photoPath.startsWith('/') ? photoPath : `/${photoPath}`;
+    return `https://larrissa.pythonanywhere.com${cleanPath}`;
+  };
+
+  const photoUrl = getPhotoUrl(alerte?.photo);
+
   if (loading) {
     return (
       <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
@@ -130,19 +140,6 @@ function DetailAlerte() {
       </div>
     );
   }
-
-  // ==========================================
-  // CONSTRUCTION DE L'URL DE LA PHOTO
-  // ==========================================
-  const getPhotoUrl = (photoPath) => {
-    if (!photoPath) return null;
-    if (photoPath.startsWith('http')) return photoPath;
-    // Supprime le premier slash si présent pour éviter les doubles slashes
-    const cleanPath = photoPath.startsWith('/') ? photoPath : `/${photoPath}`;
-    return `https://larrissa.pythonanywhere.com${cleanPath}`;
-  };
-
-  const photoUrl = getPhotoUrl(alerte.photo);
 
   return (
     <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
@@ -187,9 +184,6 @@ function DetailAlerte() {
               <p>{alerte.description || 'Aucune description fournie.'}</p>
             </div>
 
-            {/* ==========================================
-                AFFICHAGE DE LA PHOTO CORRIGÉ
-                ========================================== */}
             {photoUrl && (
               <div className="detail-card">
                 <h2>
@@ -203,15 +197,6 @@ function DetailAlerte() {
                   onError={(e) => {
                     console.error('Erreur chargement photo:', photoUrl);
                     e.target.style.display = 'none';
-                    // Afficher un message alternatif
-                    const parent = e.target.parentElement;
-                    const msg = document.createElement('p');
-                    msg.className = 'detail-photo-error';
-                    msg.textContent = '⚠️ La photo n\'a pas pu être chargée.';
-                    msg.style.color = '#e74c3c';
-                    msg.style.padding = '20px';
-                    msg.style.textAlign = 'center';
-                    parent.appendChild(msg);
                   }}
                 />
               </div>
@@ -229,7 +214,7 @@ function DetailAlerte() {
                   WhatsApp
                 </button>
                 <button className="detail-share-fb" onClick={partagerFacebook}>
-                  <Facebook size={18} />
+                  <FacebookIcon size={18} />
                   Facebook
                 </button>
               </div>
