@@ -14,9 +14,12 @@ import {
   MessageCircle,
   Info,
   Camera,
+  Clock,
   User,
   Shield,
   Loader2,
+  AlertCircle,
+  ChevronRight,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
