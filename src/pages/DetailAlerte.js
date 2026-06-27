@@ -1,5 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import {
+  ArrowLeft,
+  AlertTriangle,
+  MapPin,
+  Calendar,
+  Eye,
+  Share2,
+  ThumbsUp,
+  Heart,
+  Handshake,
+  MessageCircle,
+  Facebook,
+  Info,
+  Camera,
+  Clock,
+  User,
+  Shield,
+  Loader2,
+  AlertCircle,
+  ChevronRight,
+} from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -8,22 +30,43 @@ import './DetailAlerte.css';
 function DetailAlerte() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [alerte,         setAlerte]         = useState(null);
-  const [loading,        setLoading]        = useState(true);
-  const [erreur,         setErreur]         = useState('');
-  const [reactions,      setReactions]      = useState({ soutien: 0, compassion: 0, solidarite: 0 });
+  const { darkMode } = useTheme();
+  const [alerte, setAlerte] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [erreur, setErreur] = useState('');
+  const [reactions, setReactions] = useState({ soutien: 0, compassion: 0, solidarite: 0 });
   const [reactionActive, setReactionActive] = useState(null);
 
-  const typeIcon  = { kidnapping: 'emergency', disparition: 'search', perte_objet: 'inventory_2', decouverte: 'person_search', accident: 'local_hospital' };
-  const statutLabel = { recu: 'En attente', en_cours: 'Publiée', resolu: 'Résolue', cloture: 'Clôturée' };
-  const statutClass = { recu: 'tag-attente', en_cours: 'tag-publiee', resolu: 'tag-resolue', cloture: 'tag-cloture' };
+  const typeIcon = {
+    kidnapping: AlertTriangle,
+    disparition: User,
+    perte_objet: Eye,
+    decouverte: Shield,
+    accident: Heart,
+  };
+
+  const statutLabel = {
+    recu: 'En attente',
+    en_cours: 'Publiée',
+    resolu: 'Résolue',
+    cloture: 'Clôturée'
+  };
+
+  const statutClass = {
+    recu: 'tag-attente',
+    en_cours: 'tag-publiee',
+    resolu: 'tag-resolue',
+    cloture: 'tag-cloture'
+  };
 
   useEffect(() => {
     const charger = async () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await api.get(`signalements/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await api.get(`signalements/${id}/`, {
+          headers: { Authorization: `Token ${token}` }
+        });
         setAlerte(res.data);
       } catch {
         setErreur('Alerte introuvable ou accès refusé.');
@@ -39,7 +82,9 @@ function DetailAlerte() {
       setReactions((p) => ({ ...p, [key]: Math.max(0, p[key] - 1) }));
       setReactionActive(null);
     } else {
-      if (reactionActive) setReactions((p) => ({ ...p, [reactionActive]: Math.max(0, p[reactionActive] - 1) }));
+      if (reactionActive) {
+        setReactions((p) => ({ ...p, [reactionActive]: Math.max(0, p[reactionActive] - 1) }));
+      }
       setReactions((p) => ({ ...p, [key]: p[key] + 1 }));
       setReactionActive(key);
     }
@@ -57,56 +102,77 @@ function DetailAlerte() {
 
   const fmt = (v) => v ? new Date(v).toLocaleString('fr-FR') : 'Non spécifiée';
 
-  if (loading) return (
-    <div className="detail-page">
-      <Header />
-      <div className="detail-loading-inner">
-        <span className="material-symbols-outlined detail-loading-icon">hourglass_empty</span>
-        <p>Chargement de l'alerte...</p>
-      </div>
-      <BottomNav />
-    </div>
-  );
+  const IconComponent = alerte?.type_alerte ? typeIcon[alerte.type_alerte] || AlertTriangle : AlertTriangle;
 
-  if (erreur || !alerte) return (
-    <div className="detail-page">
-      <Header />
-      <div className="detail-loading-inner">
-        <span className="material-symbols-outlined detail-loading-icon">error_outline</span>
-        <p>{erreur || 'Alerte introuvable'}</p>
-        <button onClick={() => navigate('/alertes')}>Retour aux alertes</button>
+  if (loading) {
+    return (
+      <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
+        <Header />
+        <div className="detail-loading-inner">
+          <Loader2 size={48} className="detail-loading-icon" />
+          <p>Chargement de l'alerte...</p>
+        </div>
+        <BottomNav />
       </div>
-      <BottomNav />
-    </div>
-  );
+    );
+  }
+
+  if (erreur || !alerte) {
+    return (
+      <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
+        <Header />
+        <div className="detail-loading-inner">
+          <AlertCircle size={48} className="detail-loading-icon error" />
+          <p>{erreur || 'Alerte introuvable'}</p>
+          <button onClick={() => navigate('/alertes')}>Retour aux alertes</button>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  // ==========================================
+  // CONSTRUCTION DE L'URL DE LA PHOTO
+  // ==========================================
+  const getPhotoUrl = (photoPath) => {
+    if (!photoPath) return null;
+    if (photoPath.startsWith('http')) return photoPath;
+    // Supprime le premier slash si présent pour éviter les doubles slashes
+    const cleanPath = photoPath.startsWith('/') ? photoPath : `/${photoPath}`;
+    return `https://larrissa.pythonanywhere.com${cleanPath}`;
+  };
+
+  const photoUrl = getPhotoUrl(alerte.photo);
 
   return (
-    <div className="detail-page">
+    <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
       <Header />
       <div className="detail-body">
 
         <button className="detail-back" onClick={() => navigate('/alertes')}>
-          <span className="material-symbols-outlined">arrow_back</span>
+          <ArrowLeft size={18} />
           Retour aux alertes
         </button>
 
         <div className="detail-header">
           <div className="detail-header-left">
-            <span className={`detail-tag ${statutClass[alerte.statut]}`}>{statutLabel[alerte.statut]}</span>
+            <span className={`detail-tag ${statutClass[alerte.statut]}`}>
+              {statutLabel[alerte.statut]}
+            </span>
             <h1 className="detail-title">
               {alerte.type_alerte?.replace(/_/g, ' ')} — {alerte.localisation || 'Lieu non spécifié'}
             </h1>
-            <p className="detail-meta">
-              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>location_on</span>
-              {' '}{alerte.localisation || 'Non spécifiée'}
-              {' · '}
-              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_today</span>
-              {' '}{fmt(alerte.date_soumission)}
+            <div className="detail-meta">
+              <MapPin size={14} />
+              {alerte.localisation || 'Non spécifiée'}
+              <span className="detail-meta-sep">·</span>
+              <Calendar size={14} />
+              {fmt(alerte.date_soumission)}
               {alerte.anonyme && ' · Signalement anonyme'}
-            </p>
+            </div>
           </div>
           <div className="detail-type-icon">
-            <span className="material-symbols-outlined">{typeIcon[alerte.type_alerte] || 'notifications'}</span>
+            <IconComponent size={28} />
           </div>
         </div>
 
@@ -114,54 +180,88 @@ function DetailAlerte() {
           <div className="detail-main">
 
             <div className="detail-card">
-              <h2><span className="material-symbols-outlined">description</span> Description</h2>
+              <h2>
+                <Info size={18} />
+                Description
+              </h2>
               <p>{alerte.description || 'Aucune description fournie.'}</p>
             </div>
 
-            {alerte.photo && (
+            {/* ==========================================
+                AFFICHAGE DE LA PHOTO CORRIGÉ
+                ========================================== */}
+            {photoUrl && (
               <div className="detail-card">
-                <h2><span className="material-symbols-outlined">photo_camera</span> Preuve visuelle</h2>
+                <h2>
+                  <Camera size={18} />
+                  Preuve visuelle
+                </h2>
                 <img
-                  src={alerte.photo.startsWith('http') ? alerte.photo : `http://127.0.0.1:8000${alerte.photo}`}
-                  alt={alerte.type_alerte}
+                  src={photoUrl}
+                  alt={alerte.type_alerte || 'Photo de l\'alerte'}
                   className="detail-photo"
-                  onError={(e) => { e.target.style.display = 'none'; }}
+                  onError={(e) => {
+                    console.error('Erreur chargement photo:', photoUrl);
+                    e.target.style.display = 'none';
+                    // Afficher un message alternatif
+                    const parent = e.target.parentElement;
+                    const msg = document.createElement('p');
+                    msg.className = 'detail-photo-error';
+                    msg.textContent = '⚠️ La photo n\'a pas pu être chargée.';
+                    msg.style.color = '#e74c3c';
+                    msg.style.padding = '20px';
+                    msg.style.textAlign = 'center';
+                    parent.appendChild(msg);
+                  }}
                 />
               </div>
             )}
 
             <div className="detail-card">
-              <h2><span className="material-symbols-outlined">share</span> Partager cette alerte</h2>
+              <h2>
+                <Share2 size={18} />
+                Partager cette alerte
+              </h2>
               <p className="detail-share-sub">Aidez à diffuser cette alerte pour une réaction plus rapide.</p>
               <div className="detail-share-btns">
                 <button className="detail-share-wa" onClick={partagerWhatsApp}>
-                  <span className="material-symbols-outlined">chat</span> WhatsApp
+                  <MessageCircle size={18} />
+                  WhatsApp
                 </button>
                 <button className="detail-share-fb" onClick={partagerFacebook}>
-                  <span className="material-symbols-outlined">thumb_up</span> Facebook
+                  <Facebook size={18} />
+                  Facebook
                 </button>
               </div>
             </div>
 
             <div className="detail-card">
-              <h2><span className="material-symbols-outlined">favorite</span> Réactions</h2>
+              <h2>
+                <Heart size={18} />
+                Réactions
+              </h2>
               <p className="detail-share-sub">Cliquez pour réagir à cette alerte.</p>
               <div className="detail-reactions">
                 {[
-                  { key: 'soutien',    icon: 'thumb_up',  label: 'Soutenir' },
-                  { key: 'compassion', icon: 'favorite',  label: 'Compassion' },
-                  { key: 'solidarite',icon: 'handshake', label: 'Solidarité' },
-                ].map((r) => (
-                  <button
-                    key={r.key}
-                    className={`detail-reaction ${reactionActive === r.key ? 'active' : ''}`}
-                    onClick={() => reagir(r.key)}
-                  >
-                    <span className="material-symbols-outlined">{r.icon}</span>
-                    {r.label}
-                    {reactions[r.key] > 0 && <span className="reaction-count">{reactions[r.key]}</span>}
-                  </button>
-                ))}
+                  { key: 'soutien', icon: ThumbsUp, label: 'Soutenir' },
+                  { key: 'compassion', icon: Heart, label: 'Compassion' },
+                  { key: 'solidarite', icon: Handshake, label: 'Solidarité' },
+                ].map((r) => {
+                  const Icon = r.icon;
+                  return (
+                    <button
+                      key={r.key}
+                      className={`detail-reaction ${reactionActive === r.key ? 'active' : ''}`}
+                      onClick={() => reagir(r.key)}
+                    >
+                      <Icon size={16} />
+                      {r.label}
+                      {reactions[r.key] > 0 && (
+                        <span className="reaction-count">{reactions[r.key]}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -169,14 +269,17 @@ function DetailAlerte() {
 
           <aside className="detail-side">
             <div className="detail-card">
-              <h2><span className="material-symbols-outlined">info</span> Informations</h2>
+              <h2>
+                <Info size={18} />
+                Informations
+              </h2>
               <div className="detail-infos">
                 {[
-                  { label: 'Type',            val: alerte.type_alerte?.replace(/_/g, ' ') || '—' },
-                  { label: 'Localisation',    val: alerte.localisation || '—' },
-                  { label: "Date incident",   val: fmt(alerte.date_evenement) },
+                  { label: 'Type', val: alerte.type_alerte?.replace(/_/g, ' ') || '—' },
+                  { label: 'Localisation', val: alerte.localisation || '—' },
+                  { label: "Date incident", val: fmt(alerte.date_evenement) },
                   { label: 'Date soumission', val: fmt(alerte.date_soumission) },
-                  { label: 'Anonyme',         val: alerte.anonyme ? 'Oui' : 'Non' },
+                  { label: 'Anonyme', val: alerte.anonyme ? 'Oui' : 'Non' },
                 ].map((item) => (
                   <div key={item.label} className="detail-info-row">
                     <span className="detail-info-label">{item.label}</span>
@@ -185,7 +288,9 @@ function DetailAlerte() {
                 ))}
                 <div className="detail-info-row">
                   <span className="detail-info-label">Statut</span>
-                  <span className={`detail-tag ${statutClass[alerte.statut]}`}>{statutLabel[alerte.statut]}</span>
+                  <span className={`detail-tag ${statutClass[alerte.statut]}`}>
+                    {statutLabel[alerte.statut]}
+                  </span>
                 </div>
               </div>
             </div>

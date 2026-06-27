@@ -57,3 +57,19 @@
   .detail-body { padding: 76px 12px 100px; }
   .detail-title { font-size: 18px; }
 }
+/* ===== ERREUR PHOTO ===== */
+.detail-photo-error {
+  background: #f8f9fa;
+  border: 1px dashed #e0e0e8;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.detail-page.dark-mode .detail-photo-error {
+  background: #1a1a2e;
+  border-color: #2a2a3e;
+  color: #ef5350;
+}
