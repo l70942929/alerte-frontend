@@ -9,12 +9,9 @@ import {
   ArrowLeft,
   TrendingUp,
   Gift,
-  Clock,
   CheckCircle,
   User,
   AlertTriangle,
-  Eye,
-  Heart,
   Shield,
   Target,
 } from 'lucide-react';
