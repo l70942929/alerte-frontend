@@ -17,7 +17,7 @@ function SoumettreAlerte() {
     description: '',
     localisation: '',
     date_evenement: '',
-    photoFile: '',
+    photoFile: null,
     anonyme: false,
   });
   const [position, setPosition] = useState(null);
@@ -114,20 +114,38 @@ function SoumettreAlerte() {
   }
 
   const submit = async () => {
-    if (!form.type_alerte || !form.description || !form.localisation || !form.date_evenement || !form.photoFile) {
-      setErreur('Veuillez remplir tous les champs obligatoires.');
+    // Vérifier que tous les champs sont remplis
+    if (!form.type_alerte) {
+      setErreur('Veuillez sélectionner un type d\'alerte.');
+      return;
+    }
+    if (!form.description) {
+      setErreur('Veuillez décrire l\'incident.');
+      return;
+    }
+    if (!form.localisation) {
+      setErreur('Veuillez indiquer le lieu de l\'incident.');
+      return;
+    }
+    if (!form.date_evenement) {
+      setErreur('Veuillez indiquer la date de l\'incident.');
+      return;
+    }
+    if (!form.photoFile) {
+      setErreur('Veuillez ajouter une photo.');
       return;
     }
 
     setLoading(true);
     setErreur('');
+    setMessage('');
 
     const formData = new FormData();
     formData.append('type_alerte', form.type_alerte);
     formData.append('description', form.description);
     formData.append('localisation', form.localisation);
-    formData.append('date_evenement', form.date_evenement ? new Date(form.date_evenement).toISOString() : '');
-    formData.append('anonyme', form.anonyme);
+    formData.append('date_evenement', new Date(form.date_evenement).toISOString());
+    formData.append('anonyme', form.anonyme ? 'true' : 'false');
 
     if (form.photoFile) {
       formData.append('photo', form.photoFile);
@@ -139,11 +157,32 @@ function SoumettreAlerte() {
     }
 
     try {
-      await api.post('signalements/', formData);
-      setMessage('Votre alerte a été soumise. Elle sera vérifiée sous 15 minutes.');
+      // Récupérer le token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErreur('Vous devez être connecté pour soumettre une alerte.');
+        setLoading(false);
+        return;
+      }
+
+      // Envoyer la requête avec le token
+      const response = await api.post('/signalements/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Token ${token}`,
+        },
+      });
+
+      setMessage('✅ Votre alerte a été soumise avec succès ! Elle sera vérifiée sous 15 minutes.');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {
-      setErreur('Erreur lors de la soumission. Vérifiez votre connexion.');
+      console.error('Erreur complète:', err);
+      if (err.response) {
+        console.error('Données de la réponse:', err.response.data);
+        setErreur(`Erreur ${err.response.status}: ${err.response.data?.error || 'Vérifiez les informations saisies.'}`);
+      } else {
+        setErreur('Erreur lors de la soumission. Vérifiez votre connexion et réessayez.');
+      }
     } finally {
       setLoading(false);
     }
@@ -313,8 +352,6 @@ function SoumettreAlerte() {
                   />
                   <LocationMarker position={position} />
                 </MapContainer>
-                <input type="hidden" name="latitude" value={position?.lat || ''} />
-                <input type="hidden" name="longitude" value={position?.lng || ''} />
               </div>
 
               {erreur && (
