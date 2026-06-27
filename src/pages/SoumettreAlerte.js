@@ -166,7 +166,7 @@ function SoumettreAlerte() {
       }
 
       // Envoyer la requête avec le token
-      const response = await api.post('/signalements/', formData, {
+       await api.post('/signalements/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Token ${token}`,
