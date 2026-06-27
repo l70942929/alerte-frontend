@@ -15,7 +15,6 @@ function Accueil() {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/connexion'); return; }
 
-    /* Salutation selon l'heure */
     const h = new Date().getHours();
     if (h < 12)      setHeure('Bonjour');
     else if (h < 18) setHeure('Bon après-midi');
@@ -26,7 +25,6 @@ function Accueil() {
       .catch(() => {});
   }, [navigate]);
 
-  /* ── Données ── */
   const cats = [
     { icon: 'emergency',      label: 'Kidnapping',    type: 'kidnapping',  bg: '#FFF0F0', border: '#FFCDD2', color: '#C62828' },
     { icon: 'search',         label: 'Disparition',   type: 'disparition', bg: '#EFF6FF', border: '#BBDEFB', color: '#1565C0' },
@@ -35,14 +33,14 @@ function Accueil() {
     { icon: 'local_hospital', label: 'Accident',      type: 'accident',    bg: '#F5F0FF', border: '#D1C4E9', color: '#6A1B9A' },
   ];
 
-  const typeLabel = {
-    kidnapping: 'Kidnapping', disparition: 'Disparition',
-    perte_objet: "Perte d'objet", decouverte: 'Découverte', accident: 'Accident',
+  const typeConfig = {
+    kidnapping:  { label: 'Kidnapping',    icon: 'emergency',      bg: '#FFF0F0', color: '#C62828' },
+    disparition: { label: 'Disparition',   icon: 'search',         bg: '#EFF6FF', color: '#1565C0' },
+    perte_objet: { label: "Perte d'objet", icon: 'inventory_2',    bg: '#FFFBF0', color: '#E65100' },
+    decouverte:  { label: 'Découverte',    icon: 'person_search',  bg: '#F0FFF4', color: '#2E7D32' },
+    accident:    { label: 'Accident',      icon: 'local_hospital', bg: '#F5F0FF', color: '#6A1B9A' },
   };
-  const typeIcon = {
-    kidnapping: 'emergency', disparition: 'search',
-    perte_objet: 'inventory_2', decouverte: 'person_search', accident: 'local_hospital',
-  };
+
   const statutCfg = {
     recu:     { label: 'En attente', cls: 'badge-attente' },
     en_cours: { label: 'En cours',   cls: 'badge-encours' },
@@ -63,7 +61,7 @@ function Accueil() {
 
       <div className="acc-wrap">
 
-        {/* ════════════════ BANNIÈRE DE BIENVENUE ════════════════ */}
+        {/* ════ BANNIÈRE ════ */}
         <div className="acc-banner">
           <div className="acc-banner-left">
             <div className="acc-avatar">{initiales}</div>
@@ -79,7 +77,7 @@ function Accueil() {
           </button>
         </div>
 
-        {/* ════════════════ BOUTON URGENCE ════════════════ */}
+        {/* ════ URGENCE ════ */}
         <button className="acc-urgence" onClick={() => navigate('/soumettre')}>
           <div className="acc-urgence-left">
             <div className="acc-urgence-dot" />
@@ -91,7 +89,7 @@ function Accueil() {
           <span className="material-symbols-outlined acc-urgence-arrow">arrow_forward</span>
         </button>
 
-        {/* ════════════════ SIGNALER RAPIDEMENT ════════════════ */}
+        {/* ════ SIGNALER RAPIDEMENT ════ */}
         <section className="acc-section">
           <div className="acc-section-hdr">
             <h2 className="acc-section-title">Signaler rapidement</h2>
@@ -102,11 +100,7 @@ function Accueil() {
               <button
                 key={cat.type}
                 className="acc-cat"
-                style={{
-                  '--cat-bg':     cat.bg,
-                  '--cat-border': cat.border,
-                  '--cat-color':  cat.color,
-                }}
+                style={{ '--cat-bg': cat.bg, '--cat-border': cat.border, '--cat-color': cat.color }}
                 onClick={() => navigate('/soumettre')}
               >
                 <div className="acc-cat-icon-wrap">
@@ -118,7 +112,7 @@ function Accueil() {
           </div>
         </section>
 
-        {/* ════════════════ ALERTES RÉCENTES ════════════════ */}
+        {/* ════ ALERTES RÉCENTES ════ */}
         <section className="acc-section">
           <div className="acc-section-hdr">
             <h2 className="acc-section-title">Alertes récentes</h2>
@@ -142,33 +136,46 @@ function Accueil() {
           ) : (
             <div className="acc-alrt-list">
               {alertes.map((alerte) => {
-                const sc  = statutCfg[alerte.statut] || { label: alerte.statut, cls: '' };
-                const ico = typeIcon[alerte.type_alerte] || 'notifications';
-                const lbl = typeLabel[alerte.type_alerte] || alerte.type_alerte?.replace(/_/g, ' ');
-                const loc = afficherLieu(alerte.localisation);
+                const sc   = statutCfg[alerte.statut] || { label: alerte.statut, cls: '' };
+                const cfg  = typeConfig[alerte.type_alerte] || { label: alerte.type_alerte, icon: 'notifications', bg: '#F0F0F0', color: '#555' };
+                const loc  = afficherLieu(alerte.localisation);
                 return (
                   <div
                     key={alerte.id}
                     className="acc-alrt-card"
                     onClick={() => navigate(`/alertes/${alerte.id}`)}
                   >
-                    <div className="acc-alrt-ico">
-                      <span className="material-symbols-outlined">{ico}</span>
-                    </div>
                     <div className="acc-alrt-info">
                       <div className="acc-alrt-top">
-                        <span className="acc-alrt-type">{lbl}</span>
                         <span className={`acc-badge ${sc.cls}`}>{sc.label}</span>
-                      </div>
-                      <p className="acc-alrt-lieu">
-                        <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
-                          location_on
+                        <span className="acc-alrt-lieu">
+                          <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>location_on</span>
+                          {loc}
                         </span>
-                        {loc}
-                      </p>
+                      </div>
+                      <span className="acc-alrt-type-label" style={{ color: cfg.color }}>
+                        {cfg.label.toUpperCase()}
+                      </span>
+                      <p className="acc-alrt-titre">{cfg.label}</p>
                       <p className="acc-alrt-desc">{alerte.description}</p>
+                      <p className="acc-alrt-date">
+                        <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>calendar_today</span>
+                        {new Date(alerte.date_soumission).toLocaleDateString('fr-FR')}
+                      </p>
                     </div>
-                    <span className="material-symbols-outlined acc-alrt-chevron">chevron_right</span>
+
+                    {/* ── Icône colorée à droite ── */}
+                    <div
+                      className="acc-alrt-ico-box"
+                      style={{ background: cfg.bg }}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ color: cfg.color, fontSize: '22px' }}
+                      >
+                        {cfg.icon}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
@@ -176,7 +183,7 @@ function Accueil() {
           )}
         </section>
 
-        {/* ════════════════ ACCÈS RAPIDES ════════════════ */}
+        {/* ════ ACCÈS RAPIDES ════ */}
         <section className="acc-section">
           <h2 className="acc-section-title">Accès rapides</h2>
           <div className="acc-rapides">
