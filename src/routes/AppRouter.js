@@ -19,6 +19,7 @@ import Conditions from '../pages/Conditions';
 import Privacy from '../pages/Privacy';
 import Contact from '../pages/Contact';
 import NotFound from '../pages/NotFound';
+import Points from './pages/Points';
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/connexion" />;
@@ -53,6 +54,7 @@ function App() {
         <Route element={<Layout><PrivateRoute><Messagerie /></PrivateRoute></Layout>} path="/messagerie" />
         <Route element={<Layout><PrivateRoute><Moderateur /></PrivateRoute></Layout>} path="/moderateur" />
         <Route element={<Layout><Don /></Layout>} path="/don" />
+        <Route path="/points" element={<Points />} />
         <Route path="/conditions-d-utilisation" element={<Conditions />} />
         <Route path="/politique-de-confidentialite" element={<Privacy />} />
         <Route path="/contact-d-urgence" element={<Contact />} />

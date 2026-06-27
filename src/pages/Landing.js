@@ -173,8 +173,8 @@ function Landing() {
           <div className="hero-grid">
             <div className="hero-txt">
               <h1 className="hero-h1">
-                Protégez votre <span className="titre">communauté</span>,<br />
-                un signalement <span className="titre">à la fois.</span>
+                Protégez votre <span className="titre">communauté</span>,un <br/>
+                signalement <span className="titre">à la fois.</span>
               </h1>
               <p className="hero-p">
                 Rejoignez des milliers de citoyens qui utilisent CIVIALERT
