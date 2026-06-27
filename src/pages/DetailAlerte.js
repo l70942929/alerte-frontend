@@ -12,7 +12,6 @@ import {
   Heart,
   Handshake,
   MessageCircle,
-  FacebookIcon,
   Info,
   Camera,
   Clock,
@@ -96,15 +95,10 @@ function DetailAlerte() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const partagerFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
-  };
-
   const fmt = (v) => v ? new Date(v).toLocaleString('fr-FR') : 'Non spécifiée';
 
   const IconComponent = alerte?.type_alerte ? typeIcon[alerte.type_alerte] || AlertTriangle : AlertTriangle;
 
-  // Construction de l'URL de la photo
   const getPhotoUrl = (photoPath) => {
     if (!photoPath) return null;
     if (photoPath.startsWith('http')) return photoPath;
@@ -212,10 +206,6 @@ function DetailAlerte() {
                 <button className="detail-share-wa" onClick={partagerWhatsApp}>
                   <MessageCircle size={18} />
                   WhatsApp
-                </button>
-                <button className="detail-share-fb" onClick={partagerFacebook}>
-                  <FacebookIcon size={18} />
-                  Facebook
                 </button>
               </div>
             </div>
