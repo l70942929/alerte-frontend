@@ -12,17 +12,12 @@ import {
   Clock,
   ThumbsUp,
   FileText,
-  Users,
   Filter,
   Loader2,
-  PlusCircle,
-  ArrowRight,
   Bell,
   User,
-  Flag,
   Check,
   X,
-  Send,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -74,13 +69,11 @@ function Moderateur() {
     const proprietaireAlerte = alerteActuelle?.utilisateur_nom || alerteActuelle?.username;
     
     try {
-      // ✅ URL CORRIGÉE
       await api.patch(`signalements/moderer/${id}/`, { statut: nouveauStatut });
       setMessage('✅ Alerte mise à jour avec succès !');
       setErreur('');
       setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
       
-      // Envoyer la notification au propriétaire
       if (proprietaireAlerte) {
         const typeAlerte = alerteActuelle?.type_alerte?.replace(/_/g, ' ') || 'alerte';
         
