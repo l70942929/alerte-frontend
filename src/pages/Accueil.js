@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
+import {
   AlertTriangle,
   MapPin,
   Calendar,
@@ -11,11 +12,9 @@ import {
   MessageSquare,
   Heart,
   Bell,
-  User,
   Eye,
   Search,
   Package,
-  Shield,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
