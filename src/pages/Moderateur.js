@@ -70,7 +70,7 @@ function Moderateur() {
     
     try {
       await api.patch(`signalements/moderer/${id}/`, { statut: nouveauStatut });
-      setMessage('✅ Alerte mise à jour avec succès !');
+      setMessage(' Alerte mise à jour avec succès !');
       setErreur('');
       setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
       
@@ -80,7 +80,7 @@ function Moderateur() {
         if (nouveauStatut === 'en_cours') {
           addNotificationForUser(
             proprietaireAlerte,
-            '✅ Alerte vérifiée et publiée',
+            ' Alerte vérifiée et publiée',
             `Votre ${typeAlerte} a été validée et est maintenant publique.`,
             'success',
             id

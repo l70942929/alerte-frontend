@@ -18,6 +18,8 @@ import {
   Shield,
   Loader2,
   AlertCircle,
+  Mail,
+  Phone,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -267,6 +269,41 @@ function DetailAlerte() {
                 </div>
               </div>
             </div>
+
+            {/* ==========================================
+                INFOS DE L'AUTEUR (si non anonyme)
+                ========================================== */}
+            {!alerte.anonyme && alerte.utilisateur_nom && (
+              <div className="detail-card">
+                <h2>
+                  <User size={18} />
+                  Informations de l'auteur
+                </h2>
+                <div className="detail-infos">
+                  <div className="detail-info-row">
+                    <span className="detail-info-label">Nom</span>
+                    <span className="detail-info-val">{alerte.utilisateur_nom || 'Non spécifié'}</span>
+                  </div>
+                  {alerte.utilisateur_email && (
+                    <div className="detail-info-row">
+                      <span className="detail-info-label">
+                        <Mail size={14} />
+                      </span>
+                      <span className="detail-info-val">{alerte.utilisateur_email}</span>
+                    </div>
+                  )}
+                  {alerte.utilisateur_telephone && (
+                    <div className="detail-info-row">
+                      <span className="detail-info-label">
+                        <Phone size={14} />
+                      </span>
+                      <span className="detail-info-val">{alerte.utilisateur_telephone}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
           </aside>
         </div>
 

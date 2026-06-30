@@ -46,7 +46,7 @@ function ResetPassword() {
         token,
         new_password: password
       });
-      setMessage('✅ Mot de passe réinitialisé avec succès !');
+      setMessage(' Mot de passe réinitialisé avec succès !');
       setTimeout(() => navigate('/connexion'), 3000);
     } catch (error) {
       setErreur(error.response?.data?.error || 'Erreur lors de la réinitialisation.');

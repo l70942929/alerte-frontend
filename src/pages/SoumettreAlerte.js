@@ -233,7 +233,7 @@ function SoumettreAlerte() {
         },
       });
 
-      setMessage('✅ Votre alerte a été soumise avec succès ! Elle sera vérifiée sous 15 minutes.');
+      setMessage(' Votre alerte a été soumise avec succès ! ');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {
       console.error('Erreur complète:', err);
