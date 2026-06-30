@@ -10,7 +10,6 @@ import {
   XCircle,
   TrendingUp,
   Wallet,
-  Gift,
   AlertTriangle,
   Users,
   Calendar,

@@ -10,10 +10,8 @@ import {
   Clock,
   TrendingUp,
   AlertTriangle,
-  Eye,
   ArrowLeft,
   DollarSign,
-  Send,
   RefreshCw,
 } from 'lucide-react';
 import api from '../services/api';

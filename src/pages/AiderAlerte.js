@@ -6,7 +6,6 @@ import {
   Send,
   MapPin,
   Calendar,
-  User,
   Award,
   FileText,
   Image,

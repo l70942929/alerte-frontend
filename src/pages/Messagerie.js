@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import {
   MessageSquare,
-  User,
-  Clock,
   CheckCircle,
   Circle,
   Send,
