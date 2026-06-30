@@ -26,6 +26,7 @@ import {
   Info,
   Lightbulb,
   Shield,
+  Award,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -42,6 +43,7 @@ function SoumettreAlerte() {
     date_evenement: '',
     photoFile: null,
     anonyme: false,
+    montant_recompense: '', // ← NOUVEAU CHAMP
   });
   const [position, setPosition] = useState(null);
   const [searching, setSearching] = useState(false);
@@ -209,6 +211,14 @@ function SoumettreAlerte() {
     formData.append('date_evenement', new Date(form.date_evenement).toISOString());
     formData.append('anonyme', form.anonyme ? 'true' : 'false');
 
+    // ==========================================
+    // AJOUT DE LA RÉCOMPENSE
+    // ==========================================
+    if (form.montant_recompense && parseInt(form.montant_recompense) > 0) {
+      formData.append('montant_recompense', form.montant_recompense);
+      formData.append('recompense_active', 'true');
+    }
+
     if (form.photoFile) {
       formData.append('photo', form.photoFile);
     }
@@ -233,7 +243,7 @@ function SoumettreAlerte() {
         },
       });
 
-      setMessage(' Votre alerte a été soumise avec succès ! ');
+      setMessage('✅ Votre alerte a été soumise avec succès ! Elle sera vérifiée sous 15 minutes.');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {
       console.error('Erreur complète:', err);
@@ -246,6 +256,11 @@ function SoumettreAlerte() {
       setLoading(false);
     }
   };
+
+  // Calcul de la commission
+  const montant = parseInt(form.montant_recompense) || 0;
+  const commission = Math.floor(montant * 0.04);
+  const net = montant - commission;
 
   return (
     <div className={`sa-page ${darkMode ? 'dark-mode' : ''}`}>
@@ -350,6 +365,35 @@ function SoumettreAlerte() {
                     value={form.date_evenement}
                     onChange={(e) => setForm({ ...form, date_evenement: e.target.value })}
                   />
+                </div>
+              </div>
+
+              {/* ==========================================
+                  RÉCOMPENSE
+                  ========================================== */}
+              <div className="sa-fgrp">
+                <label>
+                  <Award size={16} style={{ color: '#f5ab35' }} />
+                  Montant de la récompense (FCFA)
+                </label>
+                <div className="sa-recompense-input">
+                  <input
+                    type="number"
+                    placeholder="Ex: 10000"
+                    value={form.montant_recompense}
+                    onChange={(e) => setForm({ ...form, montant_recompense: e.target.value })}
+                    min="0"
+                  />
+                  <small>
+                    💡 <strong>Optionnel</strong> - Proposer une récompense pour encourager les citoyens à aider.
+                    {montant > 0 && (
+                      <span style={{ display: 'block', marginTop: '4px' }}>
+                        <span style={{ color: '#f39c12' }}>📊 Commission (4%) : {commission} FCFA</span>
+                        <br />
+                        <span style={{ color: '#2ecc71' }}>🎯 Récompense nette : {net} FCFA</span>
+                      </span>
+                    )}
+                  </small>
                 </div>
               </div>
 
