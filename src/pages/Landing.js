@@ -23,7 +23,6 @@ import {
   Phone,
   Mail,
   Flag,
-  ThumbsUp,
 } from 'lucide-react';
 import './Landing.css';
 
