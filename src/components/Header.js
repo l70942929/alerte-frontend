@@ -10,7 +10,6 @@ import {
   Menu,
   X,
 } from 'lucide-react';
-import Logo from './Logo';
 import NotificationPanel from './NotificationPanel';
 import { getUnreadCount } from '../services/notificationService';
 import './Header.css';
@@ -73,7 +72,14 @@ function Header() {
         <div className="hdr-inner">
           <div className="hdr-left">
             <Link to={homePath} className="hdr-logo">
-              <Logo size={34} variant="full" />
+              <span className="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="22" height="22">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </span>
+              CIVIALERT
             </Link>
 
             <nav className="hdr-nav">
