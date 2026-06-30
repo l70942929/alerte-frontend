@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import Logo from '../components/Logo';
+
 import {
   UserPlus,
   User,
@@ -20,6 +22,8 @@ import api from '../services/api';
 import './Connexion.css';
 
 function Inscription() {
+  const navigate = useNavigate();
+  const { darkMode } = useTheme();
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -30,8 +34,14 @@ function Inscription() {
   const [showPassword, setShowPassword] = useState(false);
   const [erreur, setErreur] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { darkMode } = useTheme();
+
+  // ✅ REDIRIGER VERS DASHBOARD SI DÉJÀ CONNECTÉ
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/accueil');
+    }
+  }, [navigate]);
 
   const submit = async () => {
     if (!form.username || !form.password) {
@@ -43,9 +53,6 @@ function Inscription() {
     try {
       const res = await api.post('/auth/inscription/', form);
       if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('username', res.data.username);
-        localStorage.setItem('role', res.data.role);
         navigate('/connexion');
       } else {
         setErreur("Erreur lors de l'inscription. Réessayez.");
@@ -77,11 +84,7 @@ function Inscription() {
       <div className="auth-left">
         <div className="auth-visual">
           <div className="auth-logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="48" height="48">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+            <Logo size={56} variant="icon" />
           </div>
           <h2>CIVIALERT</h2>
           <p>Rejoignez la communauté citoyenne</p>

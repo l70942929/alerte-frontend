@@ -41,7 +41,10 @@ function Messagerie() {
       setLoadingContacts(true);
       setErreur('');
       try {
-        const res = await api.get('auth/utilisateurs/');
+        const token = localStorage.getItem('token');
+        const res = await api.get('auth/utilisateurs/', {
+          headers: { Authorization: `Token ${token}` }
+        });
         const autres = Array.isArray(res.data)
           ? res.data.filter(u => u.username !== username)
           : [];
@@ -51,7 +54,9 @@ function Messagerie() {
         const nonLus = {};
         for (const contact of autres) {
           try {
-            const convRes = await api.get(`messagerie/conversation/?user_id=${contact.id}`);
+            const convRes = await api.get(`messagerie/conversation/?user_id=${contact.id}`, {
+              headers: { Authorization: `Token ${token}` }
+            });
             const nonLusCount = convRes.data.filter(msg => 
               !msg.lu && msg.expediteur_nom === contact.username
             ).length;
@@ -63,7 +68,8 @@ function Messagerie() {
           }
         }
         setNonLusParContact(nonLus);
-      } catch {
+      } catch (error) {
+        console.error('Erreur:', error);
         setErreur("Impossible de charger les contacts.");
         setContacts([]);
       } finally {
@@ -80,7 +86,10 @@ function Messagerie() {
     setLoadingMessages(true);
     setErreur('');
     try {
-      const res = await api.get(`messagerie/conversation/?user_id=${contact.id}`);
+      const token = localStorage.getItem('token');
+      const res = await api.get(`messagerie/conversation/?user_id=${contact.id}`, {
+        headers: { Authorization: `Token ${token}` }
+      });
       setMessages(Array.isArray(res.data) ? res.data : []);
       
       // Marquer les messages non lus comme lus
@@ -88,14 +97,16 @@ function Messagerie() {
         !msg.lu && msg.expediteur_nom === contact.username
       );
       if (nonLus.length > 0) {
-        await api.post(`messagerie/marquer-lu/?user_id=${contact.id}`);
-        // Mettre à jour le compteur
+        await api.post(`messagerie/marquer-lu/?user_id=${contact.id}`, {}, {
+          headers: { Authorization: `Token ${token}` }
+        });
         setNonLusParContact(prev => ({
           ...prev,
           [contact.id]: 0
         }));
       }
     } catch (error) {
+      console.error('Erreur:', error);
       setErreur("Impossible de charger la conversation.");
       setMessages([]);
     } finally {
@@ -110,12 +121,16 @@ function Messagerie() {
     setNouveauMsg('');
     setErreur('');
     try {
+      const token = localStorage.getItem('token');
       const res = await api.post('messagerie/', {
         destinataire: actif.id,
         contenu: contenu,
+      }, {
+        headers: { Authorization: `Token ${token}` }
       });
       setMessages(prev => [...prev, res.data]);
     } catch (error) {
+      console.error('Erreur:', error);
       setNouveauMsg(contenu);
       setErreur(error.response?.data?.detail || "Erreur lors de l'envoi.");
     }
@@ -130,10 +145,14 @@ function Messagerie() {
   const supprimerMessage = async (id) => {
     if (window.confirm('Supprimer ce message ?')) {
       try {
-        await api.delete(`messagerie/${id}/`);
+        const token = localStorage.getItem('token');
+        await api.delete(`messagerie/${id}/`, {
+          headers: { Authorization: `Token ${token}` }
+        });
         setMessages(messages.filter((msg) => msg.id !== id));
         setMenuMessage(null);
       } catch (error) {
+        console.error('Erreur:', error);
         alert("Impossible de supprimer le message");
       }
     }
@@ -143,10 +162,14 @@ function Messagerie() {
     const nouveauContenu = prompt('Modifier le message :', ancienContenu);
     if (nouveauContenu && nouveauContenu.trim() !== ancienContenu) {
       try {
-        await api.patch(`messagerie/${id}/`, { contenu: nouveauContenu });
+        const token = localStorage.getItem('token');
+        await api.patch(`messagerie/${id}/`, { contenu: nouveauContenu }, {
+          headers: { Authorization: `Token ${token}` }
+        });
         setMessages(messages.map(msg => msg.id === id ? { ...msg, contenu: nouveauContenu } : msg));
         setMenuMessage(null);
       } catch (error) {
+        console.error('Erreur:', error);
         alert("Impossible de modifier le message");
       }
     } else {
@@ -160,13 +183,17 @@ function Messagerie() {
       const destinataire = contacts.find(c => c.username.toLowerCase() === reponse.trim().toLowerCase());
       if (destinataire) {
         try {
+          const token = localStorage.getItem('token');
           await api.post('messagerie/', {
             destinataire: destinataire.id,
             contenu: `[Transféré] ${contenu}`,
+          }, {
+            headers: { Authorization: `Token ${token}` }
           });
           alert(`Message transféré à ${destinataire.username}`);
           setMenuMessage(null);
         } catch (error) {
+          console.error('Erreur:', error);
           alert("Erreur lors du transfert");
         }
       } else {

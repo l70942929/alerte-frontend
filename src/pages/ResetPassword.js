@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import { ArrowLeft, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import './Connexion.css';
 
 function ResetPassword() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -16,6 +19,14 @@ function ResetPassword() {
 
   const uid = searchParams.get('uid');
   const token = searchParams.get('token');
+
+  // ✅ REDIRIGER VERS DASHBOARD SI DÉJÀ CONNECTÉ
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/accueil');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (!uid || !token) {
@@ -46,7 +57,7 @@ function ResetPassword() {
         token,
         new_password: password
       });
-      setMessage(' Mot de passe réinitialisé avec succès !');
+      setMessage('Mot de passe réinitialisé avec succès !');
       setTimeout(() => navigate('/connexion'), 3000);
     } catch (error) {
       setErreur(error.response?.data?.error || 'Erreur lors de la réinitialisation.');
@@ -56,23 +67,26 @@ function ResetPassword() {
   };
 
   return (
-    <div className="auth-page">
+    <div className={`auth-page ${darkMode ? 'dark-mode' : ''}`}>
       <Header />
       <div className="auth-right" style={{ marginTop: '80px' }}>
         <div className="auth-box fade-up">
+          <button className="auth-back" onClick={() => navigate('/')}>
+            <ArrowLeft size={20} />
+          </button>
           <h1>Réinitialiser le mot de passe</h1>
           <p>Entrez votre nouveau mot de passe.</p>
           
           {erreur && (
             <div className="form-err">
-              <span className="material-symbols-outlined">error</span>
+              <AlertCircle size={18} />
               {erreur}
             </div>
           )}
           
           {message && (
             <div className="form-success">
-              <span className="material-symbols-outlined">check_circle</span>
+              <CheckCircle size={18} />
               {message}
             </div>
           )}
@@ -81,7 +95,7 @@ function ResetPassword() {
             <div className="fgrp">
               <label>Nouveau mot de passe</label>
               <div className="finp">
-                <span className="material-symbols-outlined finp-ico">lock</span>
+                <Lock size={20} className="finp-ico" />
                 <input
                   type="password"
                   placeholder="Entrez votre nouveau mot de passe"
@@ -94,7 +108,7 @@ function ResetPassword() {
             <div className="fgrp">
               <label>Confirmer le mot de passe</label>
               <div className="finp">
-                <span className="material-symbols-outlined finp-ico">lock</span>
+                <Lock size={20} className="finp-ico" />
                 <input
                   type="password"
                   placeholder="Confirmez votre nouveau mot de passe"

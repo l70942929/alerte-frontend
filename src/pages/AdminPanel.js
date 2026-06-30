@@ -47,15 +47,28 @@ function AdminPanel() {
     setLoading(true);
     setErreur('');
     try {
-      const res = await api.get('/admin/recompenses/');
-      setRecompenses(res.data);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErreur('Vous devez être connecté.');
+        setLoading(false);
+        return;
+      }
 
-      const en_attente = res.data.filter(r => r.statut === 'en_attente').length;
-      const depose = res.data.filter(r => r.statut === 'depose').length;
-      const attribue = res.data.filter(r => r.statut === 'attribuee').length;
-      const commission = res.data
+      const res = await api.get('/signalements/admin/recompenses/', {
+        headers: {
+          'Authorization': `Token ${token}`
+        }
+      });
+
+      const data = Array.isArray(res.data) ? res.data : [];
+      setRecompenses(data);
+
+      const en_attente = data.filter(r => r.statut === 'en_attente').length;
+      const depose = data.filter(r => r.statut === 'depose').length;
+      const attribue = data.filter(r => r.statut === 'attribuee').length;
+      const commission = data
         .filter(r => r.statut === 'attribuee')
-        .reduce((acc, r) => acc + (r.commission || 0), 0);
+        .reduce((acc, r) => acc + (parseInt(r.commission) || 0), 0);
 
       setStats({
         total_en_attente: en_attente,
@@ -64,6 +77,7 @@ function AdminPanel() {
         total_commission: commission,
       });
     } catch (error) {
+      console.error('Erreur:', error);
       setErreur('Impossible de charger les données.');
     } finally {
       setLoading(false);
@@ -78,10 +92,16 @@ function AdminPanel() {
     setMessage('');
     
     try {
-      await api.post(`/signalements/recompense/confirmer-depot/${recompenseId}/`);
+      const token = localStorage.getItem('token');
+      await api.post(`/signalements/recompense/confirmer-depot/${recompenseId}/`, {}, {
+        headers: {
+          'Authorization': `Token ${token}`
+        }
+      });
       setMessage('Dépôt confirmé avec succès !');
       chargerDonnees();
     } catch (error) {
+      console.error('Erreur:', error);
       setErreur('Erreur lors de la confirmation.');
     } finally {
       setProcessing(false);
@@ -133,7 +153,6 @@ function AdminPanel() {
           </button>
         </div>
 
-        {/* Statistiques */}
         <div className="admin-stats">
           <div className="stat-card">
             <div className="stat-icon" style={{ background: '#FFF8E1' }}>
@@ -173,14 +192,9 @@ function AdminPanel() {
           </div>
         </div>
 
-        {message && (
-          <div className="admin-success">{message}</div>
-        )}
-        {erreur && (
-          <div className="admin-error">{erreur}</div>
-        )}
+        {message && <div className="admin-success">{message}</div>}
+        {erreur && <div className="admin-error">{erreur}</div>}
 
-        {/* Liste des récompenses */}
         <div className="admin-table-container">
           <h2>Transactions en attente</h2>
           <div className="admin-table-wrapper">
