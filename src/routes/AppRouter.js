@@ -22,10 +22,8 @@ import NotFound from '../pages/NotFound';
 import Points from '../pages/Points';
 import ResetPassword from '../pages/ResetPassword';
 import AiderAlerte from '../pages/AiderAlerte';
-
-
-
-// Et dans les routes
+import MesRecompenses from '../pages/MesRecompenses';
+import AdminPanel from '../pages/AdminPanel';
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/connexion" />;
@@ -41,16 +39,13 @@ function Layout({ children }) {
   );
 }
 
-
 function App() {
   return (
-    
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
-      
         
         {/* Routes protégées avec Layout */}
         <Route element={<Layout><PrivateRoute><Accueil /></PrivateRoute></Layout>} path="/accueil" />
@@ -62,12 +57,24 @@ function App() {
         <Route element={<Layout><PrivateRoute><Moderateur /></PrivateRoute></Layout>} path="/moderateur" />
         <Route element={<Layout><Don /></Layout>} path="/don" />
         
-        <Route path="/aider/:id" element={<AiderAlerte />} />
+        {/* Points */}
         <Route path="/points" element={<Points />} />
+        
+        {/* Mot de passe oublié */}
         <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+        
+        {/* Aide pour les alertes */}
+        <Route path="/aider/:id" element={<AiderAlerte />} />
+
+        <Route path="/mes-recompenses" element={<MesRecompenses />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        
+        {/* Pages publiques */}
         <Route path="/conditions-d-utilisation" element={<Conditions />} />
         <Route path="/politique-de-confidentialite" element={<Privacy />} />
         <Route path="/contact-d-urgence" element={<Contact />} />
+        
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer />
