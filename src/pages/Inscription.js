@@ -46,7 +46,7 @@ function Inscription() {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('username', res.data.username);
         localStorage.setItem('role', res.data.role);
-        navigate('/accueil');
+        navigate('/connexion');
       } else {
         setErreur("Erreur lors de l'inscription. Réessayez.");
       }
