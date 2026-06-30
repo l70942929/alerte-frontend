@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Mail,
   Phone,
+  Award, // ← AJOUT IMPORTANT
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -169,26 +170,28 @@ function DetailAlerte() {
 
         <div className="detail-content">
           <div className="detail-main">
-            // Dans la section detail-main, ajoute ce bouton
 
-{alerte.statut === 'recu' && alerte.montant_recompense > 0 && (
-  <div className="detail-card aider-card">
-    <h2>
-      <Award size={18} color="#f5ab35" />
-      Récompense disponible
-    </h2>
-    <p className="aider-card-text">
-      Une récompense de <strong>{alerte.montant_recompense} FCFA</strong> est proposée pour 
-      toute information permettant de résoudre cette alerte.
-    </p>
-    <button 
-      className="btn-aider" 
-      onClick={() => navigate(`/aider/${alerte.id}`)}
-    >
-      🤝 Proposer mon aide
-    </button>
-  </div>
-)}
+            {/* ==========================================
+                RÉCOMPENSE DISPONIBLE
+                ========================================== */}
+            {alerte.statut === 'recu' && alerte.montant_recompense > 0 && (
+              <div className="detail-card aider-card">
+                <h2>
+                  <Award size={18} color="#f5ab35" />
+                  Récompense disponible
+                </h2>
+                <p className="aider-card-text">
+                  Une récompense de <strong>{alerte.montant_recompense} FCFA</strong> est proposée pour 
+                  toute information permettant de résoudre cette alerte.
+                </p>
+                <button 
+                  className="btn-aider" 
+                  onClick={() => navigate(`/aider/${alerte.id}`)}
+                >
+                  🤝 Proposer mon aide
+                </button>
+              </div>
+            )}
 
             <div className="detail-card">
               <h2>
