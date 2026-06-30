@@ -20,7 +20,7 @@ import {
   AlertCircle,
   Mail,
   Phone,
-  Award, // ← AJOUT IMPORTANT
+  Award,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -171,9 +171,6 @@ function DetailAlerte() {
         <div className="detail-content">
           <div className="detail-main">
 
-            {/* ==========================================
-                RÉCOMPENSE DISPONIBLE
-                ========================================== */}
             {alerte.statut === 'recu' && alerte.montant_recompense > 0 && (
               <div className="detail-card aider-card">
                 <h2>
@@ -293,9 +290,6 @@ function DetailAlerte() {
               </div>
             </div>
 
-            {/* ==========================================
-                INFOS DE L'AUTEUR (si non anonyme)
-                ========================================== */}
             {!alerte.anonyme && alerte.utilisateur_nom && (
               <div className="detail-card">
                 <h2>

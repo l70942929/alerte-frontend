@@ -48,11 +48,18 @@ function Header() {
     { path: '/messagerie', label: 'Messages' },
     { path: '/don', label: 'Faire un don' },
     { path: '/points', label: 'Points' },
+    { path: '/mes-recompenses', label: 'Récompenses' },
   ];
 
-  const filteredNavLinks = role === 'moderateur' || role === 'admin' 
-    ? [...navLinks, { path: '/moderateur', label: 'Modération' }]
-    : navLinks;
+  let filteredNavLinks = [...navLinks];
+
+  if (role === 'moderateur' || role === 'admin') {
+    filteredNavLinks.push({ path: '/moderateur', label: 'Modération' });
+  }
+
+  if (role === 'admin') {
+    filteredNavLinks.push({ path: '/admin', label: 'Admin' });
+  }
 
   const handleLogout = () => {
     localStorage.clear();
@@ -89,12 +96,10 @@ function Header() {
           </div>
 
           <div className="hdr-right">
-            {/* BOUTON MODE NUIT/JOUR */}
             <button className="theme-btn" onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {/* BOUTON NOTIFICATION */}
             <button
               className="hdr-icon-btn"
               aria-label="Notifications"
@@ -106,12 +111,10 @@ function Header() {
               )}
             </button>
 
-            {/* PANEAU NOTIFICATIONS */}
             {showNotifications && (
               <NotificationPanel onClose={() => setShowNotifications(false)} />
             )}
 
-            {/* MENU UTILISATEUR */}
             <div className="hdr-user" onClick={() => setOpen(!open)}>
               <div className="hdr-avatar">
                 {username ? username[0].toUpperCase() : '?'}
@@ -131,7 +134,6 @@ function Header() {
               )}
             </div>
 
-            {/* BOUTON HAMBURGER */}
             <button
               className="hamburger"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -143,7 +145,6 @@ function Header() {
         </div>
       </header>
 
-      {/* MENU MOBILE */}
       {mobileMenuOpen && (
         <div className="mobile-menu">
           {filteredNavLinks.map((link) => (

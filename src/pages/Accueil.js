@@ -14,6 +14,7 @@ import {
   Eye,
   Search,
   Package,
+  Award,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -234,6 +235,13 @@ function Accueil() {
                 <Heart size={22} style={{ color: '#E65100' }} />
               </div>
               <span>Faire un don</span>
+            </button>
+            {/* NOUVEAU BOUTON MES RÉCOMPENSES */}
+            <button className="acc-rapide-card" onClick={() => navigate('/mes-recompenses')}>
+              <div className="acc-rapide-icon" style={{ background: '#FFF8E1' }}>
+                <Award size={22} style={{ color: '#f5ab35' }} />
+              </div>
+              <span>Mes récompenses</span>
             </button>
           </div>
         </section>
