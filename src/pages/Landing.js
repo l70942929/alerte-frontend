@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
   Shield,
   Sun,
   Moon,
-  Users,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  MapPin,
-  Bell,
   UserPlus,
-  Verified,
-  Send,
   Menu,
   X,
-  ArrowRight,
   LogIn,
-  Award,
-  Heart,
-  Phone,
-  Mail,
-  Flag,
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import './Landing.css';
@@ -32,7 +18,6 @@ function Landing() {
   const { darkMode, setDarkMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const isLoggedIn = !!localStorage.getItem('token');
 
   useEffect(() => {
@@ -43,66 +28,10 @@ function Landing() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const alertes = [
-    {
-      image: 'https://images.unsplash.com/photo-1531844251246-9a1bfaae09fc?w=800&q=80',
-      type: 'ENLÈVEMENT',
-      lieu: 'Douala — il y a 10 min',
-      titre: 'Enlèvement signalé à Bonanjo',
-      desc: 'Signalement reçu et transmis aux autorités compétentes.',
-      statut: 'Urgent',
-      sc: 'urgent',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=80',
-      type: 'DISPARITION',
-      lieu: 'Yaoundé — il y a 2 h',
-      titre: 'Enfant porté disparu à Bastos',
-      desc: 'Recherche en cours avec diffusion des informations.',
-      statut: 'En cours',
-      sc: 'en-cours',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80',
-      type: 'OBJET RETROUVÉ',
-      lieu: 'Bafoussam — aujourd\'hui',
-      titre: 'Documents officiels retrouvés',
-      desc: 'Documents officiels remis au centre de collecte communautaire.',
-      statut: 'Nouveau',
-      sc: 'nouveau',
-    },
-  ];
-
-  const communityImages = [
-    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
-    'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80',
-    'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800&q=80',
-  ];
-
-  const steps = [
-    { icon: UserPlus, title: 'Créer un compte', desc: 'Un accès personnel pour signaler et suivre les alertes.', color: '#e74c3c' },
-    { icon: MapPin, title: 'Localiser', desc: 'Ajoutez un lieu précis ou utilisez votre position GPS.', color: '#3498db' },
-    { icon: Verified, title: 'Vérifier', desc: 'Les modérateurs contrôlent les informations reçues.', color: '#2ecc71' },
-    { icon: Send, title: 'Diffuser', desc: 'Les alertes validées sont partagées à toute la communauté.', color: '#f39c12' },
-  ];
-
-  const features = [
-    { icon: Shield, title: 'Sécurisé', desc: 'Toutes les données sont protégées et confidentielles.' },
-    { icon: Clock, title: 'Rapide', desc: 'Traitement des alertes en moins de 15 minutos.' },
-    { icon: Award, title: 'Fiable', desc: '98% des alertes sont vérifiées et authentifiées.' },
-    { icon: Heart, title: 'Communautaire', desc: 'Une plateforme solidaire et engagée.' },
-  ];
-
   return (
     <div className={`land ${darkMode ? 'dark-mode' : ''}`}>
 
+      {/* HEADER */}
       <header className={`land-hdr ${scrolled ? 'scrolled' : ''}`}>
         <div className="land-hdr-in">
           <a className="logo" href="/">
@@ -136,14 +65,94 @@ function Landing() {
             <button className="theme-btn-landing" onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="hamburger-landing" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button
+              className="hamburger-landing"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ... le reste du code reste identique ... */}
+      {/* MENU MOBILE */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-landing">
+          <a href="#alertes" onClick={() => setMobileMenuOpen(false)}>Alertes</a>
+          <a href="#comment" onClick={() => setMobileMenuOpen(false)}>Fonctionnement</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Caractéristiques</a>
+          <a href="#community" onClick={() => setMobileMenuOpen(false)}>Communauté</a>
+          {isLoggedIn ? (
+            <button className="btn-prim-mobile" onClick={() => { navigate('/accueil'); setMobileMenuOpen(false); }}>
+              Accéder à mon Dashboard
+            </button>
+          ) : (
+            <>
+              <button onClick={() => { navigate('/connexion'); setMobileMenuOpen(false); }}>
+                Se connecter
+              </button>
+              <button className="btn-prim-mobile" onClick={() => { navigate('/inscription'); setMobileMenuOpen(false); }}>
+                Créer un compte
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* HERO */}
+      <section className="land-hero">
+        <div className="hero-overlay">
+          <div className="hero-grid">
+            <div className="hero-txt">
+              <div className="hero-badge">
+                <Shield size={16} />
+                Plateforme citoyenne 🇨🇲
+              </div>
+              <h1 className="hero-h1">
+                Protégez votre <span className='titre'>communauté</span>,<br />
+                un signalement <span className='titre'>à la fois.</span>
+              </h1>
+              <p className="hero-p">
+                Rejoignez des milliers de citoyens qui utilisent CIVIALERT
+                pour signaler des incidents, retrouver des personnes disparues
+                et sécuriser leurs quartiers.
+              </p>
+              <div className="hero-btns">
+                <button className="btn-sec" onClick={() => navigate('/inscription')}>
+                  Soumettre une alerte
+                </button>
+                <button className="btn-ghost-lg" onClick={() => navigate('/connexion')}>
+                  Se connecter
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="land-footer">
+        <div className="foot-in">
+          <div className="foot-brand">
+            <div className="foot-logo">
+              <Logo size={28} variant="icon" />
+              <span style={{ marginLeft: '8px' }}>CIVIALERT</span>
+            </div>
+            <p className="foot-copy">
+              © 2026 Tous droits réservés.
+            </p>
+          </div>
+          <div className="foot-links">
+            <div className="foot-links-group">
+              <h4>Plateforme</h4>
+              <a href="/conditions-d-utilisation">Conditions</a>
+              <a href="/politique-de-confidentialite">Confidentialité</a>
+              <a href="/contact-d-urgence">Contact d'urgence</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }
