@@ -21,9 +21,11 @@ import Contact from '../pages/Contact';
 import NotFound from '../pages/NotFound';
 import Points from '../pages/Points';
 import ResetPassword from '../pages/ResetPassword';
+import AiderAlerte from '../pages/AiderAlerte';
+
+
 
 // Et dans les routes
-<Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/connexion" />;
@@ -48,6 +50,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
+      
         
         {/* Routes protégées avec Layout */}
         <Route element={<Layout><PrivateRoute><Accueil /></PrivateRoute></Layout>} path="/accueil" />
@@ -58,6 +61,8 @@ function App() {
         <Route element={<Layout><PrivateRoute><Messagerie /></PrivateRoute></Layout>} path="/messagerie" />
         <Route element={<Layout><PrivateRoute><Moderateur /></PrivateRoute></Layout>} path="/moderateur" />
         <Route element={<Layout><Don /></Layout>} path="/don" />
+        
+        <Route path="/aider/:id" element={<AiderAlerte />} />
         <Route path="/points" element={<Points />} />
         <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
         <Route path="/conditions-d-utilisation" element={<Conditions />} />
