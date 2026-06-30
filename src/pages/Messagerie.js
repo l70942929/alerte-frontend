@@ -42,9 +42,16 @@ function Messagerie() {
       setErreur('');
       try {
         const token = localStorage.getItem('token');
-        const res = await api.get('auth/utilisateurs/', {
+        if (!token) {
+          setErreur('Vous devez être connecté.');
+          setLoadingContacts(false);
+          return;
+        }
+
+        const res = await api.get('/auth/utilisateurs/', {
           headers: { Authorization: `Token ${token}` }
         });
+        
         const autres = Array.isArray(res.data)
           ? res.data.filter(u => u.username !== username)
           : [];
@@ -54,7 +61,7 @@ function Messagerie() {
         const nonLus = {};
         for (const contact of autres) {
           try {
-            const convRes = await api.get(`messagerie/conversation/?user_id=${contact.id}`, {
+            const convRes = await api.get(`/messagerie/conversation/?user_id=${contact.id}`, {
               headers: { Authorization: `Token ${token}` }
             });
             const nonLusCount = convRes.data.filter(msg => 
@@ -87,7 +94,13 @@ function Messagerie() {
     setErreur('');
     try {
       const token = localStorage.getItem('token');
-      const res = await api.get(`messagerie/conversation/?user_id=${contact.id}`, {
+      if (!token) {
+        setErreur('Vous devez être connecté.');
+        setLoadingMessages(false);
+        return;
+      }
+
+      const res = await api.get(`/messagerie/conversation/?user_id=${contact.id}`, {
         headers: { Authorization: `Token ${token}` }
       });
       setMessages(Array.isArray(res.data) ? res.data : []);
@@ -97,7 +110,7 @@ function Messagerie() {
         !msg.lu && msg.expediteur_nom === contact.username
       );
       if (nonLus.length > 0) {
-        await api.post(`messagerie/marquer-lu/?user_id=${contact.id}`, {}, {
+        await api.post(`/messagerie/marquer-lu/?user_id=${contact.id}`, {}, {
           headers: { Authorization: `Token ${token}` }
         });
         setNonLusParContact(prev => ({
@@ -122,7 +135,12 @@ function Messagerie() {
     setErreur('');
     try {
       const token = localStorage.getItem('token');
-      const res = await api.post('messagerie/', {
+      if (!token) {
+        setErreur('Vous devez être connecté.');
+        return;
+      }
+
+      const res = await api.post('/messagerie/envoyer/', {
         destinataire: actif.id,
         contenu: contenu,
       }, {
@@ -146,7 +164,7 @@ function Messagerie() {
     if (window.confirm('Supprimer ce message ?')) {
       try {
         const token = localStorage.getItem('token');
-        await api.delete(`messagerie/${id}/`, {
+        await api.delete(`/messagerie/supprimer/${id}/`, {
           headers: { Authorization: `Token ${token}` }
         });
         setMessages(messages.filter((msg) => msg.id !== id));
@@ -163,7 +181,7 @@ function Messagerie() {
     if (nouveauContenu && nouveauContenu.trim() !== ancienContenu) {
       try {
         const token = localStorage.getItem('token');
-        await api.patch(`messagerie/${id}/`, { contenu: nouveauContenu }, {
+        await api.patch(`/messagerie/modifier/${id}/`, { contenu: nouveauContenu }, {
           headers: { Authorization: `Token ${token}` }
         });
         setMessages(messages.map(msg => msg.id === id ? { ...msg, contenu: nouveauContenu } : msg));
@@ -184,7 +202,7 @@ function Messagerie() {
       if (destinataire) {
         try {
           const token = localStorage.getItem('token');
-          await api.post('messagerie/', {
+          await api.post('/messagerie/envoyer/', {
             destinataire: destinataire.id,
             contenu: `[Transféré] ${contenu}`,
           }, {
