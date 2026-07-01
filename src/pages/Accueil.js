@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate }react-router-dom';
+import { useNavigate } react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
   AlertTriangle,
