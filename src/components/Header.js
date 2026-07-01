@@ -13,7 +13,6 @@ import {
 import NotificationPanel from './NotificationPanel';
 import api from '../services/api'; // ✅ AJOUT IMPORTANT
 import './Header.css';
-import { startMessagePolling, stopMessagePolling, getUnreadCount } from '../services/notificationService';
 
 function Header() {
   const navigate = useNavigate();
