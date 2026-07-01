@@ -34,10 +34,14 @@
   gap: 40px;
 }
 
-.hdr-logo {
+/* ===== LOGO BUTTON ===== */
+.hdr-logo-btn {
   display: flex;
   align-items: center;
   gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 18px;
   font-weight: 800;
@@ -45,13 +49,14 @@
   text-decoration: none;
   letter-spacing: -0.5px;
   transition: all 0.3s ease;
+  padding: 0;
 }
 
-.hdr-logo:hover {
+.hdr-logo-btn:hover {
   transform: scale(1.02);
 }
 
-.logo-icon {
+.hdr-logo-btn .logo-icon {
   width: 34px;
   height: 34px;
   display: flex;
@@ -63,16 +68,9 @@
   flex-shrink: 0;
 }
 
-.logo-icon svg {
+.hdr-logo-btn .logo-icon svg {
   stroke: white;
   stroke-width: 2.5;
-}
-
-.logo-text {
-  background: linear-gradient(135deg, #1a5490, #e74c3c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* ===== NAVIGATION ===== */
@@ -356,7 +354,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="dark"] .hdr-logo {
+[data-theme="dark"] .hdr-logo-btn {
   color: #5b9bd5;
 }
 
@@ -482,16 +480,16 @@
     display: flex !important;
   }
   
-  .hdr-logo {
+  .hdr-logo-btn {
     font-size: 16px;
   }
   
-  .logo-icon {
+  .hdr-logo-btn .logo-icon {
     width: 30px;
     height: 30px;
   }
   
-  .logo-icon svg {
+  .hdr-logo-btn .logo-icon svg {
     width: 18px !important;
     height: 18px !important;
   }
@@ -503,17 +501,17 @@
 }
 
 @media (max-width: 480px) {
-  .hdr-logo {
+  .hdr-logo-btn {
     font-size: 14px;
     gap: 6px;
   }
   
-  .logo-icon {
+  .hdr-logo-btn .logo-icon {
     width: 28px;
     height: 28px;
   }
   
-  .logo-icon svg {
+  .hdr-logo-btn .logo-icon svg {
     width: 16px !important;
     height: 16px !important;
   }

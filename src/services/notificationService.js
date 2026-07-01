@@ -1,5 +1,6 @@
 // Service de gestion des notifications
 import api from './api';
+
 // Récupérer toutes les notifications de l'utilisateur connecté
 export const getNotifications = () => {
   const username = localStorage.getItem('username');
@@ -87,8 +88,6 @@ export const getUnreadCount = () => {
   const notifications = getNotifications();
   return notifications.filter(notif => !notif.lu).length;
 };
-
-
 
 // ==========================================
 // NOTIFICATIONS DE MESSAGES (AJOUT)

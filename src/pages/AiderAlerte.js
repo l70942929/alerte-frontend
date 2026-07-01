@@ -11,6 +11,8 @@ import {
   Image,
   CheckCircle,
   AlertTriangle,
+  Upload,
+  X,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -24,7 +26,8 @@ function AiderAlerte() {
   const [alerte, setAlerte] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-  const [preuve, setPreuve] = useState('');
+  const [preuveFile, setPreuveFile] = useState(null);
+  const [preuveNom, setPreuveNom] = useState('');
   const [erreur, setErreur] = useState('');
   const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -59,11 +62,18 @@ function AiderAlerte() {
 
     try {
       const token = localStorage.getItem('token');
-      await api.post(`/signalements/aider/${id}/`, {
-        message: message,
-        preuve: preuve
-      }, {
-        headers: { Authorization: `Token ${token}` }
+      
+      const formData = new FormData();
+      formData.append('message', message);
+      if (preuveFile) {
+        formData.append('preuve', preuveFile);
+      }
+
+      await api.post(`/signalements/aider/${id}/`, formData, {
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'multipart/form-data',
+        }
       });
 
       setSuccess('Votre aide a été proposée avec succès ! L\'auteur sera notifié.');
@@ -73,6 +83,25 @@ function AiderAlerte() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Vérifier la taille (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setErreur('Le fichier est trop volumineux (max 5MB).');
+        return;
+      }
+      setPreuveFile(file);
+      setPreuveNom(file.name);
+      setErreur('');
+    }
+  };
+
+  const removeFile = () => {
+    setPreuveFile(null);
+    setPreuveNom('');
   };
 
   if (loading) {
@@ -157,14 +186,29 @@ function AiderAlerte() {
               <Image size={18} />
               Preuve (optionnel)
             </label>
-            <input
-              type="text"
-              placeholder="Lien vers une photo, un document, une vidéo..."
-              value={preuve}
-              onChange={(e) => setPreuve(e.target.value)}
-              disabled={submitting}
-            />
-            <small>Vous pouvez fournir un lien vers une preuve hébergée ailleurs.</small>
+            <div className="aider-file-input">
+              <input
+                type="file"
+                id="preuve-file"
+                accept="image/*,application/pdf,.doc,.docx"
+                onChange={handleFileChange}
+                disabled={submitting}
+              />
+              <label htmlFor="preuve-file" className="file-label">
+                <Upload size={20} />
+                Choisir un fichier
+              </label>
+              {preuveNom && (
+                <div className="file-info">
+                  <CheckCircle size={16} color="#2ecc71" />
+                  <span>{preuveNom}</span>
+                  <button type="button" onClick={removeFile} className="remove-file">
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
+            <small>Formats acceptés : JPG, PNG, PDF, DOC, DOCX (max 5MB)</small>
           </div>
 
           {erreur && (

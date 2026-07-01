@@ -25,38 +25,33 @@ function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { darkMode, setDarkMode } = useTheme();
   const isActive = (path) => location.pathname === path;
-  const homePath = '/';
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
- useEffect(() => {
-  const updateCount = () => {
-    // Récupérer le nombre de notifications non lues
-    const count = getUnreadCount();
-    setUnreadCount(count);
-  };
-  
-  updateCount();
-  window.addEventListener('notificationsUpdated', updateCount);
-  window.addEventListener('newNotification', updateCount);
-  
-  // ✅ Démarrer le polling des messages
-  const token = localStorage.getItem('token');
-  if (token) {
-    startMessagePolling((newMessages) => {
-      // Mettre à jour le compteur
-      setUnreadCount(prev => prev + newMessages.length);
-      // Déclencher un événement pour mettre à jour le panneau
-      window.dispatchEvent(new Event('notificationsUpdated'));
-    });
-  }
-  
-  return () => {
-    window.removeEventListener('notificationsUpdated', updateCount);
-    window.removeEventListener('newNotification', updateCount);
-    stopMessagePolling();
-  };
-}, []);
+  useEffect(() => {
+    const updateCount = () => {
+      const count = getUnreadCount();
+      setUnreadCount(count);
+    };
+    
+    updateCount();
+    window.addEventListener('notificationsUpdated', updateCount);
+    window.addEventListener('newNotification', updateCount);
+    
+    const token = localStorage.getItem('token');
+    if (token) {
+      startMessagePolling((newMessages) => {
+        setUnreadCount(prev => prev + newMessages.length);
+        window.dispatchEvent(new Event('notificationsUpdated'));
+      });
+    }
+    
+    return () => {
+      window.removeEventListener('notificationsUpdated', updateCount);
+      window.removeEventListener('newNotification', updateCount);
+      stopMessagePolling();
+    };
+  }, []);
 
   const navLinks = [
     { path: '/accueil', label: 'Accueil' },
@@ -84,12 +79,20 @@ function Header() {
     navigate('/');
   };
 
+  // ✅ Rediriger vers la landing page quand on clique sur le logo
+  const handleLogoClick = () => {
+    // Vider le localStorage pour se déconnecter
+    localStorage.clear();
+    navigate('/');
+  };
+
   return (
     <>
       <header className="hdr">
         <div className="hdr-inner">
           <div className="hdr-left">
-            <Link to={homePath} className="hdr-logo">
+            {/* ✅ Logo avec redirection vers landing */}
+            <button onClick={handleLogoClick} className="hdr-logo-btn">
               <span className="logo-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="22" height="22">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -98,7 +101,7 @@ function Header() {
                 </svg>
               </span>
               CIVIALERT
-            </Link>
+            </button>
 
             <nav className="hdr-nav">
               {filteredNavLinks.map((link) => (
