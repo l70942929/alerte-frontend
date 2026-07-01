@@ -49,14 +49,16 @@ function DetailAlerte() {
     recu: 'En attente',
     en_cours: 'Publiée',
     resolu: 'Résolue',
-    cloture: 'Clôturée'
+    cloture: 'Clôturée',
+    retrouve: 'Retrouvé 🎉', // ← AJOUT
   };
 
   const statutClass = {
     recu: 'tag-attente',
     en_cours: 'tag-publiee',
     resolu: 'tag-resolue',
-    cloture: 'tag-cloture'
+    cloture: 'tag-cloture',
+    retrouve: 'tag-retrouve', // ← AJOUT
   };
 
   useEffect(() => {
@@ -136,6 +138,11 @@ function DetailAlerte() {
     );
   }
 
+  // ✅ Vérifier si l'alerte est encore active
+  const isActive = alerte.statut !== 'resolu' && 
+                   alerte.statut !== 'retrouve' && 
+                   alerte.statut !== 'cloture';
+
   return (
     <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
       <Header />
@@ -171,22 +178,37 @@ function DetailAlerte() {
         <div className="detail-content">
           <div className="detail-main">
 
-            {alerte.statut === 'recu' && alerte.montant_recompense > 0 && (
+            {/* ==========================================
+                RÉCOMPENSE DISPONIBLE - CORRIGÉ
+                ========================================== */}
+            {alerte.montant_recompense > 0 && (
               <div className="detail-card aider-card">
                 <h2>
                   <Award size={18} color="#f5ab35" />
                   Récompense disponible
                 </h2>
                 <p className="aider-card-text">
-                  Une récompense de <strong>{alerte.montant_recompense} FCFA</strong> est proposée pour 
-                  toute information permettant de résoudre cette alerte.
+                  Une récompense de <strong>{alerte.montant_recompense} FCFA</strong> est proposée.
+                  {alerte.statut === 'recu' && " L'alerte est en attente de vérification."}
+                  {alerte.statut === 'en_cours' && " L'alerte est active."}
+                  {alerte.statut === 'resolu' && "  L'alerte a été résolue."}
+                  {alerte.statut === 'retrouve' && "  L'objet/la personne a été retrouvé(e) !"}
+                  {alerte.statut === 'cloture' && "  L'alerte est clôturée."}
                 </p>
-                <button 
-                  className="btn-aider" 
-                  onClick={() => navigate(`/aider/${alerte.id}`)}
-                >
-                  🤝 Proposer mon aide
-                </button>
+                {/* ✅ Bouton visible seulement si l'alerte est active */}
+                {isActive && (
+                  <button 
+                    className="btn-aider" 
+                    onClick={() => navigate(`/aider/${alerte.id}`)}
+                  >
+                    🤝 Proposer mon aide
+                  </button>
+                )}
+                {alerte.statut === 'retrouve' && (
+                  <div className="aider-retrouve-badge">
+                    🎉 Objet/personne retrouvé(e) !
+                  </div>
+                )}
               </div>
             )}
 

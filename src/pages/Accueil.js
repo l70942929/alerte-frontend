@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate }react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
   AlertTriangle,
@@ -38,7 +38,17 @@ function Accueil() {
     else setHeure('Bonsoir');
 
     api.get('signalements/')
-      .then((res) => setAlertes(Array.isArray(res.data) ? res.data.slice(0, 4) : []))
+      .then((res) => {
+        // ✅ Filtrer : uniquement les alertes publiées (en_cours, resolu, retrouve, cloture)
+        const data = Array.isArray(res.data) ? res.data : [];
+        const alertesPubliees = data.filter(a => 
+          a.statut === 'en_cours' || 
+          a.statut === 'resolu' || 
+          a.statut === 'retrouve' || 
+          a.statut === 'cloture'
+        );
+        setAlertes(alertesPubliees.slice(0, 4));
+      })
       .catch(() => {});
   }, [navigate]);
 
@@ -194,7 +204,6 @@ function Accueil() {
                       </p>
                     </div>
 
-                    {/* Icône colorée à droite */}
                     <div
                       className="acc-alrt-ico-box"
                       style={{ background: cfg.bg }}
@@ -236,7 +245,6 @@ function Accueil() {
               </div>
               <span>Faire un don</span>
             </button>
-            {/* NOUVEAU BOUTON MES RÉCOMPENSES */}
             <button className="acc-rapide-card" onClick={() => navigate('/mes-recompenses')}>
               <div className="acc-rapide-icon" style={{ background: '#FFF8E1' }}>
                 <Award size={22} style={{ color: '#f5ab35' }} />

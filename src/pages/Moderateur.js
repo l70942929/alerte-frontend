@@ -81,7 +81,7 @@ function Moderateur() {
         if (nouveauStatut === 'en_cours') {
           addNotificationForUser(
             proprietaireAlerte,
-            '✅ Alerte vérifiée et publiée',
+            ' Alerte vérifiée et publiée',
             `Votre ${typeAlerte} a été validée et est maintenant publique.`,
             'success',
             id
@@ -97,7 +97,7 @@ function Moderateur() {
         } else if (nouveauStatut === 'retrouve') {
           addNotificationForUser(
             proprietaireAlerte,
-            '🎉 Objet/personne retrouvé(e) !',
+            'Objet/personne retrouvé(e) !',
             `Félicitations ! L'objet ou la personne de votre alerte "${typeAlerte}" a été retrouvé(e) ! Vous avez gagné 30 points.`,
             'success',
             id
@@ -105,7 +105,7 @@ function Moderateur() {
         } else if (nouveauStatut === 'cloture' && alerteActuelle?.statut === 'recu') {
           addNotificationForUser(
             proprietaireAlerte,
-            '❌ Alerte non validée',
+            ' Alerte non validée',
             `Votre ${typeAlerte} n'a pas été validée par nos modérateurs.`,
             'error',
             id
@@ -183,7 +183,7 @@ function Moderateur() {
     { key: 'recu', label: 'En attente', icon: Clock },
     { key: 'en_cours', label: 'Publiées', icon: CheckCircle },
     { key: 'resolu', label: 'Résolues', icon: ThumbsUp },
-    { key: 'retrouve', label: 'Retrouvées 🎉', icon: Search }, // ← AJOUT
+    { key: 'retrouve', label: 'Retrouvées ', icon: Search }, // ← AJOUT
     { key: 'cloture', label: 'Clôturées', icon: XCircle },
   ];
 
@@ -218,7 +218,7 @@ function Moderateur() {
         </div>
 
         {message && (
-          <div className={`modo-msg ${message.startsWith('✅') ? 'success' : 'error'}`}>
+          <div className={`modo-msg ${message.startsWith('') ? 'success' : 'error'}`}>
             {message}
           </div>
         )}

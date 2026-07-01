@@ -44,7 +44,27 @@ function ListeAlertes() {
       const res = await api.get('signalements/', {
         headers: { Authorization: `Token ${token}` },
       });
-      setAlertes(Array.isArray(res.data) ? res.data : []);
+      
+      const data = Array.isArray(res.data) ? res.data : [];
+      
+      // ✅ Filtrer selon le rôle
+      const role = localStorage.getItem('role');
+      let alertesFiltrees;
+      
+      if (role === 'admin' || role === 'moderateur') {
+        // Admin et modérateur voient toutes les alertes
+        alertesFiltrees = data;
+      } else {
+        // Citoyen voit seulement les alertes publiées
+        alertesFiltrees = data.filter(a => 
+          a.statut === 'en_cours' || 
+          a.statut === 'resolu' || 
+          a.statut === 'retrouve' || 
+          a.statut === 'cloture'
+        );
+      }
+      
+      setAlertes(alertesFiltrees);
     } catch {
       setErreur('Impossible de charger les alertes. Vérifiez votre connexion.');
       setAlertes([]);
@@ -115,7 +135,6 @@ function ListeAlertes() {
       <Header />
       <div className="la-layout">
 
-        {/* ══════════ SIDEBAR ══════════ */}
         <aside className={`la-sidebar ${mobileFiltersOpen ? 'open' : ''}`}>
           <div className="la-sidebar-brand">
             <Bell size={24} className="la-brand-icon" />
@@ -159,15 +178,12 @@ function ListeAlertes() {
           </button>
         </aside>
 
-        {/* Overlay pour fermer le menu mobile */}
         {mobileFiltersOpen && (
           <div className="la-overlay" onClick={() => setMobileFiltersOpen(false)} />
         )}
 
-        {/* ══════════ MAIN ══════════ */}
         <main className="la-main">
 
-          {/* En-tête */}
           <div className="la-main-hdr">
             <div>
               <h1 className="la-main-titre">Fil d'actualité</h1>
@@ -189,7 +205,6 @@ function ListeAlertes() {
             </div>
           </div>
 
-          {/* Barre de résultats */}
           {!loading && (
             <div className="la-results-bar">
               <span className="la-results-count">
@@ -208,7 +223,6 @@ function ListeAlertes() {
             </div>
           )}
 
-          {/* Erreur */}
           {erreur && (
             <div className="la-error">
               <AlertCircle size={20} />
@@ -216,7 +230,6 @@ function ListeAlertes() {
             </div>
           )}
 
-          {/* Chargement */}
           {loading ? (
             <div className="la-loading">
               <Loader2 size={40} className="la-spinner" />

@@ -73,3 +73,26 @@
   border-color: #2a2a3e;
   color: #ef5350;
 }
+/* ===== BADGE RETROUVÉ ===== */
+.aider-retrouve-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f5ab35, #e67e22);
+  color: white;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 12px;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== TAG RETROUVÉ ===== */
+.tag-retrouve {
+  background: linear-gradient(135deg, #f5ab35, #e67e22);
+  color: white;
+}
