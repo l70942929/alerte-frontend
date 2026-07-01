@@ -307,6 +307,11 @@
   color: #7f8c8d;
 }
 
+.statut-retrouve {
+  background: rgba(245, 171, 53, 0.15);
+  color: #f39c12;
+}
+
 .modo-card-desc {
   font-size: 14px;
   color: #5a5a7a;
@@ -383,6 +388,17 @@
 
 .modo-btn-resoudre:hover:not(:disabled) {
   background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* ✅ NOUVEAU BOUTON RETROUVÉ */
+.modo-btn-retrouve {
+  background: #f5ab35;
+  color: white;
+}
+
+.modo-btn-retrouve:hover:not(:disabled) {
+  background: #e67e22;
   transform: translateY(-2px);
 }
 

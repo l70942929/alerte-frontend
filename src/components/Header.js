@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
+import api from '../services/api'; // ✅ AJOUT IMPORTANT
 import './Header.css';
 import { startMessagePolling, stopMessagePolling, getUnreadCount } from '../services/notificationService';
 
@@ -28,28 +29,48 @@ function Header() {
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
+  // ✅ VÉRIFICATION DES NOTIFICATIONS
   useEffect(() => {
-    const updateCount = () => {
-      const count = getUnreadCount();
-      setUnreadCount(count);
+    const checkNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const res = await api.get('/messagerie/notifications/', {
+          headers: { Authorization: `Token ${token}` }
+        });
+        
+        const unread = res.data.filter(n => !n.lu);
+        if (unread.length > 0) {
+          setUnreadCount(unread.length);
+          window.dispatchEvent(new Event('notificationsUpdated'));
+        } else {
+          // Si aucune notification non lue, mettre à 0
+          setUnreadCount(0);
+        }
+      } catch (error) {
+        console.error('Erreur chargement notifications:', error);
+      }
     };
     
-    updateCount();
-    window.addEventListener('notificationsUpdated', updateCount);
-    window.addEventListener('newNotification', updateCount);
+    // Vérifier immédiatement
+    checkNotifications();
     
-    const token = localStorage.getItem('token');
-    if (token) {
-      startMessagePolling((newMessages) => {
-        setUnreadCount(prev => prev + newMessages.length);
-        window.dispatchEvent(new Event('notificationsUpdated'));
-      });
-    }
+    // Puis toutes les 10 secondes
+    const interval = setInterval(checkNotifications, 10000);
+    
+    // Écouter les événements de nouvelles notifications
+    const handleNewNotification = () => {
+      checkNotifications();
+    };
+    
+    window.addEventListener('newNotification', handleNewNotification);
+    window.addEventListener('notificationsUpdated', handleNewNotification);
     
     return () => {
-      window.removeEventListener('notificationsUpdated', updateCount);
-      window.removeEventListener('newNotification', updateCount);
-      stopMessagePolling();
+      clearInterval(interval);
+      window.removeEventListener('newNotification', handleNewNotification);
+      window.removeEventListener('notificationsUpdated', handleNewNotification);
     };
   }, []);
 
@@ -81,7 +102,6 @@ function Header() {
 
   // ✅ Rediriger vers la landing page quand on clique sur le logo
   const handleLogoClick = () => {
-    // Vider le localStorage pour se déconnecter
     localStorage.clear();
     navigate('/');
   };

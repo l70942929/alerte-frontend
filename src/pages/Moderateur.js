@@ -18,6 +18,7 @@ import {
   User,
   Check,
   X,
+  Search,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -70,7 +71,7 @@ function Moderateur() {
     
     try {
       await api.patch(`signalements/moderer/${id}/`, { statut: nouveauStatut });
-      setMessage(' Alerte mise à jour avec succès !');
+      setMessage('✅ Alerte mise à jour avec succès !');
       setErreur('');
       setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
       
@@ -80,7 +81,7 @@ function Moderateur() {
         if (nouveauStatut === 'en_cours') {
           addNotificationForUser(
             proprietaireAlerte,
-            ' Alerte vérifiée et publiée',
+            '✅ Alerte vérifiée et publiée',
             `Votre ${typeAlerte} a été validée et est maintenant publique.`,
             'success',
             id
@@ -90,6 +91,14 @@ function Moderateur() {
             proprietaireAlerte,
             '🏁 Alerte résolue',
             `L'alerte "${typeAlerte}" est maintenant résolue.`,
+            'success',
+            id
+          );
+        } else if (nouveauStatut === 'retrouve') {
+          addNotificationForUser(
+            proprietaireAlerte,
+            '🎉 Objet/personne retrouvé(e) !',
+            `Félicitations ! L'objet ou la personne de votre alerte "${typeAlerte}" a été retrouvé(e) ! Vous avez gagné 30 points.`,
             'success',
             id
           );
@@ -142,7 +151,8 @@ function Moderateur() {
       recu: 'En attente',
       en_cours: 'Publiée',
       resolu: 'Résolue',
-      cloture: 'Clôturée'
+      cloture: 'Clôturée',
+      retrouve: 'Retrouvé 🎉', // ← AJOUT
     };
     return labels[statut] || statut;
   };
@@ -152,7 +162,8 @@ function Moderateur() {
       recu: 'statut-attente',
       en_cours: 'statut-publiee',
       resolu: 'statut-resolue',
-      cloture: 'statut-cloture'
+      cloture: 'statut-cloture',
+      retrouve: 'statut-retrouve', // ← AJOUT
     };
     return classes[statut] || '';
   };
@@ -164,6 +175,7 @@ function Moderateur() {
     recu: alertes.filter((a) => a.statut === 'recu').length,
     en_cours: alertes.filter((a) => a.statut === 'en_cours').length,
     resolu: alertes.filter((a) => a.statut === 'resolu').length,
+    retrouve: alertes.filter((a) => a.statut === 'retrouve').length, // ← AJOUT
   };
 
   const filtres = [
@@ -171,6 +183,7 @@ function Moderateur() {
     { key: 'recu', label: 'En attente', icon: Clock },
     { key: 'en_cours', label: 'Publiées', icon: CheckCircle },
     { key: 'resolu', label: 'Résolues', icon: ThumbsUp },
+    { key: 'retrouve', label: 'Retrouvées 🎉', icon: Search }, // ← AJOUT
     { key: 'cloture', label: 'Clôturées', icon: XCircle },
   ];
 
@@ -342,20 +355,49 @@ function Moderateur() {
                     </>
                   )}
                   {a.statut === 'en_cours' && (
+                    <>
+                      <button
+                        className="modo-btn-resoudre"
+                        onClick={() => changerStatut(a.id, 'resolu')}
+                        disabled={processingIds.includes(a.id)}
+                      >
+                        {processingIds.includes(a.id) ? (
+                          <Loader2 size={16} className="spinning" />
+                        ) : (
+                          <CheckCircle size={16} />
+                        )}
+                        Marquer comme résolue
+                      </button>
+                      {/* ✅ NOUVEAU BOUTON RETROUVÉ */}
+                      <button
+                        className="modo-btn-retrouve"
+                        onClick={() => changerStatut(a.id, 'retrouve')}
+                        disabled={processingIds.includes(a.id)}
+                      >
+                        {processingIds.includes(a.id) ? (
+                          <Loader2 size={16} className="spinning" />
+                        ) : (
+                          <Search size={16} />
+                        )}
+                        Marquer comme retrouvé (+30 pts)
+                      </button>
+                    </>
+                  )}
+                  {a.statut === 'resolu' && (
                     <button
-                      className="modo-btn-resoudre"
-                      onClick={() => changerStatut(a.id, 'resolu')}
+                      className="modo-btn-cloturer"
+                      onClick={() => changerStatut(a.id, 'cloture')}
                       disabled={processingIds.includes(a.id)}
                     >
                       {processingIds.includes(a.id) ? (
                         <Loader2 size={16} className="spinning" />
                       ) : (
-                        <CheckCircle size={16} />
+                        <XCircle size={16} />
                       )}
-                      Marquer comme résolue
+                      Clôturer l'alerte
                     </button>
                   )}
-                  {a.statut === 'resolu' && (
+                  {a.statut === 'retrouve' && (
                     <button
                       className="modo-btn-cloturer"
                       onClick={() => changerStatut(a.id, 'cloture')}
