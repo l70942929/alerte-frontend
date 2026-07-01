@@ -8,7 +8,6 @@ import {
   clearAllNotifications,
   fetchMessageNotifications,
   markMessageNotificationAsRead,
-  addListener
 } from '../services/notificationService';
 import './NotificationPanel.css';
 
