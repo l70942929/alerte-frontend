@@ -61,7 +61,7 @@ function Messagerie() {
         const nonLus = {};
         for (const contact of autres) {
           try {
-            const convRes = await api.get(`/messagerie/conversation/?user_id=${contact.id}`, {
+            const convRes = await api.get(`/messagerie/conversation/${contact.id}/`, {
               headers: { Authorization: `Token ${token}` }
             });
             const nonLusCount = convRes.data.filter(msg => 
@@ -100,7 +100,8 @@ function Messagerie() {
         return;
       }
 
-      const res = await api.get(`/messagerie/conversation/?user_id=${contact.id}`, {
+      // ✅ URL CORRIGÉE
+      const res = await api.get(`/messagerie/conversation/${contact.id}/`, {
         headers: { Authorization: `Token ${token}` }
       });
       setMessages(Array.isArray(res.data) ? res.data : []);
@@ -110,7 +111,7 @@ function Messagerie() {
         !msg.lu && msg.expediteur_nom === contact.username
       );
       if (nonLus.length > 0) {
-        await api.post(`/messagerie/marquer-lu/?user_id=${contact.id}`, {}, {
+        await api.post(`/messagerie/marquer-lu/${contact.id}/`, {}, {
           headers: { Authorization: `Token ${token}` }
         });
         setNonLusParContact(prev => ({
