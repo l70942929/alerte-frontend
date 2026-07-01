@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
   AlertTriangle,
@@ -39,8 +39,8 @@ function Accueil() {
 
     api.get('signalements/')
       .then((res) => {
-        // ✅ Filtrer : uniquement les alertes publiées (en_cours, resolu, retrouve, cloture)
         const data = Array.isArray(res.data) ? res.data : [];
+        // ✅ Filtrer les alertes publiées
         const alertesPubliees = data.filter(a => 
           a.statut === 'en_cours' || 
           a.statut === 'resolu' || 
@@ -73,6 +73,7 @@ function Accueil() {
     en_cours: { label: 'En cours',   cls: 'badge-encours' },
     resolu:   { label: 'Résolu',     cls: 'badge-resolu'  },
     cloture:  { label: 'Clôturé',    cls: 'badge-cloture' },
+    retrouve: { label: 'Retrouvé 🎉', cls: 'badge-retrouve' },
   };
 
   const afficherLieu = (loc = '') => {
