@@ -583,3 +583,31 @@
     font-size: 20px;
   }
 }
+
+
+
+.auth-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.auth-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.auth-logout-btn:hover {
+  background: rgba(231, 76, 60, 0.08);
+}

@@ -243,7 +243,7 @@ function SoumettreAlerte() {
         },
       });
 
-      setMessage('✅ Votre alerte a été soumise avec succès ! Elle sera vérifiée sous 15 minutes.');
+      setMessage('Votre alerte a été soumise avec succès ! Elle sera vérifiée sous 15 minutes.');
       setTimeout(() => navigate('/alertes'), 3000);
     } catch (err) {
       console.error('Erreur complète:', err);
@@ -385,12 +385,12 @@ function SoumettreAlerte() {
                     min="0"
                   />
                   <small>
-                    💡 <strong>Optionnel</strong> - Proposer une récompense pour encourager les citoyens à aider.
+                    <strong>Optionnel</strong> - Proposer une récompense pour encourager les citoyens à aider.
                     {montant > 0 && (
                       <span style={{ display: 'block', marginTop: '4px' }}>
-                        <span style={{ color: '#f39c12' }}>📊 Commission (4%) : {commission} FCFA</span>
+                        <span style={{ color: '#f39c12' }}> Commission (4%) : {commission} FCFA</span>
                         <br />
-                        <span style={{ color: '#2ecc71' }}>🎯 Récompense nette : {net} FCFA</span>
+                        <span style={{ color: '#2ecc71' }}> Récompense nette : {net} FCFA</span>
                       </span>
                     )}
                   </small>

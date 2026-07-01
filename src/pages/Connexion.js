@@ -12,6 +12,7 @@ import {
   Mail,
   KeyRound,
   ArrowRight,
+  LogOut,
 } from 'lucide-react';
 import api from '../services/api';
 import './Connexion.css';
@@ -83,6 +84,11 @@ function Connexion() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
   return (
     <div className={`auth-page ${darkMode ? 'dark-mode' : ''}`}>
       <div className="auth-left">
@@ -117,9 +123,16 @@ function Connexion() {
       </div>
       <div className="auth-right">
         <div className="auth-box fade-up">
-          <button className="auth-back" onClick={() => navigate('/')}>
-            <ArrowLeft size={20} />
-          </button>
+          <div className="auth-header-actions">
+            <button className="auth-back" onClick={() => navigate('/')}>
+              <ArrowLeft size={20} />
+            </button>
+            {/* ✅ BOUTON DÉCONNEXION */}
+            <button className="auth-logout-btn" onClick={handleLogout}>
+              <LogOut size={18} />
+              Se déconnecter
+            </button>
+          </div>
           <h1>Connexion</h1>
           <p>Connectez-vous à votre compte citoyen.</p>
 
