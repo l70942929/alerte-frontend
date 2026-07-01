@@ -29,6 +29,14 @@ function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // ✅ REDIRIGER VERS DASHBOARD SI DÉJÀ CONNECTÉ
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/accueil');
+    }
+  }, [navigate]);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -117,7 +125,7 @@ function Landing() {
   return (
     <div className={`land ${darkMode ? 'dark-mode' : ''}`}>
 
-      {/* ══════════ HEADER ══════════ */}
+      {/* HEADER */}
       <header className={`land-hdr ${scrolled ? 'scrolled' : ''}`}>
         <div className="land-hdr-in">
           <a className="logo" href="/">
@@ -155,7 +163,7 @@ function Landing() {
         </div>
       </header>
 
-      {/* ══════════ MENU MOBILE ══════════ */}
+      {/* MENU MOBILE */}
       {mobileMenuOpen && (
         <div className="mobile-menu-landing">
           <a href="#alertes"  onClick={() => setMobileMenuOpen(false)}>Alertes</a>
@@ -167,7 +175,7 @@ function Landing() {
         </div>
       )}
 
-      {/* ══════════ HERO ══════════ */}
+      {/* HERO */}
       <section className="land-hero">
         <div className="hero-overlay">
           <div className="hero-grid">
@@ -213,7 +221,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ STATS ══════════ */}
+      {/* STATS */}
       <section className="land-stats">
         <div className="stats-in">
           {[
@@ -233,7 +241,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ FEATURES ══════════ */}
+      {/* FEATURES */}
       <section className="land-features" id="features">
         <div className="sec-in">
           <div className="sec-hdr">
@@ -255,7 +263,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ ALERTES RÉCENTES ══════════ */}
+      {/* ALERTES RÉCENTES */}
       <section className="land-alertes" id="alertes">
         <div className="sec-in">
           <div className="sec-hdr">
@@ -290,7 +298,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ COMMENT ÇA MARCHE ══════════ */}
+      {/* COMMENT ÇA MARCHE */}
       <section className="land-how" id="comment">
         <div className="sec-in">
           <div className="sec-hdr center">
@@ -315,7 +323,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ COMMUNITY ══════════ */}
+      {/* COMMUNITY */}
       <section className="community-section" id="community">
         <div className="sec-in">
           <div className="sec-hdr center">
@@ -337,7 +345,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ CTA ══════════ */}
+      {/* CTA */}
       <section className="land-cta">
         <div className="cta-content">
           <h2>Ensemble, protégeons nos communautés.</h2>
@@ -356,7 +364,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════ FOOTER ══════════ */}
+      {/* FOOTER */}
       <footer className="land-footer">
         <div className="foot-in">
           <div className="foot-brand">

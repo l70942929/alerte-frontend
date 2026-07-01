@@ -1,21 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNotifications, markAsRead, markAllAsRead, deleteNotification, clearAllNotifications } from '../services/notificationService';
+import { 
+  getNotifications, 
+  markAsRead, 
+  markAllAsRead, 
+  deleteNotification, 
+  clearAllNotifications,
+  fetchMessageNotifications,
+  markMessageNotificationAsRead,
+  addListener
+} from '../services/notificationService';
 import './NotificationPanel.css';
 
 function NotificationPanel({ onClose }) {
   const [notifications, setNotifications] = useState([]);
+  const [messageNotifs, setMessageNotifs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const panelRef = useRef(null);
 
-  const loadNotifications = () => {
-    setNotifications(getNotifications());
+  // Charger les notifications
+  const loadNotifications = async () => {
+    setLoading(true);
+    try {
+      // Notifications existantes (localStorage)
+      const existingNotifs = getNotifications();
+      setNotifications(existingNotifs);
+      
+      // Notifications de messages (backend)
+      const messages = await fetchMessageNotifications();
+      setMessageNotifs(messages || []);
+    } catch (error) {
+      console.error('Erreur chargement notifications:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadNotifications();
     
-    const handleUpdate = () => loadNotifications();
+    // Écouter les mises à jour
+    const handleUpdate = () => {
+      setNotifications(getNotifications());
+    };
+    
     window.addEventListener('notificationsUpdated', handleUpdate);
     window.addEventListener('newNotification', handleUpdate);
     
@@ -25,6 +54,7 @@ function NotificationPanel({ onClose }) {
     };
   }, []);
 
+  // Fermer au clic extérieur
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -35,7 +65,21 @@ function NotificationPanel({ onClose }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  const handleNotificationClick = (notif) => {
+  // Gérer le clic sur une notification
+  const handleNotificationClick = async (notif) => {
+    // Si c'est un message
+    if (notif.id && typeof notif.id === 'string' && notif.id.startsWith('msg_')) {
+      await markMessageNotificationAsRead(notif.messageId);
+      // Marquer comme lu dans l'état local
+      setMessageNotifs(prev => 
+        prev.map(n => n.id === notif.id ? { ...n, lu: true } : n)
+      );
+      navigate('/messagerie');
+      if (onClose) onClose();
+      return;
+    }
+    
+    // Sinon, notification normale
     markAsRead(notif.id);
     if (notif.alerteId) {
       navigate(`/alertes/${notif.alerteId}`);
@@ -43,40 +87,40 @@ function NotificationPanel({ onClose }) {
     }
   };
 
+  // Supprimer une notification
   const handleDelete = (e, notifId) => {
     e.stopPropagation();
+    if (typeof notifId === 'string' && notifId.startsWith('msg_')) {
+      // Pour les messages, on les retire de la liste
+      setMessageNotifs(prev => prev.filter(n => n.id !== notifId));
+      return;
+    }
     deleteNotification(notifId);
   };
 
+  // Tout marquer comme lu
   const handleMarkAllAsRead = () => {
     markAllAsRead();
+    setMessageNotifs(prev => prev.map(n => ({ ...n, lu: true })));
   };
 
+  // Tout supprimer
   const handleClearAll = () => {
     if (window.confirm('Supprimer toutes les notifications ?')) {
       clearAllNotifications();
+      setMessageNotifs([]);
     }
   };
 
-  const getTypeIcon = (type) => {
-    switch(type) {
-      case 'success': return '✅';
-      case 'warning': return '⚠️';
-      case 'error': return '❌';
-      default: return '🔔';
-    }
-  };
+  // Combiner les deux types de notifications
+  const allNotifications = [...messageNotifs, ...notifications].sort((a, b) => 
+    new Date(b.date) - new Date(a.date)
+  );
 
-  const getTypeClass = (type) => {
-    switch(type) {
-      case 'success': return 'notif-success';
-      case 'warning': return 'notif-warning';
-      case 'error': return 'notif-error';
-      default: return 'notif-info';
-    }
-  };
+  const unreadCount = allNotifications.filter(n => !n.lu).length;
 
   const formatDate = (dateString) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
     const diff = now - date;
@@ -91,7 +135,19 @@ function NotificationPanel({ onClose }) {
     return date.toLocaleDateString('fr-FR');
   };
 
-  const unreadCount = notifications.filter(n => !n.lu).length;
+  const getTypeIcon = (type) => {
+    if (type === 'success') return '✅';
+    if (type === 'warning') return '⚠️';
+    if (type === 'error') return '❌';
+    return '🔔';
+  };
+
+  const getTypeClass = (type) => {
+    if (type === 'success') return 'notif-success';
+    if (type === 'warning') return 'notif-warning';
+    if (type === 'error') return 'notif-error';
+    return 'notif-info';
+  };
 
   return (
     <div className="notification-panel" ref={panelRef}>
@@ -102,7 +158,7 @@ function NotificationPanel({ onClose }) {
           {unreadCount > 0 && <span className="notif-badge-count">{unreadCount}</span>}
         </h3>
         <div className="notification-actions">
-          {notifications.length > 0 && (
+          {allNotifications.length > 0 && (
             <>
               <button onClick={handleMarkAllAsRead} className="notif-action-btn" title="Tout marquer comme lu">
                 <span className="material-symbols-outlined">done_all</span>
@@ -119,13 +175,18 @@ function NotificationPanel({ onClose }) {
       </div>
       
       <div className="notification-list">
-        {notifications.length === 0 ? (
+        {loading ? (
+          <div className="notification-empty">
+            <span className="material-symbols-outlined">hourglass_empty</span>
+            <p>Chargement...</p>
+          </div>
+        ) : allNotifications.length === 0 ? (
           <div className="notification-empty">
             <span className="material-symbols-outlined">notifications_off</span>
             <p>Aucune notification</p>
           </div>
         ) : (
-          notifications.map(notif => (
+          allNotifications.map(notif => (
             <div 
               key={notif.id} 
               className={`notification-item ${!notif.lu ? 'unread' : ''} ${getTypeClass(notif.type)}`}

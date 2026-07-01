@@ -11,8 +11,8 @@ import {
   X,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
-import { getUnreadCount } from '../services/notificationService';
 import './Header.css';
+import { startMessagePolling, stopMessagePolling, getUnreadCount } from '../services/notificationService';
 
 function Header() {
   const navigate = useNavigate();
@@ -29,16 +29,34 @@ function Header() {
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
-  useEffect(() => {
-    const updateCount = () => setUnreadCount(getUnreadCount());
-    updateCount();
-    window.addEventListener('notificationsUpdated', updateCount);
-    window.addEventListener('newNotification', updateCount);
-    return () => {
-      window.removeEventListener('notificationsUpdated', updateCount);
-      window.removeEventListener('newNotification', updateCount);
-    };
-  }, []);
+ useEffect(() => {
+  const updateCount = () => {
+    // Récupérer le nombre de notifications non lues
+    const count = getUnreadCount();
+    setUnreadCount(count);
+  };
+  
+  updateCount();
+  window.addEventListener('notificationsUpdated', updateCount);
+  window.addEventListener('newNotification', updateCount);
+  
+  // ✅ Démarrer le polling des messages
+  const token = localStorage.getItem('token');
+  if (token) {
+    startMessagePolling((newMessages) => {
+      // Mettre à jour le compteur
+      setUnreadCount(prev => prev + newMessages.length);
+      // Déclencher un événement pour mettre à jour le panneau
+      window.dispatchEvent(new Event('notificationsUpdated'));
+    });
+  }
+  
+  return () => {
+    window.removeEventListener('notificationsUpdated', updateCount);
+    window.removeEventListener('newNotification', updateCount);
+    stopMessagePolling();
+  };
+}, []);
 
   const navLinks = [
     { path: '/accueil', label: 'Accueil' },

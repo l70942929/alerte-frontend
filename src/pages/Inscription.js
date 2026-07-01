@@ -43,9 +43,7 @@ function Inscription() {
     try {
       const res = await api.post('/auth/inscription/', form);
       if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('username', res.data.username);
-        localStorage.setItem('role', res.data.role);
+        // ✅ Rediriger vers la page de connexion
         navigate('/connexion');
       } else {
         setErreur("Erreur lors de l'inscription. Réessayez.");

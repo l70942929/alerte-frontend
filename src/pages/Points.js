@@ -57,6 +57,11 @@ function Points() {
       setMessage(res.data.message);
       const pointsRes = await api.get('/auth/mes-points/');
       setPoints(pointsRes.data);
+      
+      // ✅ Message supplémentaire si une récompense a été attribuée
+      if (res.data.recompense_attribuee) {
+        setMessage('🎉 Récompense de 4800 FCFA ajoutée à "Mes récompenses" !');
+      }
     } catch (error) {
       setMessage(error.response?.data?.error || 'Erreur lors de la réclamation.');
     }
