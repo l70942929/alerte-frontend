@@ -10,6 +10,7 @@ import {
   markMessageNotificationAsRead,
   fetchBackendNotifications,
   markBackendNotificationAsRead,
+  addListener
 } from '../services/notificationService';
 import './NotificationPanel.css';
 
@@ -21,19 +22,15 @@ function NotificationPanel({ onClose }) {
   const navigate = useNavigate();
   const panelRef = useRef(null);
 
-  // Charger toutes les notifications
   const loadNotifications = async () => {
     setLoading(true);
     try {
-      // 1. Notifications locales (localStorage)
       const existingNotifs = getNotifications();
       setNotifications(existingNotifs);
       
-      // 2. Notifications de messages (backend)
       const messages = await fetchMessageNotifications();
       setMessageNotifs(messages || []);
       
-      // 3. Notifications backend (BDD)
       const backend = await fetchBackendNotifications();
       setBackendNotifs(backend || []);
     } catch (error) {
@@ -47,15 +44,21 @@ function NotificationPanel({ onClose }) {
     loadNotifications();
     
     const handleUpdate = () => {
-      setNotifications(getNotifications());
+      loadNotifications();
     };
     
     window.addEventListener('notificationsUpdated', handleUpdate);
     window.addEventListener('newNotification', handleUpdate);
     
+    // Ajouter un écouteur via le service
+    const unsubscribe = addListener(() => {
+      loadNotifications();
+    });
+    
     return () => {
       window.removeEventListener('notificationsUpdated', handleUpdate);
       window.removeEventListener('newNotification', handleUpdate);
+      if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, []);
 
@@ -70,7 +73,7 @@ function NotificationPanel({ onClose }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  // Gérer le clic sur une notification
+  // ✅ Gérer le clic sur une notification
   const handleNotificationClick = async (notif) => {
     // Si c'est un message
     if (notif.id && typeof notif.id === 'string' && notif.id.startsWith('msg_')) {
@@ -104,7 +107,6 @@ function NotificationPanel({ onClose }) {
     }
   };
 
-  // Supprimer une notification
   const handleDelete = (e, notifId) => {
     e.stopPropagation();
     if (typeof notifId === 'string' && notifId.startsWith('msg_')) {
@@ -114,14 +116,12 @@ function NotificationPanel({ onClose }) {
     deleteNotification(notifId);
   };
 
-  // Tout marquer comme lu
   const handleMarkAllAsRead = () => {
     markAllAsRead();
     setMessageNotifs(prev => prev.map(n => ({ ...n, lu: true })));
     setBackendNotifs(prev => prev.map(n => ({ ...n, lu: true })));
   };
 
-  // Tout supprimer
   const handleClearAll = () => {
     if (window.confirm('Supprimer toutes les notifications ?')) {
       clearAllNotifications();
@@ -130,7 +130,6 @@ function NotificationPanel({ onClose }) {
     }
   };
 
-  // Combiner tous les types de notifications
   const allNotifications = [
     ...backendNotifs.map(n => ({ ...n, id: `backend_${n.id}` })),
     ...messageNotifs,

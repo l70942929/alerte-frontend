@@ -11,7 +11,13 @@ import {
   X,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
-import api from '../services/api';
+import {
+  fetchBackendNotifications,
+  getUnreadCount,
+  addListener,
+  startPolling,
+  stopPolling
+} from '../services/notificationService';
 import './Header.css';
 
 function Header() {
@@ -28,34 +34,45 @@ function Header() {
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
-  // ✅ GESTION DES NOTIFICATIONS
   useEffect(() => {
-    const checkNotifications = async () => {
+    const token = localStorage.getItem('token');
+    
+    const updateCount = () => {
+      const count = getUnreadCount();
+      setUnreadCount(count);
+    };
+    
+    const loadNotifications = async () => {
       try {
-        const token = localStorage.getItem('token');
         if (!token) return;
-        
-        const res = await api.get('/auth/notifications/', {
-          headers: { Authorization: `Token ${token}` }
-        });
-        
-        const unread = res.data.filter(n => !n.lu);
-        setUnreadCount(unread.length);
-        window.dispatchEvent(new Event('notificationsUpdated'));
+        await fetchBackendNotifications();
+        updateCount();
       } catch (error) {
         console.error('Erreur chargement notifications:', error);
       }
     };
     
-    checkNotifications();
-    const interval = setInterval(checkNotifications, 10000);
+    loadNotifications();
     
-    const handleNewNotification = () => checkNotifications();
+    const unsubscribe = addListener(updateCount);
+    
+    if (token) {
+      startPolling((newMessages) => {
+        updateCount();
+        window.dispatchEvent(new Event('notificationsUpdated'));
+      });
+    }
+    
+    const handleNewNotification = () => {
+      updateCount();
+    };
+    
     window.addEventListener('newNotification', handleNewNotification);
     window.addEventListener('notificationsUpdated', handleNewNotification);
     
     return () => {
-      clearInterval(interval);
+      if (typeof unsubscribe === 'function') unsubscribe();
+      stopPolling();
       window.removeEventListener('newNotification', handleNewNotification);
       window.removeEventListener('notificationsUpdated', handleNewNotification);
     };
@@ -69,7 +86,6 @@ function Header() {
     { path: '/messagerie', label: 'Messages' },
     { path: '/don', label: 'Faire un don' },
     { path: '/points', label: 'Points' },
-    { path: '/mes-recompenses', label: 'Récompenses' },
   ];
 
   let filteredNavLinks = [...navLinks];
@@ -92,10 +108,15 @@ function Header() {
     navigate('/');
   };
 
+  const handleBellClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   return (
     <>
       <header className="hdr">
         <div className="hdr-inner">
+
           <div className="hdr-left">
             <button onClick={handleLogoClick} className="hdr-logo-btn">
               <span className="logo-icon">
@@ -122,6 +143,7 @@ function Header() {
           </div>
 
           <div className="hdr-right">
+
             <button className="theme-btn" onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -129,7 +151,7 @@ function Header() {
             <button
               className="hdr-icon-btn"
               aria-label="Notifications"
-              onClick={() => setShowNotifications(!showNotifications)}
+              onClick={handleBellClick}
             >
               <Bell size={20} />
               {unreadCount > 0 && (

@@ -39,7 +39,6 @@ export const addNotificationForUser = (username, title, message, type = 'info', 
   notifications.unshift(newNotification);
   localStorage.setItem(key, JSON.stringify(notifications));
   
-  // Si l'utilisateur est connecté, déclencher un événement
   const currentUser = localStorage.getItem('username');
   if (currentUser === username) {
     window.dispatchEvent(new CustomEvent('newNotification', { detail: newNotification }));
@@ -97,43 +96,27 @@ export const getUnreadCount = () => {
 // GESTION DES ÉCOUTEURS D'ÉVÉNEMENTS
 // ==========================================
 
-// Ajouter un écouteur pour les nouvelles notifications
+let listeners = [];
+
 export const addListener = (callback) => {
-  // Écouter l'événement newNotification
-  const handler = (event) => {
-    if (callback) {
-      callback(event.detail);
-    }
-  };
-  
-  window.addEventListener('newNotification', handler);
-  
-  // Retourner une fonction pour supprimer l'écouteur
+  listeners.push(callback);
+  // Appeler immédiatement avec l'état actuel
+  callback();
   return () => {
-    window.removeEventListener('newNotification', handler);
+    listeners = listeners.filter(l => l !== callback);
   };
 };
 
-// Ajouter un écouteur pour les mises à jour des notifications
-export const addUpdateListener = (callback) => {
-  const handler = () => {
-    if (callback) {
-      callback();
-    }
-  };
-  
-  window.addEventListener('notificationsUpdated', handler);
-  
-  return () => {
-    window.removeEventListener('notificationsUpdated', handler);
-  };
+export const notifyListeners = () => {
+  listeners.forEach(callback => {
+    try { callback(); } catch (e) {}
+  });
 };
 
 // ==========================================
 // NOTIFICATIONS DE MESSAGES (BACKEND)
 // ==========================================
 
-// Récupérer les notifications de messages depuis le backend
 export const fetchMessageNotifications = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -145,7 +128,7 @@ export const fetchMessageNotifications = async () => {
     
     if (!res.data || !Array.isArray(res.data)) return [];
     
-    const messageNotifs = res.data.map(msg => ({
+    return res.data.map(msg => ({
       id: `msg_${msg.id}`,
       title: `📩 Nouveau message de ${msg.expediteur || 'Inconnu'}`,
       message: msg.contenu || 'Nouveau message',
@@ -156,15 +139,12 @@ export const fetchMessageNotifications = async () => {
       messageId: msg.id,
       conversationId: msg.conversation_id
     }));
-    
-    return messageNotifs;
   } catch (error) {
     console.error('Erreur chargement notifications messages:', error);
     return [];
   }
 };
 
-// Marquer une notification de message comme lue
 export const markMessageNotificationAsRead = async (messageId) => {
   try {
     const token = localStorage.getItem('token');
@@ -178,39 +158,10 @@ export const markMessageNotificationAsRead = async (messageId) => {
   }
 };
 
-// Ajouter une notification pour un nouveau message
-export const addMessageNotification = (username, expediteur, contenu) => {
-  const key = `notifications_${username}`;
-  const stored = localStorage.getItem(key);
-  const notifications = stored ? JSON.parse(stored) : [];
-  
-  const newNotification = {
-    id: `msg_${Date.now()}`,
-    title: `📩 Nouveau message de ${expediteur}`,
-    message: contenu.length > 100 ? contenu.substring(0, 100) + '...' : contenu,
-    type: 'success',
-    alerteId: null,
-    date: new Date().toISOString(),
-    lu: false,
-    messageId: Date.now(),
-    conversationId: null
-  };
-  
-  notifications.unshift(newNotification);
-  localStorage.setItem(key, JSON.stringify(notifications));
-  
-  const currentUser = localStorage.getItem('username');
-  if (currentUser === username) {
-    window.dispatchEvent(new CustomEvent('newNotification', { detail: newNotification }));
-    window.dispatchEvent(new CustomEvent('notificationsUpdated'));
-  }
-};
-
 // ==========================================
 // NOTIFICATIONS BACKEND (BDD)
 // ==========================================
 
-// Récupérer les notifications depuis le backend (BDD)
 export const fetchBackendNotifications = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -227,7 +178,6 @@ export const fetchBackendNotifications = async () => {
   }
 };
 
-// Marquer une notification comme lue (backend)
 export const markBackendNotificationAsRead = async (notificationId) => {
   try {
     const token = localStorage.getItem('token');
@@ -250,34 +200,48 @@ let pollingInterval = null;
 export const startPolling = (onNewMessage) => {
   if (pollingInterval) clearInterval(pollingInterval);
   
-  checkMessages(onNewMessage);
+  const check = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      // Vérifier les messages
+      const messages = await fetchMessageNotifications();
+      if (messages && messages.length > 0) {
+        const unread = messages.filter(m => !m.lu);
+        if (unread.length > 0 && onNewMessage) {
+          onNewMessage(unread);
+        }
+      }
+      
+      // Vérifier les notifications backend
+      const backend = await fetchBackendNotifications();
+      if (backend && backend.length > 0) {
+        const unread = backend.filter(n => !n.lu);
+        if (unread.length > 0) {
+          // Déclencher une mise à jour
+          window.dispatchEvent(new Event('notificationsUpdated'));
+        }
+      }
+      
+      // Notifier les écouteurs
+      notifyListeners();
+      
+    } catch (error) {
+      console.error('Erreur polling:', error);
+    }
+  };
   
-  pollingInterval = setInterval(() => {
-    checkMessages(onNewMessage);
-  }, 30000);
+  // Vérifier immédiatement
+  check();
+  
+  // Puis toutes les 10 secondes
+  pollingInterval = setInterval(check, 10000);
 };
 
 export const stopPolling = () => {
   if (pollingInterval) {
     clearInterval(pollingInterval);
     pollingInterval = null;
-  }
-};
-
-const checkMessages = async (onNewMessage) => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    
-    const messages = await fetchMessageNotifications();
-    if (!messages || messages.length === 0) return;
-    
-    const unreadMessages = messages.filter(m => !m.lu);
-    
-    if (unreadMessages.length > 0 && onNewMessage) {
-      onNewMessage(unreadMessages);
-    }
-  } catch (error) {
-    console.error('Erreur polling messages:', error);
   }
 };

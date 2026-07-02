@@ -57,3 +57,29 @@
   .dash-stats { grid-template-columns: repeat(2, 1fr); }
   .dash-welcome { flex-direction: column; }
 }
+
+/* Badge nombre notifications dans le titre */
+.dash-notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e74c3c;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* Notification cliquable avec flèche */
+.dash-notif {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.dash-notif:hover {
+  background: rgba(26, 84, 144, 0.05);
+  border-radius: 10px;
+}
