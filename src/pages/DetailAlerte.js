@@ -21,6 +21,7 @@ import {
   Mail,
   Phone,
   Award,
+  CheckCircle,
 } from 'lucide-react';
 import api from '../services/api';
 import Header from '../components/Header';
@@ -37,6 +38,8 @@ function DetailAlerte() {
   const [reactions, setReactions] = useState({ soutien: 0, compassion: 0, solidarite: 0 });
   const [reactionActive, setReactionActive] = useState(null);
 
+  const username = localStorage.getItem('username');
+
   const typeIcon = {
     kidnapping: AlertTriangle,
     disparition: User,
@@ -50,7 +53,7 @@ function DetailAlerte() {
     en_cours: 'Publiée',
     resolu: 'Résolue',
     cloture: 'Clôturée',
-    retrouve: 'Retrouvé 🎉', // ← AJOUT
+    retrouve: 'Retrouvé ',
   };
 
   const statutClass = {
@@ -58,7 +61,7 @@ function DetailAlerte() {
     en_cours: 'tag-publiee',
     resolu: 'tag-resolue',
     cloture: 'tag-cloture',
-    retrouve: 'tag-retrouve', // ← AJOUT
+    retrouve: 'tag-retrouve',
   };
 
   useEffect(() => {
@@ -98,6 +101,29 @@ function DetailAlerte() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
+  // ✅ VALIDER UNE CONTRIBUTION
+  const validerContribution = async (contributionId) => {
+    if (!window.confirm('Valider cette contribution ?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await api.post(`/signalements/contribution/valider/${contributionId}/`, {}, {
+        headers: { Authorization: `Token ${token}` }
+      });
+      
+      alert(' Contribution validée avec succès !');
+      
+      // Recharger l'alerte
+      const res = await api.get(`signalements/${id}/`, {
+        headers: { Authorization: `Token ${token}` }
+      });
+      setAlerte(res.data);
+      
+    } catch (error) {
+      alert('Erreur lors de la validation : ' + (error.response?.data?.error || 'Réessayez'));
+    }
+  };
+
   const fmt = (v) => v ? new Date(v).toLocaleString('fr-FR') : 'Non spécifiée';
 
   const IconComponent = alerte?.type_alerte ? typeIcon[alerte.type_alerte] || AlertTriangle : AlertTriangle;
@@ -110,6 +136,14 @@ function DetailAlerte() {
   };
 
   const photoUrl = getPhotoUrl(alerte?.photo);
+
+  // ✅ Vérifier si l'alerte est encore active
+  const isActive = alerte?.statut !== 'resolu' && 
+                   alerte?.statut !== 'retrouve' && 
+                   alerte?.statut !== 'cloture';
+
+  // ✅ Vérifier si l'utilisateur est l'auteur
+  const isAuteur = alerte?.utilisateur_nom === username;
 
   if (loading) {
     return (
@@ -137,11 +171,6 @@ function DetailAlerte() {
       </div>
     );
   }
-
-  // ✅ Vérifier si l'alerte est encore active
-  const isActive = alerte.statut !== 'resolu' && 
-                   alerte.statut !== 'retrouve' && 
-                   alerte.statut !== 'cloture';
 
   return (
     <div className={`detail-page ${darkMode ? 'dark-mode' : ''}`}>
@@ -178,9 +207,7 @@ function DetailAlerte() {
         <div className="detail-content">
           <div className="detail-main">
 
-            {/* ==========================================
-                RÉCOMPENSE DISPONIBLE - CORRIGÉ
-                ========================================== */}
+            {/* RÉCOMPENSE DISPONIBLE */}
             {alerte.montant_recompense > 0 && (
               <div className="detail-card aider-card">
                 <h2>
@@ -193,25 +220,25 @@ function DetailAlerte() {
                   {alerte.statut === 'en_cours' && " L'alerte est active."}
                   {alerte.statut === 'resolu' && "  L'alerte a été résolue."}
                   {alerte.statut === 'retrouve' && "  L'objet/la personne a été retrouvé(e) !"}
-                  {alerte.statut === 'cloture' && "  L'alerte est clôturée."}
+                  {alerte.statut === 'cloture' && " L'alerte est clôturée."}
                 </p>
-                {/* ✅ Bouton visible seulement si l'alerte est active */}
                 {isActive && (
                   <button 
                     className="btn-aider" 
                     onClick={() => navigate(`/aider/${alerte.id}`)}
                   >
-                    🤝 Proposer mon aide
+                     Proposer mon aide
                   </button>
                 )}
                 {alerte.statut === 'retrouve' && (
                   <div className="aider-retrouve-badge">
-                    🎉 Objet/personne retrouvé(e) !
+                    Objet/personne retrouvé(e) !
                   </div>
                 )}
               </div>
             )}
 
+            {/* DESCRIPTION */}
             <div className="detail-card">
               <h2>
                 <Info size={18} />
@@ -220,6 +247,7 @@ function DetailAlerte() {
               <p>{alerte.description || 'Aucune description fournie.'}</p>
             </div>
 
+            {/* PHOTO */}
             {photoUrl && (
               <div className="detail-card">
                 <h2>
@@ -238,6 +266,7 @@ function DetailAlerte() {
               </div>
             )}
 
+            {/* PARTAGER */}
             <div className="detail-card">
               <h2>
                 <Share2 size={18} />
@@ -252,6 +281,7 @@ function DetailAlerte() {
               </div>
             </div>
 
+            {/* RÉACTIONS */}
             <div className="detail-card">
               <h2>
                 <Heart size={18} />
@@ -280,6 +310,67 @@ function DetailAlerte() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* ==========================================
+                CONTRIBUTIONS (AJOUT)
+                ========================================== */}
+            <div className="detail-card">
+              <h2>
+                <Handshake size={18} />
+                Aides proposées
+              </h2>
+              
+              {alerte.contributions && alerte.contributions.length > 0 ? (
+                <div className="contributions-list">
+                  {alerte.contributions.map((contrib) => (
+                    <div key={contrib.id} className={`contribution-item ${contrib.statut}`}>
+                      <div className="contribution-header">
+                        <div className="contribution-author">
+                          <User size={16} />
+                          <strong>{contrib.contributeur_nom || 'Anonyme'}</strong>
+                        </div>
+                        <span className={`contribution-statut ${contrib.statut}`}>
+                          {contrib.statut === 'en_attente' && ' En attente'}
+                          {contrib.statut === 'validee' && ' Validée'}
+                          {contrib.statut === 'refusee' && ' Refusée'}
+                          {contrib.statut === 'recompensee' && ' Récompensée'}
+                        </span>
+                      </div>
+                      <p className="contribution-message">{contrib.message}</p>
+                      {contrib.preuve && (
+                        <div className="contribution-preuve">
+                          <span className="material-symbols-outlined">link</span>
+                          <a href={contrib.preuve} target="_blank" rel="noopener noreferrer">
+                            Voir la preuve
+                          </a>
+                        </div>
+                      )}
+                      <div className="contribution-date">
+                        <Calendar size={14} />
+                        {new Date(contrib.date_creation).toLocaleString('fr-FR')}
+                      </div>
+                      
+                      {/* ✅ BOUTON VALIDER (visible seulement si l'utilisateur est l'auteur) */}
+                      {contrib.statut === 'en_attente' && isAuteur && (
+                        <button 
+                          className="btn-valider-contribution"
+                          onClick={() => validerContribution(contrib.id)}
+                        >
+                          <CheckCircle size={16} />
+                          Valider cette aide
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="contributions-empty">
+                  <Handshake size={32} color="#d0d0d8" />
+                  <p>Aucune aide proposée pour le moment.</p>
+                  <small>Soyez le premier à proposer votre aide !</small>
+                </div>
+              )}
             </div>
 
           </div>

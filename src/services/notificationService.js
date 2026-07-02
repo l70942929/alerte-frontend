@@ -1,6 +1,10 @@
 // Service de gestion des notifications
 import api from './api';
 
+// ==========================================
+// NOTIFICATIONS LOCALES (localStorage)
+// ==========================================
+
 // Récupérer toutes les notifications de l'utilisateur connecté
 export const getNotifications = () => {
   const username = localStorage.getItem('username');
@@ -90,7 +94,43 @@ export const getUnreadCount = () => {
 };
 
 // ==========================================
-// NOTIFICATIONS DE MESSAGES (AJOUT)
+// GESTION DES ÉCOUTEURS D'ÉVÉNEMENTS
+// ==========================================
+
+// Ajouter un écouteur pour les nouvelles notifications
+export const addListener = (callback) => {
+  // Écouter l'événement newNotification
+  const handler = (event) => {
+    if (callback) {
+      callback(event.detail);
+    }
+  };
+  
+  window.addEventListener('newNotification', handler);
+  
+  // Retourner une fonction pour supprimer l'écouteur
+  return () => {
+    window.removeEventListener('newNotification', handler);
+  };
+};
+
+// Ajouter un écouteur pour les mises à jour des notifications
+export const addUpdateListener = (callback) => {
+  const handler = () => {
+    if (callback) {
+      callback();
+    }
+  };
+  
+  window.addEventListener('notificationsUpdated', handler);
+  
+  return () => {
+    window.removeEventListener('notificationsUpdated', handler);
+  };
+};
+
+// ==========================================
+// NOTIFICATIONS DE MESSAGES (BACKEND)
 // ==========================================
 
 // Récupérer les notifications de messages depuis le backend
@@ -105,7 +145,6 @@ export const fetchMessageNotifications = async () => {
     
     if (!res.data || !Array.isArray(res.data)) return [];
     
-    // Convertir les notifications backend en format compatible avec ton système
     const messageNotifs = res.data.map(msg => ({
       id: `msg_${msg.id}`,
       title: `📩 Nouveau message de ${msg.expediteur || 'Inconnu'}`,
@@ -160,7 +199,6 @@ export const addMessageNotification = (username, expediteur, contenu) => {
   notifications.unshift(newNotification);
   localStorage.setItem(key, JSON.stringify(notifications));
   
-  // Si l'utilisateur est connecté, déclencher un événement
   const currentUser = localStorage.getItem('username');
   if (currentUser === username) {
     window.dispatchEvent(new CustomEvent('newNotification', { detail: newNotification }));
@@ -169,31 +207,63 @@ export const addMessageNotification = (username, expediteur, contenu) => {
 };
 
 // ==========================================
-// POLLING DES MESSAGES
+// NOTIFICATIONS BACKEND (BDD)
+// ==========================================
+
+// Récupérer les notifications depuis le backend (BDD)
+export const fetchBackendNotifications = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return [];
+    
+    const res = await api.get('/auth/notifications/', {
+      headers: { Authorization: `Token ${token}` }
+    });
+    
+    return res.data || [];
+  } catch (error) {
+    console.error('Erreur chargement notifications backend:', error);
+    return [];
+  }
+};
+
+// Marquer une notification comme lue (backend)
+export const markBackendNotificationAsRead = async (notificationId) => {
+  try {
+    const token = localStorage.getItem('token');
+    await api.post(`/auth/notifications/marquer-lue/${notificationId}/`, {}, {
+      headers: { Authorization: `Token ${token}` }
+    });
+    return true;
+  } catch (error) {
+    console.error('Erreur:', error);
+    return false;
+  }
+};
+
+// ==========================================
+// POLLING
 // ==========================================
 
 let pollingInterval = null;
 
-export const startMessagePolling = (onNewMessage) => {
+export const startPolling = (onNewMessage) => {
   if (pollingInterval) clearInterval(pollingInterval);
   
-  // Vérifier immédiatement au démarrage
   checkMessages(onNewMessage);
   
-  // Puis toutes les 30 secondes
   pollingInterval = setInterval(() => {
     checkMessages(onNewMessage);
   }, 30000);
 };
 
-export const stopMessagePolling = () => {
+export const stopPolling = () => {
   if (pollingInterval) {
     clearInterval(pollingInterval);
     pollingInterval = null;
   }
 };
 
-// Fonction de vérification des messages
 const checkMessages = async (onNewMessage) => {
   try {
     const token = localStorage.getItem('token');
@@ -202,7 +272,6 @@ const checkMessages = async (onNewMessage) => {
     const messages = await fetchMessageNotifications();
     if (!messages || messages.length === 0) return;
     
-    // Filtrer les messages non lus
     const unreadMessages = messages.filter(m => !m.lu);
     
     if (unreadMessages.length > 0 && onNewMessage) {

@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
-import api from '../services/api'; // ✅ AJOUT IMPORTANT
+import { getUnreadCount, addListener, startPolling, stopPolling } from '../services/notificationService';
 import './Header.css';
 
 function Header() {
@@ -28,46 +28,39 @@ function Header() {
 
   const roleLabel = role === 'moderateur' ? 'Modérateur' : role === 'admin' ? 'Admin' : 'Citoyen';
 
-  // ✅ VÉRIFICATION DES NOTIFICATIONS
+  // ✅ GESTION DES NOTIFICATIONS
   useEffect(() => {
-    const checkNotifications = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        
-        const res = await api.get('/messagerie/notifications/', {
-          headers: { Authorization: `Token ${token}` }
-        });
-        
-        const unread = res.data.filter(n => !n.lu);
-        if (unread.length > 0) {
-          setUnreadCount(unread.length);
-          window.dispatchEvent(new Event('notificationsUpdated'));
-        } else {
-          // Si aucune notification non lue, mettre à 0
-          setUnreadCount(0);
-        }
-      } catch (error) {
-        console.error('Erreur chargement notifications:', error);
-      }
+    const token = localStorage.getItem('token');
+    
+    // Mettre à jour le compteur
+    const updateCount = () => {
+      setUnreadCount(getUnreadCount());
     };
     
-    // Vérifier immédiatement
-    checkNotifications();
+    updateCount();
     
-    // Puis toutes les 10 secondes
-    const interval = setInterval(checkNotifications, 10000);
+    // Écouter les changements
+    const unsubscribe = addListener(updateCount);
     
-    // Écouter les événements de nouvelles notifications
+    // Démarrer le polling si connecté
+    if (token) {
+      startPolling((newMessages) => {
+        setUnreadCount(prev => prev + newMessages.length);
+        window.dispatchEvent(new Event('notificationsUpdated'));
+      });
+    }
+    
+    // Écouter les événements
     const handleNewNotification = () => {
-      checkNotifications();
+      updateCount();
     };
     
     window.addEventListener('newNotification', handleNewNotification);
     window.addEventListener('notificationsUpdated', handleNewNotification);
     
     return () => {
-      clearInterval(interval);
+      if (typeof unsubscribe === 'function') unsubscribe();
+      stopPolling();
       window.removeEventListener('newNotification', handleNewNotification);
       window.removeEventListener('notificationsUpdated', handleNewNotification);
     };
@@ -99,7 +92,6 @@ function Header() {
     navigate('/');
   };
 
-  // ✅ Rediriger vers la landing page quand on clique sur le logo
   const handleLogoClick = () => {
     localStorage.clear();
     navigate('/');
@@ -110,7 +102,6 @@ function Header() {
       <header className="hdr">
         <div className="hdr-inner">
           <div className="hdr-left">
-            {/* ✅ Logo avec redirection vers landing */}
             <button onClick={handleLogoClick} className="hdr-logo-btn">
               <span className="logo-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="22" height="22">

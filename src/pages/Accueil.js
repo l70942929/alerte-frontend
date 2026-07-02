@@ -73,7 +73,7 @@ function Accueil() {
     en_cours: { label: 'En cours',   cls: 'badge-encours' },
     resolu:   { label: 'Résolu',     cls: 'badge-resolu'  },
     cloture:  { label: 'Clôturé',    cls: 'badge-cloture' },
-    retrouve: { label: 'Retrouvé 🎉', cls: 'badge-retrouve' },
+    retrouve: { label: 'Retrouvé ', cls: 'badge-retrouve' },
   };
 
   const afficherLieu = (loc = '') => {
@@ -258,7 +258,7 @@ function Accueil() {
       </div>
 
       <BottomNav />
-    </div>
+    </div>      
   );
 }
 

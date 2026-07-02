@@ -8,27 +8,34 @@ import {
   clearAllNotifications,
   fetchMessageNotifications,
   markMessageNotificationAsRead,
+  fetchBackendNotifications,
+  markBackendNotificationAsRead,
 } from '../services/notificationService';
 import './NotificationPanel.css';
 
 function NotificationPanel({ onClose }) {
   const [notifications, setNotifications] = useState([]);
   const [messageNotifs, setMessageNotifs] = useState([]);
+  const [backendNotifs, setBackendNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const panelRef = useRef(null);
 
-  // Charger les notifications
+  // Charger toutes les notifications
   const loadNotifications = async () => {
     setLoading(true);
     try {
-      // Notifications existantes (localStorage)
+      // 1. Notifications locales (localStorage)
       const existingNotifs = getNotifications();
       setNotifications(existingNotifs);
       
-      // Notifications de messages (backend)
+      // 2. Notifications de messages (backend)
       const messages = await fetchMessageNotifications();
       setMessageNotifs(messages || []);
+      
+      // 3. Notifications backend (BDD)
+      const backend = await fetchBackendNotifications();
+      setBackendNotifs(backend || []);
     } catch (error) {
       console.error('Erreur chargement notifications:', error);
     } finally {
@@ -39,7 +46,6 @@ function NotificationPanel({ onClose }) {
   useEffect(() => {
     loadNotifications();
     
-    // Écouter les mises à jour
     const handleUpdate = () => {
       setNotifications(getNotifications());
     };
@@ -69,7 +75,6 @@ function NotificationPanel({ onClose }) {
     // Si c'est un message
     if (notif.id && typeof notif.id === 'string' && notif.id.startsWith('msg_')) {
       await markMessageNotificationAsRead(notif.messageId);
-      // Marquer comme lu dans l'état local
       setMessageNotifs(prev => 
         prev.map(n => n.id === notif.id ? { ...n, lu: true } : n)
       );
@@ -78,7 +83,20 @@ function NotificationPanel({ onClose }) {
       return;
     }
     
-    // Sinon, notification normale
+    // Si c'est une notification backend (BDD)
+    if (notif.id && typeof notif.id === 'number') {
+      await markBackendNotificationAsRead(notif.id);
+      setBackendNotifs(prev => 
+        prev.map(n => n.id === notif.id ? { ...n, lu: true } : n)
+      );
+      if (notif.alerte_id) {
+        navigate(`/alertes/${notif.alerte_id}`);
+        if (onClose) onClose();
+      }
+      return;
+    }
+    
+    // Sinon, notification locale
     markAsRead(notif.id);
     if (notif.alerteId) {
       navigate(`/alertes/${notif.alerteId}`);
@@ -90,7 +108,6 @@ function NotificationPanel({ onClose }) {
   const handleDelete = (e, notifId) => {
     e.stopPropagation();
     if (typeof notifId === 'string' && notifId.startsWith('msg_')) {
-      // Pour les messages, on les retire de la liste
       setMessageNotifs(prev => prev.filter(n => n.id !== notifId));
       return;
     }
@@ -101,6 +118,7 @@ function NotificationPanel({ onClose }) {
   const handleMarkAllAsRead = () => {
     markAllAsRead();
     setMessageNotifs(prev => prev.map(n => ({ ...n, lu: true })));
+    setBackendNotifs(prev => prev.map(n => ({ ...n, lu: true })));
   };
 
   // Tout supprimer
@@ -108,13 +126,16 @@ function NotificationPanel({ onClose }) {
     if (window.confirm('Supprimer toutes les notifications ?')) {
       clearAllNotifications();
       setMessageNotifs([]);
+      setBackendNotifs([]);
     }
   };
 
-  // Combiner les deux types de notifications
-  const allNotifications = [...messageNotifs, ...notifications].sort((a, b) => 
-    new Date(b.date) - new Date(a.date)
-  );
+  // Combiner tous les types de notifications
+  const allNotifications = [
+    ...backendNotifs.map(n => ({ ...n, id: `backend_${n.id}` })),
+    ...messageNotifs,
+    ...notifications
+  ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const unreadCount = allNotifications.filter(n => !n.lu).length;
 

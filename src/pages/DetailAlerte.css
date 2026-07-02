@@ -96,3 +96,204 @@
   background: linear-gradient(135deg, #f5ab35, #e67e22);
   color: white;
 }
+
+
+/* ===== CONTRIBUTIONS ===== */
+.contributions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.contribution-item {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e8;
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.3s ease;
+}
+
+.dark-mode .contribution-item {
+  background: #2a2a3e;
+  border-color: #3a3a5e;
+}
+
+.contribution-item:hover {
+  border-color: #1a5490;
+}
+
+.contribution-item.validee {
+  border-color: #2ecc71;
+  background: rgba(46, 204, 113, 0.05);
+}
+
+.contribution-item.recompensee {
+  border-color: #f5ab35;
+  background: rgba(245, 171, 53, 0.05);
+}
+
+.contribution-item.refusee {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.contribution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contribution-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.contribution-author strong {
+  color: #1a1a2e;
+}
+
+.dark-mode .contribution-author strong {
+  color: #f0f0f0;
+}
+
+.contribution-statut {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+
+.contribution-statut.en_attente {
+  background: rgba(243, 156, 18, 0.12);
+  color: #f39c12;
+}
+
+.contribution-statut.validee {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+.contribution-statut.recompensee {
+  background: rgba(245, 171, 53, 0.12);
+  color: #f5ab35;
+}
+
+.contribution-statut.refusee {
+  background: rgba(231, 76, 60, 0.12);
+  color: #e74c3c;
+}
+
+.contribution-message {
+  font-size: 14px;
+  color: #5a5a7a;
+  margin: 4px 0 8px;
+  line-height: 1.5;
+}
+
+.dark-mode .contribution-message {
+  color: #a0a0b8;
+}
+
+.contribution-preuve {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.contribution-preuve a {
+  color: #1a5490;
+  text-decoration: none;
+}
+
+.contribution-preuve a:hover {
+  text-decoration: underline;
+}
+
+.contribution-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #7a7a9a;
+}
+
+.dark-mode .contribution-date {
+  color: #6a6a8a;
+}
+
+.btn-valider-contribution {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-valider-contribution:hover {
+  background: #27ae60;
+  transform: translateY(-2px);
+}
+
+.contributions-empty {
+  text-align: center;
+  padding: 20px;
+  color: #5a5a7a;
+}
+
+.dark-mode .contributions-empty {
+  color: #a0a0b8;
+}
+
+.contributions-empty svg {
+  color: #d0d0d8;
+  margin-bottom: 8px;
+}
+
+.contributions-empty p {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.contributions-empty small {
+  font-size: 12px;
+}
+
+/* ===== BADGE RETROUVÉ ===== */
+.aider-retrouve-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f5ab35, #e67e22);
+  color: white;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 12px;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.tag-retrouve {
+  background: linear-gradient(135deg, #f5ab35, #e67e22);
+  color: white;
+}

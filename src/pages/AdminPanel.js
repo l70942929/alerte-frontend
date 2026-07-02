@@ -247,10 +247,10 @@ function AdminPanel() {
                             </button>
                           )}
                           {item.statut === 'depose' && (
-                            <span className="status-ok">✅ Déjà confirmé</span>
+                            <span className="status-ok"> Déjà confirmé</span>
                           )}
                           {item.statut === 'attribuee' && (
-                            <span className="status-done">🎉 Attribuée</span>
+                            <span className="status-done"> Attribuée</span>
                           )}
                         </td>
                       </tr>

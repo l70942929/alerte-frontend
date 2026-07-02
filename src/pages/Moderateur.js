@@ -71,7 +71,7 @@ function Moderateur() {
     
     try {
       await api.patch(`signalements/moderer/${id}/`, { statut: nouveauStatut });
-      setMessage('✅ Alerte mise à jour avec succès !');
+      setMessage(' Alerte mise à jour avec succès !');
       setErreur('');
       setAlertes(prev => prev.map(a => (a.id === id ? { ...a, statut: nouveauStatut } : a)));
       
@@ -89,7 +89,7 @@ function Moderateur() {
         } else if (nouveauStatut === 'resolu') {
           addNotificationForUser(
             proprietaireAlerte,
-            '🏁 Alerte résolue',
+            ' Alerte résolue',
             `L'alerte "${typeAlerte}" est maintenant résolue.`,
             'success',
             id
@@ -152,7 +152,7 @@ function Moderateur() {
       en_cours: 'Publiée',
       resolu: 'Résolue',
       cloture: 'Clôturée',
-      retrouve: 'Retrouvé 🎉', // ← AJOUT
+      retrouve: 'Retrouvé ', // ← AJOUT
     };
     return labels[statut] || statut;
   };
