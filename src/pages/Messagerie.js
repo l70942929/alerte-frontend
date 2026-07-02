@@ -35,7 +35,6 @@ function Messagerie() {
   const threadRef = useRef(null);
   const username = localStorage.getItem('username');
 
-  // Charger les contacts
   useEffect(() => {
     const chargerContacts = async () => {
       setLoadingContacts(true);
@@ -57,7 +56,6 @@ function Messagerie() {
           : [];
         setContacts(autres);
         
-        // Charger les non lus pour chaque contact
         const nonLus = {};
         for (const contact of autres) {
           try {
@@ -70,13 +68,10 @@ function Messagerie() {
             if (nonLusCount > 0) {
               nonLus[contact.id] = nonLusCount;
             }
-          } catch (e) {
-            // Ignorer
-          }
+          } catch (e) {}
         }
         setNonLusParContact(nonLus);
       } catch (error) {
-        console.error('Erreur:', error);
         setErreur("Impossible de charger les contacts.");
         setContacts([]);
       } finally {
@@ -100,13 +95,11 @@ function Messagerie() {
         return;
       }
 
-      // ✅ URL CORRIGÉE
       const res = await api.get(`/messagerie/conversation/${contact.id}/`, {
         headers: { Authorization: `Token ${token}` }
       });
       setMessages(Array.isArray(res.data) ? res.data : []);
       
-      // Marquer les messages non lus comme lus
       const nonLus = res.data.filter(msg => 
         !msg.lu && msg.expediteur_nom === contact.username
       );
@@ -120,7 +113,6 @@ function Messagerie() {
         }));
       }
     } catch (error) {
-      console.error('Erreur:', error);
       setErreur("Impossible de charger la conversation.");
       setMessages([]);
     } finally {
@@ -148,8 +140,26 @@ function Messagerie() {
         headers: { Authorization: `Token ${token}` }
       });
       setMessages(prev => [...prev, res.data]);
+      
+      // Sauvegarder la notification localement
+      const username = localStorage.getItem('username');
+      if (username) {
+        const key = `notifications_${username}`;
+        const stored = localStorage.getItem(key);
+        const notifications = stored ? JSON.parse(stored) : [];
+        notifications.unshift({
+          id: Date.now(),
+          title: `📩 Message envoyé à ${actif.username}`,
+          message: contenu.length > 50 ? contenu.substring(0, 50) + '...' : contenu,
+          type: 'success',
+          alerteId: null,
+          date: new Date().toISOString(),
+          lu: false
+        });
+        localStorage.setItem(key, JSON.stringify(notifications));
+        window.dispatchEvent(new Event('newNotification'));
+      }
     } catch (error) {
-      console.error('Erreur:', error);
       setNouveauMsg(contenu);
       setErreur(error.response?.data?.detail || "Erreur lors de l'envoi.");
     }
@@ -171,7 +181,6 @@ function Messagerie() {
         setMessages(messages.filter((msg) => msg.id !== id));
         setMenuMessage(null);
       } catch (error) {
-        console.error('Erreur:', error);
         alert("Impossible de supprimer le message");
       }
     }
@@ -188,7 +197,6 @@ function Messagerie() {
         setMessages(messages.map(msg => msg.id === id ? { ...msg, contenu: nouveauContenu } : msg));
         setMenuMessage(null);
       } catch (error) {
-        console.error('Erreur:', error);
         alert("Impossible de modifier le message");
       }
     } else {
@@ -212,7 +220,6 @@ function Messagerie() {
           alert(`Message transféré à ${destinataire.username}`);
           setMenuMessage(null);
         } catch (error) {
-          console.error('Erreur:', error);
           alert("Erreur lors du transfert");
         }
       } else {
@@ -272,12 +279,7 @@ function Messagerie() {
 
           <div className="msg-search">
             <Search size={18} />
-            <input
-              type="search"
-              placeholder="Rechercher un contact"
-              value={recherche}
-              onChange={(e) => setRecherche(e.target.value)}
-            />
+            <input type="search" placeholder="Rechercher un contact" value={recherche} onChange={(e) => setRecherche(e.target.value)} />
           </div>
 
           {loadingContacts ? (
@@ -297,25 +299,17 @@ function Messagerie() {
                   className={`msg-contact ${actif?.id === contact.id ? 'active' : ''}`}
                   onClick={() => ouvrirChat(contact)}
                 >
-                  <span className="msg-avatar">
-                    {(contact.username || '?').charAt(0).toUpperCase()}
-                  </span>
+                  <span className="msg-avatar">{(contact.username || '?').charAt(0).toUpperCase()}</span>
                   <span className="msg-contact-info">
                     <span className="msg-contact-nom">
                       {contact.username}
                       {nonLusParContact[contact.id] > 0 && (
-                        <span className="msg-non-lu-badge">
-                          {nonLusParContact[contact.id]}
-                        </span>
+                        <span className="msg-non-lu-badge">{nonLusParContact[contact.id]}</span>
                       )}
                     </span>
-                    <span className="msg-contact-ville">
-                      {contact.localisation || 'Cameroun'}
-                    </span>
+                    <span className="msg-contact-ville">{contact.localisation || 'Cameroun'}</span>
                   </span>
-                  {nonLusParContact[contact.id] > 0 && (
-                    <span className="msg-non-lu-dot" />
-                  )}
+                  {nonLusParContact[contact.id] > 0 && <span className="msg-non-lu-dot" />}
                 </button>
               ))}
             </div>
@@ -332,12 +326,10 @@ function Messagerie() {
           ) : (
             <>
               <div className="msg-chat-header">
-                <button type="button" className="msg-back" onClick={fermerChatMobile} aria-label="Retour aux contacts">
+                <button type="button" className="msg-back" onClick={fermerChatMobile}>
                   <ArrowLeft size={20} />
                 </button>
-                <span className="msg-avatar">
-                  {(actif.username || '?').charAt(0).toUpperCase()}
-                </span>
+                <span className="msg-avatar">{(actif.username || '?').charAt(0).toUpperCase()}</span>
                 <div>
                   <p className="msg-chat-nom">{actif.username}</p>
                   <p className="msg-chat-status">{actif.localisation || 'Cameroun'}</p>

@@ -101,7 +101,6 @@ function DetailAlerte() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  // ✅ VALIDER UNE CONTRIBUTION
   const validerContribution = async (contributionId) => {
     if (!window.confirm('Valider cette contribution ?')) return;
     
@@ -111,9 +110,8 @@ function DetailAlerte() {
         headers: { Authorization: `Token ${token}` }
       });
       
-      alert(' Contribution validée avec succès !');
+      alert('✅ Contribution validée avec succès !');
       
-      // Recharger l'alerte
       const res = await api.get(`signalements/${id}/`, {
         headers: { Authorization: `Token ${token}` }
       });
@@ -137,12 +135,10 @@ function DetailAlerte() {
 
   const photoUrl = getPhotoUrl(alerte?.photo);
 
-  // ✅ Vérifier si l'alerte est encore active
   const isActive = alerte?.statut !== 'resolu' && 
                    alerte?.statut !== 'retrouve' && 
                    alerte?.statut !== 'cloture';
 
-  // ✅ Vérifier si l'utilisateur est l'auteur
   const isAuteur = alerte?.utilisateur_nom === username;
 
   if (loading) {
@@ -207,7 +203,6 @@ function DetailAlerte() {
         <div className="detail-content">
           <div className="detail-main">
 
-            {/* RÉCOMPENSE DISPONIBLE */}
             {alerte.montant_recompense > 0 && (
               <div className="detail-card aider-card">
                 <h2>
@@ -220,73 +215,48 @@ function DetailAlerte() {
                   {alerte.statut === 'en_cours' && " L'alerte est active."}
                   {alerte.statut === 'resolu' && "  L'alerte a été résolue."}
                   {alerte.statut === 'retrouve' && "  L'objet/la personne a été retrouvé(e) !"}
-                  {alerte.statut === 'cloture' && " L'alerte est clôturée."}
+                  {alerte.statut === 'cloture' && "  L'alerte est clôturée."}
                 </p>
                 {isActive && (
-                  <button 
-                    className="btn-aider" 
-                    onClick={() => navigate(`/aider/${alerte.id}`)}
-                  >
+                  <button className="btn-aider" onClick={() => navigate(`/aider/${alerte.id}`)}>
                      Proposer mon aide
                   </button>
                 )}
                 {alerte.statut === 'retrouve' && (
-                  <div className="aider-retrouve-badge">
-                    Objet/personne retrouvé(e) !
-                  </div>
+                  <div className="aider-retrouve-badge">🎉 Objet/personne retrouvé(e) !</div>
                 )}
               </div>
             )}
 
-            {/* DESCRIPTION */}
             <div className="detail-card">
-              <h2>
-                <Info size={18} />
-                Description
-              </h2>
+              <h2><Info size={18} /> Description</h2>
               <p>{alerte.description || 'Aucune description fournie.'}</p>
             </div>
 
-            {/* PHOTO */}
             {photoUrl && (
               <div className="detail-card">
-                <h2>
-                  <Camera size={18} />
-                  Preuve visuelle
-                </h2>
-                <img
-                  src={photoUrl}
-                  alt={alerte.type_alerte || 'Photo de l\'alerte'}
-                  className="detail-photo"
-                  onError={(e) => {
-                    console.error('Erreur chargement photo:', photoUrl);
-                    e.target.style.display = 'none';
-                  }}
+                <h2><Camera size={18} /> Preuve visuelle</h2>
+                {/* ✅ CORRECTION ICI : alt descriptif au lieu de "Photo" */}
+                <img 
+                  src={photoUrl} 
+                  alt={`Illustration de l'alerte ${alerte.type_alerte?.replace(/_/g, ' ')} à ${alerte.localisation}`} 
+                  className="detail-photo" 
                 />
               </div>
             )}
 
-            {/* PARTAGER */}
             <div className="detail-card">
-              <h2>
-                <Share2 size={18} />
-                Partager cette alerte
-              </h2>
+              <h2><Share2 size={18} /> Partager cette alerte</h2>
               <p className="detail-share-sub">Aidez à diffuser cette alerte pour une réaction plus rapide.</p>
               <div className="detail-share-btns">
                 <button className="detail-share-wa" onClick={partagerWhatsApp}>
-                  <MessageCircle size={18} />
-                  WhatsApp
+                  <MessageCircle size={18} /> WhatsApp
                 </button>
               </div>
             </div>
 
-            {/* RÉACTIONS */}
             <div className="detail-card">
-              <h2>
-                <Heart size={18} />
-                Réactions
-              </h2>
+              <h2><Heart size={18} /> Réactions</h2>
               <p className="detail-share-sub">Cliquez pour réagir à cette alerte.</p>
               <div className="detail-reactions">
                 {[
@@ -303,23 +273,16 @@ function DetailAlerte() {
                     >
                       <Icon size={16} />
                       {r.label}
-                      {reactions[r.key] > 0 && (
-                        <span className="reaction-count">{reactions[r.key]}</span>
-                      )}
+                      {reactions[r.key] > 0 && <span className="reaction-count">{reactions[r.key]}</span>}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* ==========================================
-                CONTRIBUTIONS (AJOUT)
-                ========================================== */}
+            {/* CONTRIBUTIONS */}
             <div className="detail-card">
-              <h2>
-                <Handshake size={18} />
-                Aides proposées
-              </h2>
+              <h2><Handshake size={18} /> Aides proposées</h2>
               
               {alerte.contributions && alerte.contributions.length > 0 ? (
                 <div className="contributions-list">
@@ -338,27 +301,13 @@ function DetailAlerte() {
                         </span>
                       </div>
                       <p className="contribution-message">{contrib.message}</p>
-                      {contrib.preuve && (
-                        <div className="contribution-preuve">
-                          <span className="material-symbols-outlined">link</span>
-                          <a href={contrib.preuve} target="_blank" rel="noopener noreferrer">
-                            Voir la preuve
-                          </a>
-                        </div>
-                      )}
                       <div className="contribution-date">
                         <Calendar size={14} />
                         {new Date(contrib.date_creation).toLocaleString('fr-FR')}
                       </div>
-                      
-                      {/* ✅ BOUTON VALIDER (visible seulement si l'utilisateur est l'auteur) */}
                       {contrib.statut === 'en_attente' && isAuteur && (
-                        <button 
-                          className="btn-valider-contribution"
-                          onClick={() => validerContribution(contrib.id)}
-                        >
-                          <CheckCircle size={16} />
-                          Valider cette aide
+                        <button className="btn-valider-contribution" onClick={() => validerContribution(contrib.id)}>
+                          <CheckCircle size={16} /> Valider cette aide
                         </button>
                       )}
                     </div>
@@ -377,10 +326,7 @@ function DetailAlerte() {
 
           <aside className="detail-side">
             <div className="detail-card">
-              <h2>
-                <Info size={18} />
-                Informations
-              </h2>
+              <h2><Info size={18} /> Informations</h2>
               <div className="detail-infos">
                 {[
                   { label: 'Type', val: alerte.type_alerte?.replace(/_/g, ' ') || '—' },
@@ -405,10 +351,7 @@ function DetailAlerte() {
 
             {!alerte.anonyme && alerte.utilisateur_nom && (
               <div className="detail-card">
-                <h2>
-                  <User size={18} />
-                  Informations de l'auteur
-                </h2>
+                <h2><User size={18} /> Informations de l'auteur</h2>
                 <div className="detail-infos">
                   <div className="detail-info-row">
                     <span className="detail-info-label">Nom</span>
@@ -416,17 +359,13 @@ function DetailAlerte() {
                   </div>
                   {alerte.utilisateur_email && (
                     <div className="detail-info-row">
-                      <span className="detail-info-label">
-                        <Mail size={14} />
-                      </span>
+                      <span className="detail-info-label"><Mail size={14} /></span>
                       <span className="detail-info-val">{alerte.utilisateur_email}</span>
                     </div>
                   )}
                   {alerte.utilisateur_telephone && (
                     <div className="detail-info-row">
-                      <span className="detail-info-label">
-                        <Phone size={14} />
-                      </span>
+                      <span className="detail-info-label"><Phone size={14} /></span>
                       <span className="detail-info-val">{alerte.utilisateur_telephone}</span>
                     </div>
                   )}

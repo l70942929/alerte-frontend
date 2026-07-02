@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import NotificationPanel from './NotificationPanel';
-import { getUnreadCount, addListener, startPolling, stopPolling } from '../services/notificationService';
+import api from '../services/api';
 import './Header.css';
 
 function Header() {
@@ -30,37 +30,32 @@ function Header() {
 
   // ✅ GESTION DES NOTIFICATIONS
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
-    // Mettre à jour le compteur
-    const updateCount = () => {
-      setUnreadCount(getUnreadCount());
-    };
-    
-    updateCount();
-    
-    // Écouter les changements
-    const unsubscribe = addListener(updateCount);
-    
-    // Démarrer le polling si connecté
-    if (token) {
-      startPolling((newMessages) => {
-        setUnreadCount(prev => prev + newMessages.length);
+    const checkNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const res = await api.get('/auth/notifications/', {
+          headers: { Authorization: `Token ${token}` }
+        });
+        
+        const unread = res.data.filter(n => !n.lu);
+        setUnreadCount(unread.length);
         window.dispatchEvent(new Event('notificationsUpdated'));
-      });
-    }
-    
-    // Écouter les événements
-    const handleNewNotification = () => {
-      updateCount();
+      } catch (error) {
+        console.error('Erreur chargement notifications:', error);
+      }
     };
     
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 10000);
+    
+    const handleNewNotification = () => checkNotifications();
     window.addEventListener('newNotification', handleNewNotification);
     window.addEventListener('notificationsUpdated', handleNewNotification);
     
     return () => {
-      if (typeof unsubscribe === 'function') unsubscribe();
-      stopPolling();
+      clearInterval(interval);
       window.removeEventListener('newNotification', handleNewNotification);
       window.removeEventListener('notificationsUpdated', handleNewNotification);
     };

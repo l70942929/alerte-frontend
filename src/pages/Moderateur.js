@@ -97,8 +97,8 @@ function Moderateur() {
         } else if (nouveauStatut === 'retrouve') {
           addNotificationForUser(
             proprietaireAlerte,
-            'Objet/personne retrouvé(e) !',
-            `Félicitations ! L'objet ou la personne de votre alerte "${typeAlerte}" a été retrouvé(e) ! Vous avez gagné 30 points.`,
+            ' Objet/personne retrouvé(e) !',
+            `Félicitations ! L'objet ou la personne de votre alerte "${typeAlerte}" a été retrouvé(e) ! Vous avez gagné 55 points au total !`,
             'success',
             id
           );
@@ -152,7 +152,7 @@ function Moderateur() {
       en_cours: 'Publiée',
       resolu: 'Résolue',
       cloture: 'Clôturée',
-      retrouve: 'Retrouvé ', // ← AJOUT
+      retrouve: 'Retrouvé ',
     };
     return labels[statut] || statut;
   };
@@ -163,7 +163,7 @@ function Moderateur() {
       en_cours: 'statut-publiee',
       resolu: 'statut-resolue',
       cloture: 'statut-cloture',
-      retrouve: 'statut-retrouve', // ← AJOUT
+      retrouve: 'statut-retrouve',
     };
     return classes[statut] || '';
   };
@@ -175,7 +175,7 @@ function Moderateur() {
     recu: alertes.filter((a) => a.statut === 'recu').length,
     en_cours: alertes.filter((a) => a.statut === 'en_cours').length,
     resolu: alertes.filter((a) => a.statut === 'resolu').length,
-    retrouve: alertes.filter((a) => a.statut === 'retrouve').length, // ← AJOUT
+    retrouve: alertes.filter((a) => a.statut === 'retrouve').length,
   };
 
   const filtres = [
@@ -183,7 +183,7 @@ function Moderateur() {
     { key: 'recu', label: 'En attente', icon: Clock },
     { key: 'en_cours', label: 'Publiées', icon: CheckCircle },
     { key: 'resolu', label: 'Résolues', icon: ThumbsUp },
-    { key: 'retrouve', label: 'Retrouvées ', icon: Search }, // ← AJOUT
+    { key: 'retrouve', label: 'Retrouvées 🎉', icon: Search },
     { key: 'cloture', label: 'Clôturées', icon: XCircle },
   ];
 
@@ -322,7 +322,7 @@ function Moderateur() {
                 <div className="modo-card-date">
                   <Calendar size={14} />
                   Soumis le {new Date(a.date_soumission).toLocaleString('fr-FR')}
-                  {a.anonyme && ' • 🕵️ Anonyme'}
+                  {a.anonyme && ' • Anonyme'}
                 </div>
 
                 <div className="modo-card-actions">
@@ -368,7 +368,6 @@ function Moderateur() {
                         )}
                         Marquer comme résolue
                       </button>
-                      {/* ✅ NOUVEAU BOUTON RETROUVÉ */}
                       <button
                         className="modo-btn-retrouve"
                         onClick={() => changerStatut(a.id, 'retrouve')}
@@ -379,7 +378,7 @@ function Moderateur() {
                         ) : (
                           <Search size={16} />
                         )}
-                        Marquer comme retrouvé (+30 pts)
+                        Marquer comme retrouvé (+55 pts)
                       </button>
                     </>
                   )}
